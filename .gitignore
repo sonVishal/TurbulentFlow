@@ -1,0 +1,5 @@
+# C++ compilation output files
+*.o
+
+# Executable
+ns

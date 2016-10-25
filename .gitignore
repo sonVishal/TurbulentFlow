@@ -3,3 +3,6 @@
 
 # Executable
 ns
+
+# Atom ctags
+.tags*

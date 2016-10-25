@@ -6,3 +6,8 @@ ns
 
 # Atom ctags
 .tags*
+
+# Eclipse
+.cproject
+.project
+.settings

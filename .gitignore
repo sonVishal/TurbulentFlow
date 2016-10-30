@@ -11,3 +11,6 @@ ns
 .cproject
 .project
 .settings
+
+# Visualization
+*.vtk

@@ -131,8 +131,8 @@ class Simulation {
         // TODO WS2: communicate pressure values
         // compute velocity
         _velocityIterator.iterate();
-	// set obstacle boundaries
-	_obstacleIterator.iterate();
+    	// set obstacle boundaries
+    	_obstacleIterator.iterate();
         // TODO WS2: communicate velocity values
         // Iterate for velocities on the boundary
         _wallVelocityIterator.iterate();

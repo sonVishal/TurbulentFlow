@@ -38,7 +38,7 @@ class FlowField {
          * @param Nx Size of the fuild domain (non-ghost cells), in the X direction
          * @param Ny Size of the fuild domain (non-ghost cells), in the Y direction
          */
-        FlowField (int Nx, int Ny, int Nz);
+        FlowField ( int Nx, int Ny );
 
         /** Constructor for the 3D flow field
          *
@@ -49,7 +49,7 @@ class FlowField {
          * @param Ny Size of the fuild domain (non-ghost cells), in the Y direction
          * @param Nz Size of the fuild domain (non-ghost cells), in the Z direction
          */
-        FlowField ( int Nx, int Ny );
+        FlowField (int Nx, int Ny, int Nz);
 
         /** Constructs a field from parameters object
          *

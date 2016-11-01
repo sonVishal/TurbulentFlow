@@ -28,7 +28,7 @@ int main (int argc, char *argv[]) {
     MeshsizeFactory::getInstance().initMeshsize(parameters);
     FlowField *flowField = NULL;
     Simulation *simulation = NULL;
-    
+
     #ifdef DEBUG
     std::cout << "Processor " << parameters.parallel.rank << " with index ";
     std::cout << parameters.parallel.indices[0] << ",";
@@ -63,9 +63,11 @@ int main (int argc, char *argv[]) {
 
     FLOAT time = 0.0;
     FLOAT timeStdOut=parameters.stdOut.interval;
+    FLOAT timeVTKOut=parameters.vtk.interval;
     int timeSteps = 0;
 
     // TODO WS1: plot initial state
+    simulation->plotVTK(timeSteps);
 
     // time loop
     while (time < parameters.simulation.finalTime){
@@ -80,11 +82,21 @@ int main (int argc, char *argv[]) {
                         parameters.timestep.dt << std::endl;
           timeStdOut += parameters.stdOut.interval;
       }
+
       // TODO WS1: trigger VTK output
+      if (timeVTKOut <= time) {
+          simulation->plotVTK(timeSteps);
+          if (rank == 0) {
+              std::cout << "Plotting VTK file at time: " << time << std::endl;
+          }
+          timeVTKOut += parameters.vtk.interval;
+      }
+
       timeSteps++;
     }
 
     // TODO WS1: plot final output
+    simulation->plotVTK(timeSteps);
 
     delete simulation; simulation=NULL;
     delete flowField;  flowField= NULL;

@@ -16,6 +16,7 @@
 #include "stencils/NeumannBoundaryStencils.h"
 #include "stencils/BFInputStencils.h"
 #include "stencils/InitTaylorGreenFlowFieldStencil.h"
+#include "stencils/VTKStencil.h"
 #include "GlobalBoundaryFactory.h"
 #include "Iterators.h"
 #include "Definitions.h"
@@ -52,6 +53,9 @@ class Simulation {
     FieldIterator<FlowField> _velocityIterator;
     FieldIterator<FlowField> _obstacleIterator;
 
+    VTKStencil _vtkStencil;
+    FieldIterator<FlowField> _vtkIterator;
+
     PetscSolver _solver;
 
 
@@ -73,6 +77,8 @@ class Simulation {
        _obstacleStencil(parameters),
        _velocityIterator(_flowField,parameters,_velocityStencil),
        _obstacleIterator(_flowField,parameters,_obstacleStencil),
+       _vtkStencil(parameters),
+       _vtkIterator(_flowField,parameters,_vtkStencil),
        _solver(_flowField,parameters)
        {
        }
@@ -140,6 +146,7 @@ class Simulation {
 
     /** TODO WS1: plots the flow field. */
     virtual void plotVTK(int timeStep){
+        _vtkStencil.write(_flowField, timeStep);
       // TODO WS1: create VTKStencil and respective iterator; iterate stencil
       //           over _flowField and write flow field information to vtk file
     }

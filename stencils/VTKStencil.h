@@ -14,6 +14,9 @@
  * When iterated with, creates a VTK file.
  */
 class VTKStencil : public FieldStencil<FlowField> {
+    private:
+
+        void writeHeader(std::ofstream& fileHandle);
 
     public:
 
@@ -21,7 +24,7 @@ class VTKStencil : public FieldStencil<FlowField> {
          *
          * @param prefix String with the prefix of the name of the VTK files
          */
-        VTKStencil ( const Parameters & parameters );
+        VTKStencil ( const Parameters& parameters );
 
         /** 2D operation for one position
          *

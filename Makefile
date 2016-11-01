@@ -23,7 +23,7 @@ OBJ = DataStructures.o Configuration.o 3rdparty/tinyxml2/tinyxml2.o SimpleTimer.
 NSOBJ = FlowField.o LinearSolver.o Meshsize.o\
 stencils/MaxUStencil.o stencils/MovingWallStencils.o stencils/PeriodicBoundaryStencils.o\
 stencils/FGHStencil.o solvers/SORSolver.o solvers/PetscSolver.o \
-stencils/RHSStencil.o stencils/VelocityStencil.o \
+stencils/RHSStencil.o stencils/VelocityStencil.o stencils/VTKStencil.o \
 parallelManagers/PetscParallelConfiguration.o\
 GlobalBoundaryFactory.o\
 stencils/BFStepInitStencil.o stencils/NeumannBoundaryStencils.o stencils/BFInputStencils.o stencils/ObstacleStencil.o\

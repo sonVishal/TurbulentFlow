@@ -27,7 +27,7 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j, int k ) {
 
 }
 
-void VTKStencil::writeHeaderAndCoords( FlowField & flowField ) {
+void VTKStencil::writeHeaderAndCoords() {
     _outputFileHandle << "# vtk DataFile Version 2.0\n" << "I need something to put here\n";
     _outputFileHandle << "ASCII\n" << std::endl;
 
@@ -78,7 +78,7 @@ void VTKStencil::write ( FlowField & flowField, int timeStep ) {
     fileName << _parameters.vtk.prefix << '_' << timeStep << ".vtk";
     _outputFileHandle.open(fileName.str().c_str());
     if(_outputFileHandle.is_open()) {
-        writeHeaderAndCoords(flowField);
+        writeHeaderAndCoords();
         _outputFileHandle.close();
     }
 }

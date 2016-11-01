@@ -17,6 +17,9 @@ class VTKStencil : public FieldStencil<FlowField> {
     private:
 
         std::ofstream _outputFileHandle;
+        std::stringstream _pressure;
+        std::stringstream _velocity;
+        unsigned int _numLocalCells;
 
         void writeHeaderAndCoords();
 

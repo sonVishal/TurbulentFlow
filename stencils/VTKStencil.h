@@ -8,19 +8,33 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <iomanip>
 
-/** TODO WS1: Stencil for writting VTK files
+/** Stencil for writting VTK files
  *
  * When iterated with, creates a VTK file.
  */
 class VTKStencil : public FieldStencil<FlowField> {
     private:
 
+        /** File stream variable used for writing the VTK file
+         */
         std::ofstream _outputFileHandle;
-        std::stringstream _pressure;
-        std::stringstream _velocity;
-        unsigned int _numLocalCells;
 
+        /** String stream variable used for storing pressure values at current time
+         */
+        std::stringstream _pressure;
+
+        /** String stream variable used for storing velocity values at current time
+         */
+        std::stringstream _velocity;
+
+        /** Size of the mesh in X,Y, and Z direction
+         */
+        int _sizeX, _sizeY, _sizeZ;
+
+        /** Writes the header for the VTK file as well as the coordinates
+         */
         void writeHeaderAndCoords();
 
     public:

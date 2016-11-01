@@ -87,7 +87,7 @@ int main (int argc, char *argv[]) {
       if (timeVTKOut <= time) {
           simulation->plotVTK(timeSteps);
           if (rank == 0) {
-              std::cout << "Plotting VTK file at time: " << time << std::endl;
+              std::cout << "Plotting VTK file at time: " << time << std::endl << std::endl;
           }
           timeVTKOut += parameters.vtk.interval;
       }

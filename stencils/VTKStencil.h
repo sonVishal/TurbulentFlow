@@ -16,7 +16,9 @@
 class VTKStencil : public FieldStencil<FlowField> {
     private:
 
-        void writeHeader(std::ofstream& fileHandle);
+        std::ofstream _outputFileHandle;
+
+        void writeHeader();
 
     public:
 

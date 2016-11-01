@@ -27,9 +27,9 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j, int k ) {
 
 }
 
-void VTKStencil::writeHeader( std::ofstream& fileHandle ) {
-    fileHandle << "# vtk DataFile Version 2.0\n" << "I need something to put here\n";
-    fileHandle << "ASCII\n" << std::endl;
+void VTKStencil::writeHeader() {
+    _outputFileHandle << "# vtk DataFile Version 2.0\n" << "I need something to put here\n";
+    _outputFileHandle << "ASCII\n" << std::endl;
 }
 
 /** Writes the information to the file
@@ -38,9 +38,9 @@ void VTKStencil::writeHeader( std::ofstream& fileHandle ) {
 void VTKStencil::write ( FlowField & flowField, int timeStep ) {
     std::stringstream fileName;
     fileName << _parameters.vtk.prefix << '_' << timeStep << ".vtk";
-    std::ofstream vtkFileHandle (fileName.str().c_str());
-    if(vtkFileHandle.is_open()) {
-        writeHeader(vtkFileHandle);
-        vtkFileHandle.close();
+    _outputFileHandle.open(fileName.str().c_str());
+    if(_outputFileHandle.is_open()) {
+        writeHeader();
+        _outputFileHandle.close();
     }
 }

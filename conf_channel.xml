@@ -38,7 +38,7 @@
             <vector x="0" y="0" z="0" />
         </back>
     </walls>
-    <vtk interval="0.1">channel_result2D</vtk>
-    <stdOut interval="0.0001" />
+    <vtk interval="1">channel_result</vtk>
+    <stdOut interval="10" />
     <parallel numProcessorsX="1" numProcessorsY="1" numProcessorsZ="1" />
 </configuration>

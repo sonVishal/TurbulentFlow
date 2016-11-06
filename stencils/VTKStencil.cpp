@@ -112,7 +112,7 @@ bool VTKStencil::openFile( int timeStep ) {
     // fileName stores the file name as per XML file
     // it adds current timestep + .vtk extension to it
     std::stringstream fileName;
-    fileName << _parameters.vtk.prefix << '_' << _parameters.parallel.rank << '_' << timeStep << ".vtk";
+    fileName << _parameters.vtk.prefix << '_' << timeStep << ".vtk";
 
     // Open the file for writing out
     _outputFileHandle.open(fileName.str().c_str(),std::ios::out);

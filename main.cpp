@@ -84,12 +84,10 @@ int main (int argc, char *argv[]) {
       }
 
       // VTK: trigger VTK output
-      // NOTE: One file per process for now
-      if (timeVTKOut <= time) {
+      // NOTE: Only sequential code
+      if ( (rank == 0) && (timeVTKOut <= time) ){
           simulation->plotVTK(timeSteps);
-          if (rank == 0) {
-              std::cout << "Plotting VTK file at time: " << time << std::endl << std::endl;
-          }
+          std::cout << "Plotting VTK file at time: " << time << std::endl << std::endl;
           timeVTKOut += parameters.vtk.interval;
       }
 

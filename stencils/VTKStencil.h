@@ -29,9 +29,9 @@ class VTKStencil : public FieldStencil<FlowField> {
          */
         std::stringstream _velocity;
 
-        /** Size of the mesh in X,Y, and Z direction
+        /** Local size of the mesh in X,Y, and Z direction
          */
-        int _sizeX, _sizeY, _sizeZ;
+        const int* _localSize;
 
         /** Writes the header for the VTK file as well as the coordinates
          */
@@ -66,6 +66,11 @@ class VTKStencil : public FieldStencil<FlowField> {
          * @param flowField Flow field to be written
          */
         void write ( FlowField & flowField, int timeStep );
+
+        /** Opens the file for writing and returns true if it was opened otherwise false
+         * @param timeStep used to create the file name for current time step
+         */
+        bool openFile ( int timeStep );
 
 };
 

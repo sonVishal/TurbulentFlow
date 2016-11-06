@@ -1,6 +1,6 @@
 #### The petsc environment can also be fixed in the makefile
-# PETSC_DIR = 
-# PETSC_ARCH = 
+# PETSC_DIR =
+# PETSC_ARCH =
 include ${PETSC_DIR}/conf/variables
 
 # default gnu compiler (currently not used)
@@ -11,7 +11,7 @@ include ${PETSC_DIR}/conf/variables
 #
 #
 CC = mpic++
-CFLAGS = -Wall -Werror -O3 
+CFLAGS = -Wall -Werror -O3
 SRCDIR = ./
 INCLUDE = -I. -Istencils ${PETSC_CC_INCLUDES}
 

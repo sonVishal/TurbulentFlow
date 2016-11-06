@@ -84,6 +84,7 @@ int main (int argc, char *argv[]) {
       }
 
       // VTK: trigger VTK output
+      // NOTE: Only serial output for now.
       if (timeVTKOut <= time) {
           simulation->plotVTK(timeSteps);
           if (rank == 0) {

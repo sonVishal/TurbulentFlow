@@ -14,3 +14,7 @@ ns
 
 # Visualization
 *.vtk
+
+# gprof files
+*.out
+*.txt

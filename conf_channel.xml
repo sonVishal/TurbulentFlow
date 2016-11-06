@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
     <flow Re="100" />
-    <simulation finalTime="10.0" >
+    <simulation finalTime="1.0" >
         <type>dns</type>
         <scenario>channel</scenario>
     </simulation>
@@ -39,6 +39,6 @@
         </back>
     </walls>
     <vtk interval="1">channel_result</vtk>
-    <stdOut interval="10" />
+    <stdOut interval="1" />
     <parallel numProcessorsX="1" numProcessorsY="1" numProcessorsZ="1" />
 </configuration>

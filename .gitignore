@@ -18,3 +18,6 @@ ns
 # gprof files
 *.out
 *.txt
+
+# Stupid fuse files
+.fuse*

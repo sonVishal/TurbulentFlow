@@ -63,11 +63,15 @@ int main (int argc, char *argv[]) {
 
     FLOAT time = 0.0;
     FLOAT timeStdOut=parameters.stdOut.interval;
-    FLOAT timeVTKOut=parameters.vtk.interval;
     int timeSteps = 0;
 
+    // Checks when the VTK file is to be outputted
+    FLOAT timeVTKOut = parameters.vtk.interval;
     // VTK: plot initial state
-    simulation->plotVTK(timeSteps);
+    if ( rank == 0 ) {
+        simulation->plotVTK(timeSteps);
+        std::cout << "Plotting VTK file at time: " << time << std::endl << std::endl;
+    }
 
     // time loop
     while (time < parameters.simulation.finalTime){
@@ -96,7 +100,10 @@ int main (int argc, char *argv[]) {
     }
 
     // VTK: plot final output
-    simulation->plotVTK(timeSteps);
+    if ( rank == 0 ) {
+        simulation->plotVTK(timeSteps);
+        std::cout << "Plotting VTK file at time: " << time << std::endl << std::endl;
+    }
 
     delete simulation; simulation=NULL;
     delete flowField;  flowField= NULL;

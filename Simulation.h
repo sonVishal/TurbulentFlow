@@ -149,6 +149,9 @@ class Simulation {
         if (_vtkStencil.openFile(timeStep)) {
             _vtkIterator.iterate();
             _vtkStencil.write(_flowField, timeStep);
+        } else {
+            std::cout << "ERROR: Plotting VTK file at time: " << time << " FAILED!" << std::endl;
+            std::cout << "\tReason: Could not open the file for writing." << std::endl << std::endl;
         }
     }
 

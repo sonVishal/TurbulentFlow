@@ -19,15 +19,21 @@ class VTKStencil : public FieldStencil<FlowField> {
 
         /** File stream variable used for writing the VTK file
          */
-        std::ofstream _outputFileHandle;
+        std::ofstream _outputFile;
 
         /** String stream variable used for storing pressure values at current time
+         * Put on the heap since it will become large
          */
-        std::stringstream _pressure;
+        std::stringstream* _pressureStream;
 
         /** String stream variable used for storing velocity values at current time
+         * Put on the heap since it will become large
          */
-        std::stringstream _velocity;
+        std::stringstream* _velocityStream;
+
+        /** Flag indicating if the string streams were allocated memory
+         */
+        bool _streamMemoryAllocFlag;
 
         /** Local size of the mesh in X,Y, and Z direction
          */
@@ -44,6 +50,10 @@ class VTKStencil : public FieldStencil<FlowField> {
          * @param prefix String with the prefix of the name of the VTK files
          */
         VTKStencil ( const Parameters& parameters );
+
+        /** Destructor
+         */
+        ~VTKStencil();
 
         /** 2D operation for one position
          *

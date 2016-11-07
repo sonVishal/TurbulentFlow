@@ -4,12 +4,32 @@
  *
  * @param prefix String with the prefix of the name of the VTK files
  */
-VTKStencil::VTKStencil ( const Parameters & parameters ) : FieldStencil<FlowField> ( parameters ) {
+VTKStencil::VTKStencil ( const Parameters & parameters ) : FieldStencil<FlowField> ( parameters ),
+    _pressureStream( NULL ), _velocityStream( NULL ), _streamMemoryAllocFlag(false) {
     // Get the local size and first corner of this subdomain
     _localSize   = parameters.parallel.localSize;
 
-    _pressure << std::setprecision(6);
-    _velocity << std::setprecision(6);
+    _pressureStream = new std::stringstream();
+    _velocityStream = new std::stringstream();
+
+    if (_pressureStream && _velocityStream) {
+        _streamMemoryAllocFlag = true;
+        (*_pressureStream) << std::setprecision(6);
+        (*_velocityStream) << std::setprecision(6);
+    }
+}
+
+/** Destructor
+ */
+VTKStencil::~VTKStencil() {
+    if (_pressureStream) {
+        delete _pressureStream;
+        _pressureStream = NULL;
+    }
+    if (_velocityStream) {
+        delete _velocityStream;
+        _velocityStream = NULL;
+    }
 }
 
 /** 2D operation for one position
@@ -29,12 +49,12 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j ) {
         FLOAT pressure;
         FLOAT velocity[2];
         flowField.getPressureAndVelocity(pressure, velocity, i, j);
-        _pressure << pressure << std::endl;
-        _velocity << velocity[0] << ' ' << velocity[1] << ' ' << 0 << std::endl;
+        *_pressureStream << pressure << std::endl;
+        *_velocityStream << velocity[0] << ' ' << velocity[1] << ' ' << 0 << std::endl;
     } else {
     // Otherwise output 0 values
-        _pressure << 0 << std::endl;
-        _velocity << 0 << ' ' << 0 << ' ' << 0 << std::endl;
+        *_pressureStream << 0 << std::endl;
+        *_velocityStream << 0 << ' ' << 0 << ' ' << 0 << std::endl;
     }
 }
 
@@ -56,12 +76,12 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j, int k ) {
         FLOAT pressure;
         FLOAT velocity[3];
         flowField.getPressureAndVelocity(pressure, velocity, i, j, k);
-        _pressure << pressure << std::endl;
-        _velocity << velocity[0] << ' ' << velocity[1] << ' ' << velocity[2] << std::endl;
+        *_pressureStream << pressure << std::endl;
+        *_velocityStream << velocity[0] << ' ' << velocity[1] << ' ' << velocity[2] << std::endl;
     } else {
     // Otherwise output 0 values
-        _pressure << 0 << std::endl;
-        _velocity << 0 << ' ' << 0 << ' ' << 0 << std::endl;
+        *_pressureStream << 0 << std::endl;
+        *_velocityStream << 0 << ' ' << 0 << ' ' << 0 << std::endl;
     }
 }
 
@@ -69,14 +89,14 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j, int k ) {
  */
 void VTKStencil::writeHeaderAndCoords() {
     // This is the header
-    _outputFileHandle << "# vtk DataFile Version 2.0\n" << "I need something to put here\n";
-    _outputFileHandle << "ASCII\n" << std::endl;
+    _outputFile << "# vtk DataFile Version 2.0\n" << "I need something to put here\n";
+    _outputFile << "ASCII\n" << std::endl;
 
     // Write the header for the coordinates
     // Number of coordinates is 1 more than the number of cells in that direction
-    _outputFileHandle << "DATASET STRUCTURED_GRID\n" << "DIMENSIONS ";
-    _outputFileHandle << _localSize[0]+1 << ' ' << _localSize[1]+1 << ' ' << _localSize[2]+1 << std::endl;
-    _outputFileHandle << "POINTS " << (_localSize[0]+1)*(_localSize[1]+1)*(_localSize[2]+1) << " float" << std::endl;
+    _outputFile << "DATASET STRUCTURED_GRID\n" << "DIMENSIONS ";
+    _outputFile << _localSize[0]+1 << ' ' << _localSize[1]+1 << ' ' << _localSize[2]+1 << std::endl;
+    _outputFile << "POINTS " << (_localSize[0]+1)*(_localSize[1]+1)*(_localSize[2]+1) << " float" << std::endl;
 
     // Temporary variables to avoid calling function many times
     FLOAT y = 0.0, z = 0.0;
@@ -87,8 +107,8 @@ void VTKStencil::writeHeaderAndCoords() {
         for (int j = 2; j < _localSize[1]+3; j++) {
             y = _parameters.meshsize->getPosY(2,j);
             for (int i = 2; i < _localSize[0]+3; i++) {
-                _outputFileHandle << _parameters.meshsize->getPosX(i,j);
-                _outputFileHandle << ' ' << y << ' ' << z << std::endl;
+                _outputFile << _parameters.meshsize->getPosX(i,j);
+                _outputFile << ' ' << y << ' ' << z << std::endl;
             }
         }
     } else {
@@ -97,8 +117,8 @@ void VTKStencil::writeHeaderAndCoords() {
             for (int j = 2; j < _localSize[1]+3; j++) {
                 y = _parameters.meshsize->getPosY(2,j,k);
                 for (int i = 2; i < _localSize[0]+3; i++) {
-                    _outputFileHandle << _parameters.meshsize->getPosX(i,j,k);
-                    _outputFileHandle << ' ' << y << ' ' << z << std::endl;
+                    _outputFile << _parameters.meshsize->getPosX(i,j,k);
+                    _outputFile << ' ' << y << ' ' << z << std::endl;
                 }
             }
         }
@@ -106,6 +126,8 @@ void VTKStencil::writeHeaderAndCoords() {
 }
 
 /** Opens the file for writing and returns true if it was opened otherwise false
+ * returns false if file was not opened or memory was not allocated for
+ * pressure and velocity streams.
  * @param timeStep used to create the file name for current time step
  */
 bool VTKStencil::openFile( int timeStep ) {
@@ -115,9 +137,9 @@ bool VTKStencil::openFile( int timeStep ) {
     fileName << _parameters.vtk.prefix << '_' << timeStep << ".vtk";
 
     // Open the file for writing out
-    _outputFileHandle.open(fileName.str().c_str(),std::ios::out);
+    _outputFile.open(fileName.str().c_str(),std::ios::out);
 
-    return _outputFileHandle.is_open();
+    return (_outputFile.is_open() & _streamMemoryAllocFlag);
 }
 
 /** Writes the information to the file
@@ -127,19 +149,19 @@ void VTKStencil::write ( FlowField & flowField, int timeStep ) {
     // Write the header and coordinates
     writeHeaderAndCoords();
     // Write the header for pressure field
-    _outputFileHandle << "\nCELL_DATA " << _localSize[0]*_localSize[1]*(_localSize[2]==0?1:_localSize[2]) << std::endl;
-    _outputFileHandle << "SCALARS pressure float 1\n";
-    _outputFileHandle << "LOOKUP_TABLE default\n";
+    _outputFile << "\nCELL_DATA " << _localSize[0]*_localSize[1]*(_localSize[2]==0?1:_localSize[2]) << std::endl;
+    _outputFile << "SCALARS pressure float 1\n";
+    _outputFile << "LOOKUP_TABLE default\n";
     // Write the pressure
-    _outputFileHandle << _pressure.str();
+    _outputFile << _pressureStream->str();
     // Write the header for velocity field
-    _outputFileHandle << "\nVECTORS velocity float\n";
+    _outputFile << "\nVECTORS velocity float\n";
     // Write the velocity
-    _outputFileHandle << _velocity.str();
+    _outputFile << _velocityStream->str();
     // Close the file
-    _outputFileHandle.close();
+    _outputFile.close();
 
     // Clear the stringstream buffers
-    _pressure.str(std::string());
-    _velocity.str(std::string());
+    _pressureStream->str(std::string());
+    _velocityStream->str(std::string());
 }

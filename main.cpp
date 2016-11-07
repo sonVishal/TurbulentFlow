@@ -85,7 +85,7 @@ int main (int argc, char *argv[]) {
 
       // VTK: trigger VTK output
       // NOTE: Only sequential code.
-      // Hence the check for rank == 0 in case parallel code is run.
+      // Hence the check for rank == 0. In case parallel code is run, only rank 0 will write.
       if ( (rank == 0) && (timeVTKOut <= time) ){
           simulation->plotVTK(timeSteps);
           std::cout << "Plotting VTK file at time: " << time << std::endl << std::endl;

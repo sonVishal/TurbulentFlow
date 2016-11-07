@@ -4,32 +4,12 @@
  *
  * @param prefix String with the prefix of the name of the VTK files
  */
-VTKStencil::VTKStencil ( const Parameters & parameters ) : FieldStencil<FlowField> ( parameters ),
-    _pressureStream( NULL ), _velocityStream( NULL ), _streamMemoryAllocFlag(false) {
+VTKStencil::VTKStencil ( const Parameters & parameters ) : FieldStencil<FlowField> ( parameters ) {
     // Get the local size and first corner of this subdomain
     _localSize   = parameters.parallel.localSize;
 
-    _pressureStream = new std::stringstream();
-    _velocityStream = new std::stringstream();
-
-    if (_pressureStream && _velocityStream) {
-        _streamMemoryAllocFlag = true;
-        (*_pressureStream) << std::setprecision(6);
-        (*_velocityStream) << std::setprecision(6);
-    }
-}
-
-/** Destructor
- */
-VTKStencil::~VTKStencil() {
-    if (_pressureStream) {
-        delete _pressureStream;
-        _pressureStream = NULL;
-    }
-    if (_velocityStream) {
-        delete _velocityStream;
-        _velocityStream = NULL;
-    }
+    _pressureStream << std::setprecision(6);
+    _velocityStream << std::setprecision(6);
 }
 
 /** 2D operation for one position
@@ -49,12 +29,12 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j ) {
         FLOAT pressure;
         FLOAT velocity[2];
         flowField.getPressureAndVelocity(pressure, velocity, i, j);
-        *_pressureStream << pressure << std::endl;
-        *_velocityStream << velocity[0] << ' ' << velocity[1] << ' ' << 0 << std::endl;
+        _pressureStream << pressure << std::endl;
+        _velocityStream << velocity[0] << ' ' << velocity[1] << ' ' << 0 << std::endl;
     } else {
     // Otherwise output 0 values
-        *_pressureStream << 0 << std::endl;
-        *_velocityStream << 0 << ' ' << 0 << ' ' << 0 << std::endl;
+        _pressureStream << 0 << std::endl;
+        _velocityStream << 0 << ' ' << 0 << ' ' << 0 << std::endl;
     }
 }
 
@@ -76,12 +56,12 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j, int k ) {
         FLOAT pressure;
         FLOAT velocity[3];
         flowField.getPressureAndVelocity(pressure, velocity, i, j, k);
-        *_pressureStream << pressure << std::endl;
-        *_velocityStream << velocity[0] << ' ' << velocity[1] << ' ' << velocity[2] << std::endl;
+        _pressureStream << pressure << std::endl;
+        _velocityStream << velocity[0] << ' ' << velocity[1] << ' ' << velocity[2] << std::endl;
     } else {
     // Otherwise output 0 values
-        *_pressureStream << 0 << std::endl;
-        *_velocityStream << 0 << ' ' << 0 << ' ' << 0 << std::endl;
+        _pressureStream << 0 << std::endl;
+        _velocityStream << 0 << ' ' << 0 << ' ' << 0 << std::endl;
     }
 }
 
@@ -139,7 +119,7 @@ bool VTKStencil::openFile( int timeStep ) {
     // Open the file for writing out
     _outputFile.open(fileName.str().c_str(),std::ios::out);
 
-    return (_outputFile.is_open() & _streamMemoryAllocFlag);
+    return _outputFile.is_open();
 }
 
 /** Writes the information to the file
@@ -153,15 +133,15 @@ void VTKStencil::write ( FlowField & flowField, int timeStep ) {
     _outputFile << "SCALARS pressure float 1\n";
     _outputFile << "LOOKUP_TABLE default\n";
     // Write the pressure
-    _outputFile << _pressureStream->str();
+    _outputFile << _pressureStream.str();
     // Write the header for velocity field
     _outputFile << "\nVECTORS velocity float\n";
     // Write the velocity
-    _outputFile << _velocityStream->str();
+    _outputFile << _velocityStream.str();
     // Close the file
     _outputFile.close();
 
     // Clear the stringstream buffers
-    _pressureStream->str(std::string());
-    _velocityStream->str(std::string());
+    _pressureStream.str(std::string());
+    _velocityStream.str(std::string());
 }

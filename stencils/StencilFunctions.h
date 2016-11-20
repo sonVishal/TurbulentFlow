@@ -74,6 +74,59 @@ inline FLOAT dudx ( const FLOAT * const lv, const FLOAT * const lm ) {
     return tmp2;*/
 }
 
+
+inline FLOAT dudy ( const FLOAT * const lv, const FLOAT * const lm) {
+    // evaluate dudy in the cell center by a central difference
+    const FLOAT u00   = lv[mapd( 0, 0, 0, 0)];
+    const FLOAT u01   = lv[mapd( 0, 1, 0, 0)];
+    const FLOAT u0M1  = lv[mapd( 0,-1, 0, 0)];
+    const FLOAT uM10  = lv[mapd(-1, 0, 0, 0)];
+    const FLOAT uM11  = lv[mapd(-1, 1, 0, 0)];
+    const FLOAT uM1M1 = lv[mapd(-1,-1, 0, 0)];
+
+    const FLOAT hyShort = 0.5*(lm[mapd( 0, 0, 0, 1)];                           // distance between u-value and upper edge of center-cell
+    const FLOAT hyLong0 = 0.5*(lm[mapd( 0, 0, 0, 1)] + lm[mapd( 0,-1, 0, 1)]);  // distance between center and south u-value
+    const FLOAT hyLong1 = 0.5*(lm[mapd( 0, 0, 0, 1)] + lm[mapd( 0, 1, 0, 1)]);  // distance between center and north u-value
+
+    return 1/(4*hyShort) * ( ( (hyLong1-hyShort)/hyLong1 * u00 + hyShort/hyLong1 * u01  ) + ( (hyLong1-hyShort)/hyLong1 * uM10 + hyShort/hyLong1 * uM11  )
+                           - ( (hyLong0-hyShort)/hyLong0 * u00 + hyShort/hyLong0 * u0M1 ) + ( (hyLong0-hyShort)/hyLong0 * uM10 + hyShort/hyLong0 * uM1M1 );
+}
+
+inline FLOAT dudz ( const FLOAT * const lv, const FLOAT * const lm) {
+    // evaluate dudz in the cell center by a central difference
+    const FLOAT u00   = lv[mapd( 0, 0, 0, 0)];
+    const FLOAT u01   = lv[mapd( 0, 0, 1, 0)];
+    const FLOAT u0M1  = lv[mapd( 0, 0,-1, 0)];
+    const FLOAT uM10  = lv[mapd(-1, 0, 0, 0)];
+    const FLOAT uM11  = lv[mapd(-1, 0, 1, 0)];
+    const FLOAT uM1M1 = lv[mapd(-1, 0,-1, 0)];
+
+    const FLOAT hzShort = 0.5*(lm[mapd( 0, 0, 0, 2)];                           //
+    const FLOAT hzLong0 = 0.5*(lm[mapd( 0, 0, 0, 2)] + lm[mapd( 0, 0,-1, 2)]);  //
+    const FLOAT hzLong1 = 0.5*(lm[mapd( 0, 0, 0, 2)] + lm[mapd( 0, 0, 1, 2)]);  //
+
+    return 1/(4*hzShort) * ( ( (hzLong1-hzShort)/hzLong1 * u00 + hzShort/hzLong1 * u01  ) + ( (hzLong1-hzShort)/hzLong1 * uM10 + hzShort/hzLong1 * uM11 )
+                           - ( (hzLong0-hzShort)/hzLong0 * u00 + hzShort/hzLong0 * u0M1 ) + ( (hzLong0-hzShort)/hzLong0 * uM10 + hzShort/hzLong0 * uM1M1) );
+}
+
+inline FLOAT dvdx ( const FLOAT * const lv, const FLOAT * const lm) {
+    // evaluate dudy in the cell center by a central difference
+    const FLOAT v00   = lv[mapd( 0, 0, 0, 1)];
+    const FLOAT v10   = lv[mapd( 1, 0, 0, 1)];
+    const FLOAT vM10  = lv[mapd(-1, 0, 0, 1)];
+    const FLOAT v0M1  = lv[mapd( 0,-1, 0, 1)];
+    const FLOAT v1M1  = lv[mapd( 1,-1, 0, 1)];
+    const FLOAT vM1M1 = lv[mapd(-1,-1, 0, 1)];
+
+    const FLOAT hxShort = 0.5*(lm[mapd( 0, 0, 0, 0)];                           //
+    const FLOAT hxLong0 = 0.5*(lm[mapd( 0, 0, 0, 0)] + lm[mapd(-1, 0, 0, 0)]);  //
+    const FLOAT hxLong1 = 0.5*(lm[mapd( 0, 0, 0, 0)] + lm[mapd( 1, 0, 0, 0)]);  //
+
+    return 1/(4*hxShort) * ( ( (hxLong1-hxShort)/hxLong1 * v00 + hxShort/hxLong1 * v10  ) + ( (hxLong1-hxShort)/hxLong1 * v0M1 + hxShort/hxLong1 * v1M1 )
+                           - ( (hxLong0-hxShort)/hxLong0 * v00 + hxShort/hxLong0 * vM10 ) + ( (hxLong0-hxShort)/hxLong0 * v0M1 + hxShort/hxLong0 * vM1M1) );
+
+}
+
 inline FLOAT dvdy ( const FLOAT * const lv, const FLOAT * const lm ) {
     //double tmp1= ( lv [mapd(0,0,0,1)] - lv [mapd(0,-1,0,1)] ) / GeometricParameters::dy;
     const int index0 = mapd(0, 0,0,1);
@@ -83,6 +136,57 @@ inline FLOAT dvdy ( const FLOAT * const lv, const FLOAT * const lm ) {
     /*if (fabs(tmp1-tmp2) > 1.0e-12){handleError(1, "dvdy");}
 
     return tmp2;*/
+}
+
+inline FLOAT dvdz ( const FLOAT * const lv, const FLOAT * const lm) {
+    // evaluate dvdz in the cell center by a central difference
+    const FLOAT v00   = lv[mapd( 0, 0, 0, 0)];
+    const FLOAT v01   = lv[mapd( 0, 0, 1, 0)];
+    const FLOAT v0M1  = lv[mapd( 0, 0,-1, 0)];
+    const FLOAT vM10  = lv[mapd( 0,-1, 0, 0)];
+    const FLOAT vM11  = lv[mapd( 0,-1, 1, 0)];
+    const FLOAT vM1M1 = lv[mapd( 0,-1,-1, 0)];
+
+    const FLOAT hzShort = 0.5*(lm[mapd( 0, 0, 0, 2)];                           //
+    const FLOAT hzLong0 = 0.5*(lm[mapd( 0, 0, 0, 2)] + lm[mapd( 0, 0,-1, 2)]);  //
+    const FLOAT hzLong1 = 0.5*(lm[mapd( 0, 0, 0, 2)] + lm[mapd( 0, 0, 1, 2)]);  //
+
+    return 1/(4*hzShort) * ( ( (hzLong1-hzShort)/hzLong1 * v00 + hzShort/hzLong1 * v01  ) + ( (hzLong1-hzShort)/hzLong1 * vM10 + hzShort/hzLong1 * vM11 )
+                           - ( (hzLong0-hzShort)/hzLong0 * v00 + hzShort/hzLong0 * v0M1 ) + ( (hzLong0-hzShort)/hzLong0 * vM10 + hzShort/hzLong0 * vM1M1) );
+}
+
+inline FLOAT dwdx ( const FLOAT * const lv, const FLOAT * const lm) {
+    // evaluate dwdx in the cell center by a central difference
+    const FLOAT w00   = lv[mapd( 0, 0, 0, 2)];
+    const FLOAT w10   = lv[mapd( 1, 0, 0, 2)];
+    const FLOAT wM10  = lv[mapd(-1, 0, 0, 2)];
+    const FLOAT w0M1  = lv[mapd( 0, 0,-1, 2)];
+    const FLOAT w1M1  = lv[mapd( 1, 0,-1, 2)];
+    const FLOAT wM1M1 = lv[mapd(-1, 0,-1, 2)];
+
+    const FLOAT hxShort = 0.5*(lm[mapd( 0, 0, 0, 0)];                           //
+    const FLOAT hxLong0 = 0.5*(lm[mapd( 0, 0, 0, 0)] + lm[mapd(-1, 0, 0, 0)]);  //
+    const FLOAT hxLong1 = 0.5*(lm[mapd( 0, 0, 0, 0)] + lm[mapd( 1, 0, 0, 0)]);  //
+
+    return 1/(4*hxShort) * ( ( (hxLong1-hxShort)/hxLong1 * w00 + hxShort/hxLong1 * w10  ) + ( (hxLong1-hxShort)/hxLong1 * w0M1 + hxShort/hxLong1 * w1M1 )
+                           - ( (hxLong0-hxShort)/hxLong0 * w00 + hxShort/hxLong0 * wM10 ) + ( (hxLong0-hxShort)/hxLong0 * w0M1 + hxShort/hxLong0 * wM1M1) );
+}
+
+inline FLOAT dwdy ( const FLOAT * const lv, const FLOAT * const lm) {
+    // evaluate dudy in the cell center by a central difference
+    const FLOAT w00   = lv[mapd( 0, 0, 0, 2)];
+    const FLOAT w10   = lv[mapd( 0, 1, 0, 2)];
+    const FLOAT w0M1  = lv[mapd( 0,-1, 0, 2)];
+    const FLOAT wM10  = lv[mapd( 0, 0,-1, 2)];
+    const FLOAT wM11  = lv[mapd( 0, 1,-1, 2)];
+    const FLOAT wM1M1 = lv[mapd( 0,-1,-1, 2)];
+
+    const FLOAT hyShort = 0.5*(lm[mapd( 0, 0, 0, 1)];                           //
+    const FLOAT hyLong0 = 0.5*(lm[mapd( 0, 0, 0, 1)] + lm[mapd( 0,-1, 0, 1)]);  //
+    const FLOAT hyLong1 = 0.5*(lm[mapd( 0, 0, 0, 1)] + lm[mapd( 0, 1, 0, 1)]);  //
+
+    return 1/(4*hyShort) * ( ( (hyLong1-hyShort)/hyLong1 * w00 + hyShort/hyLong1 * w10  ) + ( (hyLong1-hyShort)/hyLong1 * w0M1 + hyShort/hyLong1 * w1M1 )
+                           - ( (hyLong0-hyShort)/hyLong0 * w00 + hyShort/hyLong0 * wM10 ) + ( (hyLong0-hyShort)/hyLong0 * w0M1 + hyShort/hyLong0 * wM1M1) );
 }
 
 inline FLOAT dwdz ( const FLOAT * const lv, const FLOAT * const lm ) {

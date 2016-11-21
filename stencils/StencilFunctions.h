@@ -178,14 +178,14 @@ inline FLOAT dwdy ( const FLOAT * const lv, const FLOAT * const lm) {
     const FLOAT w10   = lv[mapd( 0, 1, 0, 2)];
     const FLOAT w0M1  = lv[mapd( 0,-1, 0, 2)];
     const FLOAT wM10  = lv[mapd( 0, 0,-1, 2)];
-    const FLOAT wM11  = lv[mapd( 0, 1,-1, 2)];
+    const FLOAT w1M1  = lv[mapd( 0, 1,-1, 2)];
     const FLOAT wM1M1 = lv[mapd( 0,-1,-1, 2)];
 
     const FLOAT hyShort = 0.5*(lm[mapd( 0, 0, 0, 1)]);                           //
     const FLOAT hyLong0 = 0.5*(lm[mapd( 0, 0, 0, 1)] + lm[mapd( 0,-1, 0, 1)]);  //
     const FLOAT hyLong1 = 0.5*(lm[mapd( 0, 0, 0, 1)] + lm[mapd( 0, 1, 0, 1)]);  //
 
-    return 1/(4*hyShort) * ( ( (hyLong1-hyShort)/hyLong1 * w00 + hyShort/hyLong1 * w10  ) + ( (hyLong1-hyShort)/hyLong1 * w0M1 + hyShort/hyLong1 * wM11 )
+    return 1/(4*hyShort) * ( ( (hyLong1-hyShort)/hyLong1 * w00 + hyShort/hyLong1 * w10  ) + ( (hyLong1-hyShort)/hyLong1 * w0M1 + hyShort/hyLong1 * w1M1 )
                            - ( (hyLong0-hyShort)/hyLong0 * w00 + hyShort/hyLong0 * wM10 ) + ( (hyLong0-hyShort)/hyLong0 * w0M1 + hyShort/hyLong0 * wM1M1) );
 }
 

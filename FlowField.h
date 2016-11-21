@@ -10,7 +10,7 @@
  */
 class FlowField {
 
-    private:
+    protected:
 
         const int _size_x; //! Size in the X direction
         const int _size_y; //! Size in the Y direction
@@ -60,52 +60,56 @@ class FlowField {
          */
         FlowField (const Parameters & parameters);
 
+        /** Virtual destructor required to handle TurbFlowField
+        */
+        virtual ~FlowField ();
+
         /** Obtain size in the X direction
          *
          * @return Number of cells in the X direction
          */
-        int getNx () const;
+        virtual int getNx () const;
 
         /** Obtain size in the Y direction
          *
          * @return Number of cells in the Y direction
          */
-        int getNy () const;
+        virtual int getNy () const;
 
         /** Obtain size in the Z direction
          *
          * @return Number of cells in the Z direction
          */
-        int getNz () const;
+        virtual int getNz () const;
 
-        int getCellsX() const;
-        int getCellsY() const;
-        int getCellsZ() const;
+        virtual int getCellsX() const;
+        virtual int getCellsY() const;
+        virtual int getCellsZ() const;
 
         /** Get pressure field
          * @return Reference to pressure field
          */
-        ScalarField & getPressure ();
+        virtual ScalarField & getPressure ();
 
         /** Get velocity field
          * @return Reference to velocity field
          */
-        VectorField & getVelocity ();
+        virtual VectorField & getVelocity ();
 
         /** Get flag field
          * @return Reference to flag field
          */
-        IntScalarField & getFlags ();
+        virtual IntScalarField & getFlags ();
 
         /** Get the field with the F, G, and H  abbreviations
          * @return Multi-component field with F, G and H
          */
-        VectorField & getFGH ();
+        virtual VectorField & getFGH ();
 
         /** Get the right hand side for the pressure linear solver
          * @return Scalar field with the right hand side
          */
-        ScalarField & getRHS ();
+        virtual ScalarField & getRHS ();
 
         void getPressureAndVelocity(FLOAT &pressure, FLOAT* const velocity, int i, int j);
         void getPressureAndVelocity(FLOAT &pressure, FLOAT* const velocity, int i, int j, int k);

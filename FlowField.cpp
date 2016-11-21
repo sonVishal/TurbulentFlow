@@ -52,6 +52,9 @@ FlowField::FlowField (const Parameters & parameters):
                  ScalarField(_size_x + 3, _size_y + 3, _size_z + 3))
 { }
 
+FlowField::~FlowField () {
+    
+}
 
 int FlowField::getNx () const{
     return _size_x;

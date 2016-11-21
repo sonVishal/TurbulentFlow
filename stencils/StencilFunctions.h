@@ -84,12 +84,12 @@ inline FLOAT dudy ( const FLOAT * const lv, const FLOAT * const lm) {
     const FLOAT uM11  = lv[mapd(-1, 1, 0, 0)];
     const FLOAT uM1M1 = lv[mapd(-1,-1, 0, 0)];
 
-    const FLOAT hyShort = 0.5*(lm[mapd( 0, 0, 0, 1)];                           // distance between u-value and upper edge of center-cell
+    const FLOAT hyShort = 0.5*(lm[mapd( 0, 0, 0, 1)]);                           // distance between u-value and upper edge of center-cell
     const FLOAT hyLong0 = 0.5*(lm[mapd( 0, 0, 0, 1)] + lm[mapd( 0,-1, 0, 1)]);  // distance between center and south u-value
     const FLOAT hyLong1 = 0.5*(lm[mapd( 0, 0, 0, 1)] + lm[mapd( 0, 1, 0, 1)]);  // distance between center and north u-value
 
     return 1/(4*hyShort) * ( ( (hyLong1-hyShort)/hyLong1 * u00 + hyShort/hyLong1 * u01  ) + ( (hyLong1-hyShort)/hyLong1 * uM10 + hyShort/hyLong1 * uM11  )
-                           - ( (hyLong0-hyShort)/hyLong0 * u00 + hyShort/hyLong0 * u0M1 ) + ( (hyLong0-hyShort)/hyLong0 * uM10 + hyShort/hyLong0 * uM1M1 );
+                           - ( (hyLong0-hyShort)/hyLong0 * u00 + hyShort/hyLong0 * u0M1 ) + ( (hyLong0-hyShort)/hyLong0 * uM10 + hyShort/hyLong0 * uM1M1 ) );
 }
 
 inline FLOAT dudz ( const FLOAT * const lv, const FLOAT * const lm) {
@@ -101,7 +101,7 @@ inline FLOAT dudz ( const FLOAT * const lv, const FLOAT * const lm) {
     const FLOAT uM11  = lv[mapd(-1, 0, 1, 0)];
     const FLOAT uM1M1 = lv[mapd(-1, 0,-1, 0)];
 
-    const FLOAT hzShort = 0.5*(lm[mapd( 0, 0, 0, 2)];                           //
+    const FLOAT hzShort = 0.5*(lm[mapd( 0, 0, 0, 2)]);                           //
     const FLOAT hzLong0 = 0.5*(lm[mapd( 0, 0, 0, 2)] + lm[mapd( 0, 0,-1, 2)]);  //
     const FLOAT hzLong1 = 0.5*(lm[mapd( 0, 0, 0, 2)] + lm[mapd( 0, 0, 1, 2)]);  //
 
@@ -118,7 +118,7 @@ inline FLOAT dvdx ( const FLOAT * const lv, const FLOAT * const lm) {
     const FLOAT v1M1  = lv[mapd( 1,-1, 0, 1)];
     const FLOAT vM1M1 = lv[mapd(-1,-1, 0, 1)];
 
-    const FLOAT hxShort = 0.5*(lm[mapd( 0, 0, 0, 0)];                           //
+    const FLOAT hxShort = 0.5*(lm[mapd( 0, 0, 0, 0)]);                           //
     const FLOAT hxLong0 = 0.5*(lm[mapd( 0, 0, 0, 0)] + lm[mapd(-1, 0, 0, 0)]);  //
     const FLOAT hxLong1 = 0.5*(lm[mapd( 0, 0, 0, 0)] + lm[mapd( 1, 0, 0, 0)]);  //
 
@@ -147,7 +147,7 @@ inline FLOAT dvdz ( const FLOAT * const lv, const FLOAT * const lm) {
     const FLOAT vM11  = lv[mapd( 0,-1, 1, 0)];
     const FLOAT vM1M1 = lv[mapd( 0,-1,-1, 0)];
 
-    const FLOAT hzShort = 0.5*(lm[mapd( 0, 0, 0, 2)];                           //
+    const FLOAT hzShort = 0.5*(lm[mapd( 0, 0, 0, 2)]);                           //
     const FLOAT hzLong0 = 0.5*(lm[mapd( 0, 0, 0, 2)] + lm[mapd( 0, 0,-1, 2)]);  //
     const FLOAT hzLong1 = 0.5*(lm[mapd( 0, 0, 0, 2)] + lm[mapd( 0, 0, 1, 2)]);  //
 
@@ -164,7 +164,7 @@ inline FLOAT dwdx ( const FLOAT * const lv, const FLOAT * const lm) {
     const FLOAT w1M1  = lv[mapd( 1, 0,-1, 2)];
     const FLOAT wM1M1 = lv[mapd(-1, 0,-1, 2)];
 
-    const FLOAT hxShort = 0.5*(lm[mapd( 0, 0, 0, 0)];                           //
+    const FLOAT hxShort = 0.5*(lm[mapd( 0, 0, 0, 0)]);                           //
     const FLOAT hxLong0 = 0.5*(lm[mapd( 0, 0, 0, 0)] + lm[mapd(-1, 0, 0, 0)]);  //
     const FLOAT hxLong1 = 0.5*(lm[mapd( 0, 0, 0, 0)] + lm[mapd( 1, 0, 0, 0)]);  //
 
@@ -181,11 +181,11 @@ inline FLOAT dwdy ( const FLOAT * const lv, const FLOAT * const lm) {
     const FLOAT wM11  = lv[mapd( 0, 1,-1, 2)];
     const FLOAT wM1M1 = lv[mapd( 0,-1,-1, 2)];
 
-    const FLOAT hyShort = 0.5*(lm[mapd( 0, 0, 0, 1)];                           //
+    const FLOAT hyShort = 0.5*(lm[mapd( 0, 0, 0, 1)]);                           //
     const FLOAT hyLong0 = 0.5*(lm[mapd( 0, 0, 0, 1)] + lm[mapd( 0,-1, 0, 1)]);  //
     const FLOAT hyLong1 = 0.5*(lm[mapd( 0, 0, 0, 1)] + lm[mapd( 0, 1, 0, 1)]);  //
 
-    return 1/(4*hyShort) * ( ( (hyLong1-hyShort)/hyLong1 * w00 + hyShort/hyLong1 * w10  ) + ( (hyLong1-hyShort)/hyLong1 * w0M1 + hyShort/hyLong1 * w1M1 )
+    return 1/(4*hyShort) * ( ( (hyLong1-hyShort)/hyLong1 * w00 + hyShort/hyLong1 * w10  ) + ( (hyLong1-hyShort)/hyLong1 * w0M1 + hyShort/hyLong1 * wM11 )
                            - ( (hyLong0-hyShort)/hyLong0 * w00 + hyShort/hyLong0 * wM10 ) + ( (hyLong0-hyShort)/hyLong0 * w0M1 + hyShort/hyLong0 * wM1M1) );
 }
 
@@ -388,7 +388,7 @@ inline FLOAT duvdx ( const FLOAT * const lv, const Parameters & parameters, cons
     const FLOAT uM11 = lv[mapd(-1, 1, 0, 0)];
     const FLOAT vM10 = lv[mapd(-1, 0, 0, 1)];
 
-    // this a central difference expression for the first-derivative. We therefore linearly interpolate u*v onto the surface of the 
+    // this a central difference expression for the first-derivative. We therefore linearly interpolate u*v onto the surface of the
     // current cell (in 2D: upper left and upper right corner) and then take the central difference
     const FLOAT secondOrder = (  ((hyLong-hyShort)/hyLong*u00 +hyShort/hyLong*u01) * ((hxLong1-hxShort)/hxLong1*v00+hxShort/hxLong1*v10)
                                - ((hyLong-hyShort)/hyLong*uM10+hyShort/hyLong*uM11) *((hxLong0-hxShort)/hxLong0*v00+hxShort/hxLong0*vM10) )/ (2.0*hxShort);
@@ -748,7 +748,7 @@ inline FLOAT computeF2D(const FLOAT * const localVelocity, const FLOAT * const l
 }
 
 inline FLOAT computeG2D(const FLOAT * const localVelocity, const FLOAT * const localMeshsize, const Parameters & parameters, FLOAT dt){
-    return localVelocity [mapd(0,0,0,1)] 
+    return localVelocity [mapd(0,0,0,1)]
         + dt * ( 1 / parameters.flow.Re * ( d2vdx2 ( localVelocity, localMeshsize )
                     + d2vdy2(localVelocity, localMeshsize)) - duvdx (localVelocity, parameters, localMeshsize)
                     - dv2dy (localVelocity, parameters, localMeshsize) + parameters.environment.gy);

@@ -418,8 +418,17 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
 
 
         //------------------------------------------------------
-        // TODO WS2: Turbulence
+        // Turbulence
         //------------------------------------------------------
+        parameters.turbulence.mixLenMethod = 0;
+        parameters.turbulence.bdLayerThickness = 1.0;
+        node = confFile.FirstChildElement()->FirstChildElement("turbulence");
+        if (node != NULL) {
+            readIntOptional(parameters.turbulence.mixLenMethod, node, "MixingLengthMethod");
+            if (parameters.turbulence.mixLenMethod == 0) {
+                readFloatOptional(parameters.turbulence.bdLayerThickness, node, "BoundaryLayerThickness");
+            }
+        }
     }
 
     // Broadcasting of the values
@@ -477,7 +486,9 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
     MPI_Bcast(parameters.walls.vectorFront,  3, MY_MPI_FLOAT, 0, communicator);
     MPI_Bcast(parameters.walls.vectorBack,   3, MY_MPI_FLOAT, 0, communicator);
 
-    // TODO WS2: broadcast turbulence parameters
+    // broadcast turbulence parameters
+    MPI_Bcast(&(parameters.turbulence.mixLenMethod),     1, MPI_INT, 0, communicator);
+    MPI_Bcast(&(parameters.turbulence.bdLayerThickness), 1, MY_MPI_FLOAT, 0, communicator);
 
 
 }

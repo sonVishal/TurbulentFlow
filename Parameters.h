@@ -132,7 +132,11 @@ class BFStepParameters{
         FLOAT yRatio;
 };
 
-
+class TurbulentParameters {
+    public:
+        int mixLenMethod;
+        FLOAT bdLayerThickness;
+};
 
 //@}
 
@@ -154,7 +158,7 @@ class Parameters {
         ParallelParameters      parallel;
         StdOutParameters        stdOut;
         BFStepParameters        bfStep;
-        // TODO WS2: include parameters for turbulence
+        TurbulentParameters     turbulence;
         Meshsize                *meshsize;
 };
 

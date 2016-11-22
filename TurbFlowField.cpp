@@ -61,14 +61,6 @@ void TurbFlowField::getPressureVelocityAndTurbVisc(FLOAT &pressure, FLOAT &turbV
     turbViscosity = getTurbViscosity().getScalar(i,j,k);
 }
 
-void TurbFlowField::getDistanceToWall(FLOAT &distToWall, int i, int j) {
-    distToWall = getDistToWall().getScalar(i,j);
-}
-
-void TurbFlowField::getDistanceToWall(FLOAT &distToWall, int i, int j, int k) {
-    distToWall = getDistToWall().getScalar(i,j,k);
-}
-
 void TurbFlowField::setTurbulentViscosity(const FLOAT turbViscosity, int i, int j) {
     getTurbViscosity().getScalar(i,j) = turbViscosity;
 }

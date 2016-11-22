@@ -64,6 +64,8 @@ class TurbFlowField : public FlowField {
 
         void getPressureVelocityAndTurbVisc(FLOAT &pressure, FLOAT &turbViscosity, FLOAT* const velocity, int i, int j);
         void getPressureVelocityAndTurbVisc(FLOAT &pressure, FLOAT &turbViscosity, FLOAT* const velocity, int i, int j, int k);
+        void getDistanceToWall(FLOAT &distToWall, int i, int j);
+        void getDistanceToWall(FLOAT &distToWall, int i, int j, int k);
 };
 
 #endif

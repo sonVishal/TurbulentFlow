@@ -3,11 +3,13 @@
 
 #include "../Stencil.h"
 #include "../Parameters.h"
-#include "../FlowField.h"
+#include "../TurbFlowField.h"
+#include "StencilFunctions.h"
+// #include "Definitions.h"
 
 /** Stencil to compute the velocity once the pressure has been found.
  */
-class LPmodel : public FieldStencil<FlowField> {    ///TODO flowfield -> Turbulent flowfield
+class TurbLPmodel : public FieldStencil<TurbFlowField> {
 
     private:
         // A local velocity variable that will be used to approximate derivatives. Size matches 3D
@@ -21,14 +23,14 @@ class LPmodel : public FieldStencil<FlowField> {    ///TODO flowfield -> Turbule
         /** Constructor
          * @param parameters Parameters of the problem
          */
-        LPmodel(const Parameters & parameters);
+        TurbLPmodel(const Parameters & parameters);
 
         /** Apply the stencil in 2D
          * @param flowField Flow field information
          * @param i Position in the X direction
          * @param j Position in the Y direction
          */
-        void apply ( FlowField & flowField, int i, int j ); ///TODO flowfield -> Turbulent flowfield
+        void apply ( TurbFlowField & flowField, int i, int j );
 
         /** Apply the stencil in 3D
          * @param flowField Flow field information
@@ -36,12 +38,13 @@ class LPmodel : public FieldStencil<FlowField> {    ///TODO flowfield -> Turbule
          * @param j Position in the Y direction
          * @param k Position in the Z direction
          */
-        void apply ( FlowField & flowField, int i, int j, int k ); ///TODO flowfield -> Turbulent flowfield
+        void apply ( TurbFlowField & flowField, int i, int j, int k );
 
         /** get the mixing length
          *
          */
-        void getMixingLength();
+        void getMixingLength( TurbFlowField & flowField, FLOAT& l_mix, int i, int j );
+        void getMixingLength( TurbFlowField & flowField, FLOAT& l_mix, int i, int j, int k );
 };
 
 

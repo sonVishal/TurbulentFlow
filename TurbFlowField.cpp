@@ -3,14 +3,14 @@
 TurbFlowField::TurbFlowField ( int Nx, int Ny ) :
     FlowField( Nx, Ny ),
     _turbViscosity ( ScalarField ( Nx + 3, Ny + 3 ) ),
-    _distToWall ( ScalarField ( Nx + 3, Ny + 3 ) )
+    _mixingLength ( ScalarField ( Nx + 3, Ny + 3 ) )
 { }
 
 
 TurbFlowField::TurbFlowField ( int Nx, int Ny, int Nz ) :
     FlowField( Nx, Ny, Nz ),
     _turbViscosity ( ScalarField ( Nx + 3, Ny + 3, Nz + 3 ) ),
-    _distToWall ( ScalarField ( Nx + 3, Ny + 3, Nz + 3 ) )
+    _mixingLength ( ScalarField ( Nx + 3, Ny + 3, Nz + 3 ) )
 { }
 
 
@@ -19,7 +19,7 @@ TurbFlowField::TurbFlowField (const Parameters & parameters) :
     // The size member variable is initialized by the parent class FlowField
     _turbViscosity(parameters.geometry.dim==2?ScalarField(_size_x + 3, _size_y + 3):
             ScalarField(_size_x + 3, _size_y + 3, _size_z + 3)),
-    _distToWall(parameters.geometry.dim==2?ScalarField(_size_x + 3, _size_y + 3):
+    _mixingLength(parameters.geometry.dim==2?ScalarField(_size_x + 3, _size_y + 3):
             ScalarField(_size_x + 3, _size_y + 3, _size_z + 3))
 { }
 
@@ -31,8 +31,8 @@ ScalarField & TurbFlowField::getTurbViscosity () {
     return _turbViscosity;
 }
 
-ScalarField & TurbFlowField::getDistToWall() {
-    return _distToWall;
+ScalarField & TurbFlowField::getMixingLength() {
+    return _mixingLength;
 }
 
 void TurbFlowField::getPressureVelocityAndTurbVisc(FLOAT &pressure, FLOAT &turbViscosity, FLOAT* const velocity,  int i, int j){

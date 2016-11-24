@@ -14,7 +14,7 @@ class TurbFlowField : public FlowField {
     private:
 
         ScalarField _turbViscosity; //! Scalar field representing the turbulent viscosity
-        ScalarField _distToWall; //! Scalar field representing the distance to wall
+        ScalarField _mixingLength; //! Scalar field representing the distance to wall
 
     public:
 
@@ -60,7 +60,7 @@ class TurbFlowField : public FlowField {
         /** Get the nearest distance to a wall
          * @return Scalar field with the nearest distance to wall
          */
-        ScalarField & getDistToWall ();
+        ScalarField & getMixingLength ();
 
         void getPressureVelocityAndTurbVisc(FLOAT &pressure, FLOAT &turbViscosity, FLOAT* const velocity, int i, int j);
         void getPressureVelocityAndTurbVisc(FLOAT &pressure, FLOAT &turbViscosity, FLOAT* const velocity, int i, int j, int k);

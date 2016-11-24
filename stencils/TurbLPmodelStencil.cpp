@@ -15,7 +15,8 @@ void TurbLPmodel::apply( TurbFlowField & flowField, int i, int j ){
     FLOAT dudy_ =  dudy(_localVelocity,_localMeshsize);
     FLOAT dvdx_ =  dvdx(_localVelocity,_localMeshsize);
 
-    FLOAT l_mix = flowField.getDistToWall().getScalar(i,j);
+    FLOAT l_mix = 0.0;
+    getMixingLength(flowField, l_mix, i, j);
 
     flowField.setTurbulentViscosity(l_mix * l_mix *
             std::sqrt( 2*( dudx_ * dudx_  +  dvdy_ * dvdy_  +  2 * (dudy_ + dvdx_) * (dudy_ + dvdx_) ) ),i,j);
@@ -37,7 +38,8 @@ void TurbLPmodel::apply ( TurbFlowField & flowField, int i, int j, int k ){
     FLOAT dwdy_ =  dwdy(_localVelocity,_localMeshsize);
     FLOAT dwdz_ =  dwdz(_localVelocity,_localMeshsize);
 
-    FLOAT l_mix = flowField.getDistToWall().getScalar(i,j,k);
+    FLOAT l_mix = 0.0;
+    getMixingLength(flowField, l_mix, i, j, k);
 
     flowField.setTurbulentViscosity(l_mix * l_mix *
         std::sqrt( 2*( dudx_ * dudx_  +  dvdy_ * dvdy_  +  dwdz_ * dwdz_ +
@@ -47,7 +49,7 @@ void TurbLPmodel::apply ( TurbFlowField & flowField, int i, int j, int k ){
 void TurbLPmodel::getMixingLength( TurbFlowField & flowField, FLOAT& l_mix, int i, int j ) {
     ///is boundary layer thickness going to be calculated for each time step? (probably not)
     /// is boundary layer going to be calculated lecaly? how for BFS and LDC? (probably not) How to decide which value is chosen?
-    l_mix = std::min(flowField.getDistToWall().getScalar(i,j)*0.41, 0.09*_parameters.turbulence.bdLayerThickness);
+    l_mix = std::min(flowField.getDistToWall().getScalar(i,j)*_parameters.turbulence.kappa, 0.09*_parameters.turbulence.bdLayerThickness);
     /// make l_mix property that stores all l_mix (scalar field) in case BL stays constant => determine only once
     /// to get wall distance: once stencil that contains the BoundaryIterator => Iterator iterates over all cells and
     /// for each cell all boundary cells are iterated (compare x,y,z, vales => min distance).
@@ -56,7 +58,7 @@ void TurbLPmodel::getMixingLength( TurbFlowField & flowField, FLOAT& l_mix, int 
 void TurbLPmodel::getMixingLength( TurbFlowField & flowField, FLOAT& l_mix, int i, int j, int k ) {
     ///is boundary layer thickness going to be calculated for each time step? (probably not)
     /// is boundary layer going to be calculated lecaly? how for BFS and LDC? (probably not) How to decide which value is chosen?
-    l_mix = std::min(flowField.getDistToWall().getScalar(i,j,k)*0.41, 0.09*_parameters.turbulence.bdLayerThickness);
+    l_mix = std::min(flowField.getDistToWall().getScalar(i,j,k)*_parameters.turbulence.kappa, 0.09*_parameters.turbulence.bdLayerThickness);
     /// make l_mix property that stores all l_mix (scalar field) in case BL stays constant => determine only once
     /// to get wall distance: once stencil that contains the BoundaryIterator => Iterator iterates over all cells and
     /// for each cell all boundary cells are iterated (compare x,y,z, vales => min distance).

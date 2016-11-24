@@ -422,9 +422,11 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
         //------------------------------------------------------
         parameters.turbulence.mixLenMethod = 0;
         parameters.turbulence.bdLayerThickness = 1.0;
+        parameters.turbulence.kappa = 0.41;
         node = confFile.FirstChildElement()->FirstChildElement("turbulence");
         if (node != NULL) {
             readIntOptional(parameters.turbulence.mixLenMethod, node, "MixingLengthMethod");
+            readFloatOptional(parameters.turbulence.kappa, node, "Kappa");
             if (parameters.turbulence.mixLenMethod == 0) {
                 readFloatOptional(parameters.turbulence.bdLayerThickness, node, "BoundaryLayerThickness");
             }

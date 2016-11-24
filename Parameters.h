@@ -136,6 +136,7 @@ class TurbulentParameters {
     public:
         int mixLenMethod;
         FLOAT bdLayerThickness;
+        FLOAT kappa;
 };
 
 //@}

@@ -151,8 +151,10 @@ class Simulation {
         _velocityIterator.iterate();
     	// set obstacle boundaries
     	_obstacleIterator.iterate();
+    	plotAllVTK(102);
         // TODO WS2: communicate velocity values
     	_parallelManager.communicateVelocity();
+    	plotAllVTK(103);
         // Iterate for velocities on the boundary
         _wallVelocityIterator.iterate();
     }

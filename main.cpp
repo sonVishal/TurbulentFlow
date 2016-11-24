@@ -68,10 +68,8 @@ int main (int argc, char *argv[]) {
     // Checks when the VTK file is to be outputted
     FLOAT timeVTKOut = parameters.vtk.interval;
     // VTK: plot initial state
-    if ( rank == 0 ) {
-        simulation->plotVTK(timeSteps);
-        std::cout << "Plotting VTK file at time: " << time << std::endl << std::endl;
-    }
+	simulation->plotVTK(timeSteps);
+	std::cout << "Plotting VTK file at time: " << time << std::endl << std::endl;
 
     // time loop
     while (time < parameters.simulation.finalTime){
@@ -90,7 +88,7 @@ int main (int argc, char *argv[]) {
       // VTK: trigger VTK output
       // NOTE: Only sequential code.
       // Hence the check for rank == 0. In case parallel code is run, only rank 0 will write.
-      if ( (rank == 0) && (timeVTKOut <= time) ){
+      if ( timeVTKOut <= time ){
           simulation->plotVTK(timeSteps);
           std::cout << "Plotting VTK file at time: " << time << std::endl << std::endl;
           timeVTKOut += parameters.vtk.interval;
@@ -100,10 +98,9 @@ int main (int argc, char *argv[]) {
     }
 
     // VTK: plot final output
-    if ( rank == 0 ) {
-        simulation->plotVTK(timeSteps);
-        std::cout << "Plotting VTK file at time: " << time << std::endl << std::endl;
-    }
+    simulation->plotVTK(timeSteps);
+    std::cout << "Plotting VTK file at time: " << time << std::endl << std::endl;
+    
 
     delete simulation; simulation=NULL;
     delete flowField;  flowField= NULL;

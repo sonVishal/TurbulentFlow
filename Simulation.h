@@ -25,6 +25,8 @@
 #include "solvers/SORSolver.h"
 #include "solvers/PetscSolver.h"
 
+#include "parallelManagers/PetscParallelManager.h"
+
 
 
 class Simulation {
@@ -57,6 +59,7 @@ class Simulation {
     FieldIterator<FlowField> _vtkIterator;
 
     PetscSolver _solver;
+    PetscParallelManager _parallelManager;
 
 
   public:
@@ -79,7 +82,8 @@ class Simulation {
        _obstacleIterator(_flowField,parameters,_obstacleStencil),
        _vtkStencil(parameters),
        _vtkIterator(_flowField,parameters,_vtkStencil),
-       _solver(_flowField,parameters)
+       _solver(_flowField,parameters),
+	   _parallelManager(_flowField, parameters)
        {
        }
 
@@ -135,11 +139,13 @@ class Simulation {
         // solve for pressure
         _solver.solve();
         // TODO WS2: communicate pressure values
+        _parallelManager.communicatePressure();
         // compute velocity
         _velocityIterator.iterate();
     	// set obstacle boundaries
     	_obstacleIterator.iterate();
         // TODO WS2: communicate velocity values
+    	_parallelManager.communicateVelocity();
         // Iterate for velocities on the boundary
         _wallVelocityIterator.iterate();
     }

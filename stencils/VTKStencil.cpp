@@ -111,10 +111,12 @@ void VTKStencil::writeHeaderAndCoords() {
  * @param timeStep used to create the file name for current time step
  */
 bool VTKStencil::openFile( int timeStep ) {
+	int rank;
+	MPI_Comm_rank(MPI_COMM_WORLD,&rank);
     // fileName stores the file name as per XML file
     // it adds current timestep + .vtk extension to it
     std::stringstream fileName;
-    fileName << _parameters.vtk.prefix << '_' << timeStep << ".vtk";
+    fileName << _parameters.vtk.prefix << '_'<<"rank_"<<rank<<"_" << timeStep << ".vtk";
 
     // Open the file for writing out
     _outputFile.open(fileName.str().c_str(),std::ios::out);

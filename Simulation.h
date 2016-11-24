@@ -26,6 +26,7 @@
 #include "solvers/PetscSolver.h"
 
 #include "parallelManagers/PetscParallelManager.h"
+#include "stencils/VTKMPIStencil.h"
 
 
 
@@ -56,7 +57,9 @@ class Simulation {
     FieldIterator<FlowField> _obstacleIterator;
 
     VTKStencil _vtkStencil;
+    VTKMPIStencil _vtkMPIStencil;
     FieldIterator<FlowField> _vtkIterator;
+    FieldIterator<FlowField> _vtkMPIIterator;
 
     PetscSolver _solver;
     PetscParallelManager _parallelManager;
@@ -81,7 +84,9 @@ class Simulation {
        _velocityIterator(_flowField,parameters,_velocityStencil),
        _obstacleIterator(_flowField,parameters,_obstacleStencil),
        _vtkStencil(parameters),
+	   _vtkMPIStencil(parameters),
        _vtkIterator(_flowField,parameters,_vtkStencil),
+	   _vtkMPIIterator(_flowField,parameters, _vtkMPIStencil,-1,1),
        _solver(_flowField,parameters),
 	   _parallelManager(_flowField, parameters)
        {
@@ -139,7 +144,9 @@ class Simulation {
         // solve for pressure
         _solver.solve();
         // TODO WS2: communicate pressure values
+        plotAllVTK(100);
         _parallelManager.communicatePressure();
+        plotAllVTK(101);
         // compute velocity
         _velocityIterator.iterate();
     	// set obstacle boundaries
@@ -157,6 +164,16 @@ class Simulation {
             _vtkStencil.write(_flowField, timeStep);
         } else {
             std::cout << "ERROR: Plotting VTK file at time: " << timeStep << " FAILED!" << std::endl;
+            std::cout << "\tReason: Could not open the file for writing." << std::endl << std::endl;
+        }
+    }
+    /** plots the flow field. */
+    virtual void plotAllVTK(int timeStep){
+        if (_vtkMPIStencil.openFile(timeStep)) {
+        	_vtkMPIIterator.iterate();
+            _vtkMPIStencil.write(_flowField, timeStep);
+        } else {
+            std::cout << "ERROR: Plotting All VTK file at time: " << timeStep << " FAILED!" << std::endl;
             std::cout << "\tReason: Could not open the file for writing." << std::endl << std::endl;
         }
     }

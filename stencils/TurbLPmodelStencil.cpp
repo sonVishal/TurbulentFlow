@@ -15,7 +15,7 @@ void TurbLPmodel::apply( TurbFlowField & flowField, int i, int j ){
     FLOAT dudy_ =  dudy(_localVelocity,_localMeshsize);
     FLOAT dvdx_ =  dvdx(_localVelocity,_localMeshsize);
 
-    FLOAT l_mix = flowField.getMixingLength().getScalar(i, j);
+    FLOAT l_mix = flowField.getDistanceToWall().getScalar(i, j);
 
     flowField.setTurbulentViscosity(l_mix * l_mix *
             std::sqrt( 2*( dudx_ * dudx_  +  dvdy_ * dvdy_  +  2 * (dudy_ + dvdx_) * (dudy_ + dvdx_) ) ),i,j);
@@ -37,7 +37,7 @@ void TurbLPmodel::apply ( TurbFlowField & flowField, int i, int j, int k ){
     FLOAT dwdy_ =  dwdy(_localVelocity,_localMeshsize);
     FLOAT dwdz_ =  dwdz(_localVelocity,_localMeshsize);
 
-    FLOAT l_mix = flowField.getMixingLength().getScalar(i, j);
+    FLOAT l_mix = flowField.getDistanceToWall().getScalar(i, j);
 
     flowField.setTurbulentViscosity(l_mix * l_mix *
         std::sqrt( 2*( dudx_ * dudx_  +  dvdy_ * dvdy_  +  dwdz_ * dwdz_ +

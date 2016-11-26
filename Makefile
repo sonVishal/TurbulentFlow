@@ -25,7 +25,7 @@ stencils/MaxUStencil.o stencils/MovingWallStencils.o stencils/PeriodicBoundarySt
 stencils/FGHStencil.o stencils/TurbLPmodelStencil.o solvers/SORSolver.o solvers/PetscSolver.o \
 stencils/RHSStencil.o stencils/VelocityStencil.o stencils/VTKStencil.o stencils/TurbVTKStencil.o \
 parallelManagers/PetscParallelConfiguration.o\
-stencils/TurbFGHStencil.o \
+stencils/TurbFGHStencil.o stencils/DistToWallStencil.o \
 GlobalBoundaryFactory.o\
 stencils/BFStepInitStencil.o stencils/NeumannBoundaryStencils.o stencils/BFInputStencils.o stencils/ObstacleStencil.o\
 

@@ -5,25 +5,46 @@ TurbLPmodel::TurbLPmodel ( const Parameters & parameters ) : FieldStencil<TurbFl
 
 void TurbLPmodel::apply( TurbFlowField & flowField, int i, int j ){
 
-    loadLocalVelocity2D(  flowField, _localVelocity, i, j);
-    loadLocalMeshsize2D(_parameters, _localMeshsize, i, j);
+    // TODO: get mixing length. For now use distToWall*kappa
+    FLOAT l_mix = flowField.getDistanceToWall().getScalar(i, j)*_parameters.turbulence.kappa;
 
-    ///not included into  StencilFunctions because wall distance is stored in (turbulent)flowfield and that's not
-    /// included in StencilFuncitons.h (only local..)
-    FLOAT dudx_ =  dudx(_localVelocity,_localMeshsize);
-    FLOAT dvdy_ =  dvdy(_localVelocity,_localMeshsize);
-    FLOAT dudy_ =  dudy(_localVelocity,_localMeshsize);
-    FLOAT dvdx_ =  dvdx(_localVelocity,_localMeshsize);
+    FLOAT tensorProd = 0.0;
 
-    FLOAT l_mix = flowField.getDistanceToWall().getScalar(i, j);
+    getShearStressTensorProduct(flowField, tensorProd, i, j);
 
-    flowField.setTurbulentViscosity(l_mix * l_mix *
-            std::sqrt( 2*( dudx_ * dudx_  +  dvdy_ * dvdy_  +  2 * (dudy_ + dvdx_) * (dudy_ + dvdx_) ) ),i,j);
-
+    flowField.setTurbulentViscosity(l_mix * l_mix * tensorProd, i, j);
 }
 
 void TurbLPmodel::apply ( TurbFlowField & flowField, int i, int j, int k ){
 
+    // TODO: get mixing length. For now use distToWall*kappa
+    FLOAT l_mix = flowField.getDistanceToWall().getScalar(i, j, k)*_parameters.turbulence.kappa;
+
+    FLOAT tensorProd = 0.0;
+
+    getShearStressTensorProduct(flowField, tensorProd, i, j, k);
+
+    flowField.setTurbulentViscosity(l_mix * l_mix * tensorProd, i, j, k);
+}
+
+void TurbLPmodel::getShearStressTensorProduct( TurbFlowField flowField,
+    FLOAT &prod, int i, int j )
+{
+    loadLocalVelocity2D(  flowField, _localVelocity, i, j);
+    loadLocalMeshsize2D( _parameters, _localMeshsize, i, j);
+
+    FLOAT dudx_ =  dudx( _localVelocity, _localMeshsize );
+    FLOAT dvdy_ =  dvdy( _localVelocity, _localMeshsize );
+    FLOAT dudy_ =  dudy( _localVelocity, _localMeshsize );
+    FLOAT dvdx_ =  dvdx( _localVelocity, _localMeshsize );
+
+    prod = std::sqrt( 2*( dudx_ * dudx_  +  dvdy_ * dvdy_  +  2 * (dudy_ + dvdx_) * (dudy_ + dvdx_) ) );
+
+}
+
+void TurbLPmodel::getShearStressTensorProduct( TurbFlowField flowField,
+    FLOAT &prod, int i, int j, int k )
+{
     loadLocalVelocity3D(  flowField, _localVelocity, i, j, k);
     loadLocalMeshsize3D(_parameters, _localMeshsize, i, j, k);
 
@@ -37,11 +58,8 @@ void TurbLPmodel::apply ( TurbFlowField & flowField, int i, int j, int k ){
     FLOAT dwdy_ =  dwdy(_localVelocity,_localMeshsize);
     FLOAT dwdz_ =  dwdz(_localVelocity,_localMeshsize);
 
-    FLOAT l_mix = flowField.getDistanceToWall().getScalar(i, j);
-
-    flowField.setTurbulentViscosity(l_mix * l_mix *
-        std::sqrt( 2*( dudx_ * dudx_  +  dvdy_ * dvdy_  +  dwdz_ * dwdz_ +
-            2*( (dudy_ + dvdx_) * (dudy_ + dvdx_) + (dudz_ + dwdx_) * (dudz_ + dwdx_) + (dvdz_ + dwdy_) * (dvdz_ + dwdy_) ) ) ),i,j,k);
+    prod = std::sqrt( 2*( dudx_ * dudx_  +  dvdy_ * dvdy_  +  dwdz_ * dwdz_ +
+        2*( (dudy_ + dvdx_) * (dudy_ + dvdx_) + (dudz_ + dwdx_) * (dudz_ + dwdx_) + (dvdz_ + dwdy_) * (dvdz_ + dwdy_) ) ) );
 }
 
 // void TurbLPmodel::getMixingLength( TurbFlowField & flowField, FLOAT& l_mix, int i, int j ) {

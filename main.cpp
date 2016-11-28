@@ -3,6 +3,7 @@
 #include <iostream>
 #include "Configuration.h"
 #include "Simulation.h"
+#include "TurbulentSimulation.h"
 #include "parallelManagers/PetscParallelConfiguration.h"
 #include "MeshsizeFactory.h"
 #include <iomanip>
@@ -47,7 +48,11 @@ int main (int argc, char *argv[]) {
     // initialise simulation
     if (parameters.simulation.type=="turbulence"){
       // TODO WS2: initialise turbulent flow field and turbulent simulation object
-      handleError(1,"Turbulence currently not supported yet!");
+      if(rank==0){ std::cout << "Start RANS simulation in " << parameters.geometry.dim << "D" << std::endl; }
+      flowField = new TurbFlowField(parameters);
+      if(flowField == NULL){ handleError(1, "flowField==NULL!"); }
+      simulation = new TurbulentSimulation(parameters, *(dynamic_cast<TurbFlowField *>(flowField)));
+    //   handleError(1,"Turbulence currently not supported yet!");
     } else if (parameters.simulation.type=="dns"){
       if(rank==0){ std::cout << "Start DNS simulation in " << parameters.geometry.dim << "D" << std::endl; }
       flowField = new FlowField(parameters);
@@ -100,10 +105,10 @@ int main (int argc, char *argv[]) {
     }
 
     // VTK: plot final output
-    if ( rank == 0 ) {
-        simulation->plotVTK(timeSteps);
-        std::cout << "Plotting VTK file at time: " << time << std::endl << std::endl;
-    }
+    // if ( rank == 0 ) {
+    //     simulation->plotVTK(timeSteps);
+    //     std::cout << "Plotting VTK file at time: " << time << std::endl << std::endl;
+    // }
 
     delete simulation; simulation=NULL;
     delete flowField;  flowField= NULL;

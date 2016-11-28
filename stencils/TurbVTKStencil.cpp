@@ -6,10 +6,16 @@
  */
 TurbVTKStencil::TurbVTKStencil ( const Parameters & parameters ) : FieldStencil<TurbFlowField> ( parameters ) {
     // Get the local size and first corner of this subdomain
-    _localSize   = parameters.parallel.localSize;
+    _localSize[0] = parameters.parallel.localSize[0];
+    _localSize[1] = parameters.parallel.localSize[1];
+    _localSize[2] = parameters.parallel.localSize[2];
+    if (parameters.geometry.dim == 2) {
+        _localSize[2] = 0;
+    }
 
     _pressureStream << std::setprecision(6);
     _turbViscosityStream << std::setprecision(6);
+    _turbDistToWall << std::setprecision(6);
     _velocityStream << std::setprecision(6);
 }
 
@@ -34,11 +40,13 @@ void TurbVTKStencil::apply ( TurbFlowField & flowField, int i, int j ) {
         _pressureStream << pressure << std::endl;
         _turbViscosityStream << turbViscosity << std::endl;
         _velocityStream << velocity[0] << ' ' << velocity[1] << ' ' << 0 << std::endl;
+        _turbDistToWall << flowField.getDistanceToWall().getScalar(i, j) << std::endl;
     } else {
     // Otherwise output 0 values
         _pressureStream << 0 << std::endl;
         _turbViscosityStream << 0 << std::endl;
         _velocityStream << 0 << ' ' << 0 << ' ' << 0 << std::endl;
+        _turbDistToWall << 0 << std::endl;
     }
 }
 
@@ -64,11 +72,13 @@ void TurbVTKStencil::apply ( TurbFlowField & flowField, int i, int j, int k ) {
         _pressureStream << pressure << std::endl;
         _turbViscosityStream << turbViscosity << std::endl;
         _velocityStream << velocity[0] << ' ' << velocity[1] << ' ' << velocity[2] << std::endl;
+        _turbDistToWall << flowField.getDistanceToWall().getScalar(i, j, k) << std::endl;
     } else {
     // Otherwise output 0 values
         _pressureStream << 0 << std::endl;
         _turbViscosityStream << 0 << std::endl;
         _velocityStream << 0 << ' ' << 0 << ' ' << 0 << std::endl;
+        _turbDistToWall << 0 << std::endl;
     }
 }
 
@@ -140,11 +150,15 @@ void TurbVTKStencil::write ( TurbFlowField & flowField, int timeStep ) {
     _outputFile << "SCALARS pressure float 1\n";
     _outputFile << "LOOKUP_TABLE default\n";
     // Write the pressure
-    _outputFile << _pressureStream.str();
+    _outputFile << _pressureStream.str() << std::endl;
     // Write the turbulent viscosity
     _outputFile << "SCALARS turbulentViscosity float 1\n";
     _outputFile << "LOOKUP_TABLE default\n";
-    _outputFile << _turbViscosityStream.str();
+    _outputFile << _turbViscosityStream.str() << std::endl;
+    // Write the distance to wall
+    _outputFile << "SCALARS distToWall float 1\n";
+    _outputFile << "LOOKUP_TABLE default\n";
+    _outputFile << _turbDistToWall.str() << std::endl;
     // Write the header for velocity field
     _outputFile << "\nVECTORS velocity float\n";
     // Write the velocity
@@ -156,4 +170,5 @@ void TurbVTKStencil::write ( TurbFlowField & flowField, int timeStep ) {
     _pressureStream.str(std::string());
     _turbViscosityStream.str(std::string());
     _velocityStream.str(std::string());
+    _turbDistToWall.str(std::string());
 }

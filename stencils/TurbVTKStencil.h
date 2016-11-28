@@ -26,10 +26,15 @@ class TurbVTKStencil : public FieldStencil<TurbFlowField> {
          */
         std::ostringstream _pressureStream;
 
-        /** String stream variable used for storing pressure values at current time
+        /** String stream variable used for storing turbulent viscosity at current time
          * As per my knowledge the stream buffers are internally allocated on the heap
          */
         std::ostringstream _turbViscosityStream;
+
+        /** String stream variable used for storing distance to wall at current time
+         * As per my knowledge the stream buffers are internally allocated on the heap
+         */
+        std::ostringstream _turbDistToWall;
 
         /** String stream variable used for storing velocity values at current time
          * As per my knowledge the stream buffers are internally allocated on the heap
@@ -38,7 +43,7 @@ class TurbVTKStencil : public FieldStencil<TurbFlowField> {
 
         /** Local size of the mesh in X,Y, and Z direction
          */
-        const int* _localSize;
+        int _localSize[3];
 
         /** Writes the header for the VTK file as well as the coordinates
          */

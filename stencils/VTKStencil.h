@@ -33,7 +33,7 @@ class VTKStencil : public FieldStencil<FlowField> {
 
         /** Local size of the mesh in X,Y, and Z direction
          */
-        const int* _localSize;
+        int _localSize[3];
 
         /** Writes the header for the VTK file as well as the coordinates
          */

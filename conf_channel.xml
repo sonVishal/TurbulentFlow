@@ -2,7 +2,7 @@
 <configuration>
     <flow Re="100" />
     <simulation finalTime="0.0" >
-        <type>dns</type>
+        <type>turbulence</type>
         <scenario>channel</scenario>
     </simulation>
     <backwardFacingStep xRatio="0.2" yRatio="0.2" />

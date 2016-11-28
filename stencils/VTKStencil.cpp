@@ -6,7 +6,12 @@
  */
 VTKStencil::VTKStencil ( const Parameters & parameters ) : FieldStencil<FlowField> ( parameters ) {
     // Get the local size and first corner of this subdomain
-    _localSize   = parameters.parallel.localSize;
+    _localSize[0] = parameters.parallel.localSize[0];
+    _localSize[1] = parameters.parallel.localSize[1];
+    _localSize[2] = parameters.parallel.localSize[2];
+    if (parameters.geometry.dim == 2) {
+        _localSize[2] = 0;
+    }
 
     _pressureStream << std::setprecision(6);
     _velocityStream << std::setprecision(6);

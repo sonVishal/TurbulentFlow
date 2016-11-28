@@ -15,6 +15,8 @@ class TurbFGHStencil : public FieldStencil<TurbFlowField>
         FLOAT _localVelocity [ 27 * 3 ];
         // local meshsize
         FLOAT _localMeshsize [ 27 * 3 ];
+        // local turbulent viscoscity
+        FLOAT _localTurbViscosity [ 27 ];
 
 
     public:

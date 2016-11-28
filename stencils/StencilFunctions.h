@@ -4,6 +4,7 @@
 #include <math.h>
 #include "../Definitions.h"
 #include "../Parameters.h"
+#include "../TurbFlowField.h"
 
 // Load the local velocity cube with relevant velocities of the 2D plane
 inline void loadLocalVelocity2D(FlowField & flowField, FLOAT * const localVelocity, int i, int j){
@@ -54,10 +55,38 @@ inline void loadLocalMeshsize3D(const Parameters& parameters, FLOAT * const loca
     }
 }
 
+// Load the local turbulent viscosity cube with relevant velocities of the 2D plane
+inline void loadLocalTurbViscosity2D(TurbFlowField & flowField, FLOAT * const localTurbViscosity, int i, int j){
+    for (int row = -1; row <= 1; row++ ){
+        for ( int column = -1; column <= 1; column ++ ){
+            const FLOAT point = flowField.getTurbViscosity().getScalar(i + column, j + row);
+            localTurbViscosity[13 + 3*row + column] = point;
+        }
+    }
+}
+
+// Load the local turbulent viscosity cube with surrounding velocities
+inline void loadLocalTurbViscosity3D(TurbFlowField & flowField, FLOAT * const localTurbViscosity, int i, int j, int k){
+    for ( int layer = -1; layer <= 1; layer ++ ){
+        for ( int row = -1; row <= 1; row++ ){
+            for ( int column = -1; column <= 1; column ++ ){
+                const FLOAT point = flowField.getTurbViscosity().getScalar(i + column, j + row, k + layer);
+                localTurbViscosity[13 + 9*layer + 3*row + column] = point;
+            }
+        }
+    }
+}
+
 
 // Maps an index and a component to the corresponding value in the cube.
 inline int mapd (int i, int j, int k, int component){
    return 39 + 27*k + 9*j + 3*i + component;
+}
+
+// Maps an index to the corresponding value in the cube.
+// Used for scalars
+inline int mapScalar (int i, int j, int k){
+   return 13 + 9*k + 3*j + i;
 }
 
 // Derivative functions. They are applied to a cube of 3x3x3 cells. lv stands for the local velocity, lm represents the local mesh sizes
@@ -779,6 +808,62 @@ inline FLOAT computeH3D(const FLOAT * const localVelocity, const FLOAT * const l
                 + d2wdy2 ( localVelocity, localMeshsize ) + d2wdz2 ( localVelocity, localMeshsize ) )
                 - dw2dz ( localVelocity, parameters, localMeshsize ) - duwdx ( localVelocity, parameters, localMeshsize )
                 - dvwdy ( localVelocity, parameters, localMeshsize ) + parameters.environment.gz );
+}
+
+inline FLOAT computeF2D(const FLOAT * const localVelocity, const FLOAT * const localTurbViscosity,
+    const FLOAT * const localMeshsize, const Parameters & parameters, FLOAT dt){
+    // TODO:
+    handleError(1, "TODO");
+    // return localVelocity [mapd(0,0,0,0)]
+    //     + dt * ( 1 / parameters.flow.Re * ( d2udx2 ( localVelocity, localMeshsize )
+    //                 + d2udy2(localVelocity, localMeshsize)) - du2dx (localVelocity, parameters, localMeshsize)
+    //                 - duvdy (localVelocity, parameters, localMeshsize) + parameters.environment.gx);
+}
+
+inline FLOAT computeG2D(const FLOAT * const localVelocity, const FLOAT * const localTurbViscosity,
+    const FLOAT * const localMeshsize, const Parameters & parameters, FLOAT dt){
+    // TODO:
+    handleError(1, "TODO");
+    // return localVelocity [mapd(0,0,0,1)]
+    //     + dt * ( 1 / parameters.flow.Re * ( d2vdx2 ( localVelocity, localMeshsize )
+    //                 + d2vdy2(localVelocity, localMeshsize)) - duvdx (localVelocity, parameters, localMeshsize)
+    //                 - dv2dy (localVelocity, parameters, localMeshsize) + parameters.environment.gy);
+}
+
+
+inline FLOAT computeF3D(const FLOAT * const localVelocity, const FLOAT * const localTurbViscosity,
+    const FLOAT * const localMeshsize, const Parameters & parameters, FLOAT dt){
+    // TODO:
+    handleError(1, "TODO");
+    // return localVelocity [mapd(0,0,0,0)]
+    //             +  dt * ( 1 / parameters.flow.Re * ( d2udx2 ( localVelocity, localMeshsize )
+    //             + d2udy2 ( localVelocity, localMeshsize ) + d2udz2 ( localVelocity, localMeshsize ) )
+    //             - du2dx ( localVelocity, parameters, localMeshsize ) - duvdy ( localVelocity, parameters, localMeshsize )
+    //             - duwdz ( localVelocity, parameters, localMeshsize ) + parameters.environment.gx );
+}
+
+
+inline FLOAT computeG3D(const FLOAT * const localVelocity, const FLOAT * const localTurbViscosity,
+    const FLOAT * const localMeshsize, const Parameters & parameters, FLOAT dt){
+    // TODO:
+    handleError(1, "TODO");
+    // return localVelocity [mapd(0,0,0,1)]
+    //             +  dt * ( 1 / parameters.flow.Re * ( d2vdx2 ( localVelocity, localMeshsize )
+    //             + d2vdy2 ( localVelocity, localMeshsize ) + d2vdz2 ( localVelocity, localMeshsize ) )
+    //             - dv2dy ( localVelocity, parameters, localMeshsize ) - duvdx ( localVelocity, parameters, localMeshsize )
+    //             - dvwdz ( localVelocity, parameters, localMeshsize ) + parameters.environment.gy );
+}
+
+
+inline FLOAT computeH3D(const FLOAT * const localVelocity, const FLOAT * const localTurbViscosity,
+    const FLOAT * const localMeshsize, const Parameters & parameters, FLOAT dt){
+    // TODO:
+    handleError(1, "TODO");
+    // return localVelocity [mapd(0,0,0,2)]
+    //             +  dt * ( 1 / parameters.flow.Re * ( d2wdx2 ( localVelocity, localMeshsize )
+    //             + d2wdy2 ( localVelocity, localMeshsize ) + d2wdz2 ( localVelocity, localMeshsize ) )
+    //             - dw2dz ( localVelocity, parameters, localMeshsize ) - duwdx ( localVelocity, parameters, localMeshsize )
+    //             - dvwdy ( localVelocity, parameters, localMeshsize ) + parameters.environment.gz );
 }
 
 #endif

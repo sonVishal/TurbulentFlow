@@ -86,7 +86,7 @@ inline int mapd (int i, int j, int k, int component){
 // Maps an index to the corresponding value in the cube.
 // Used for scalars
 inline int mapScalar (int i, int j, int k){
-   return 14 + 9*k + 3*j + i;
+   return 13 + 9*k + 3*j + i;
 }
 
 // Derivative functions. They are applied to a cube of 3x3x3 cells. lv stands for the local velocity, lm represents the local mesh sizes
@@ -1156,18 +1156,14 @@ inline FLOAT NuM101(const FLOAT *const lm, const FLOAT * const lnu){
 
 inline FLOAT DiffusiveTerm1F(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
 
-    const FLOAT u00  = lv[mapd( 0, 0, 0, 0)];
-    const FLOAT u10  = lv[mapd( 1, 0, 0, 0)];
-    const FLOAT uM10 = lv[mapd(-1, 0, 0, 0)];
+    const FLOAT index0  = mapd(0, 0, 0, 0);
+    const FLOAT index1  = mapd(1, 0, 0, 0);
+    const FLOAT indexM1 = mapd(-1, 0, 0, 0);
+    const FLOAT scalarIndex0 = mapScalar(0, 0, 0);
+    const FLOAT scalarIndex1 = mapScalar(1, 0, 0);
 
-    const FLOAT nu00 = lnu[mapd( 0, 0, 0, 0)];
-    const FLOAT nu10 = lnu[mapd( 1, 0, 0 ,0)];
-
-    const FLOAT hxShort = 0.5 *  lm[mapd( 0, 0, 0, 0)];
-    const FLOAT hxLong1 = 0.5 * (lm[mapd( 1, 0, 0, 0)] + lm[mapd( 0, 0, 0, 0)]);
-    const FLOAT hxLong0 = 0.5 * (lm[mapd(-1, 0, 0, 0)] + lm[mapd( 0, 0, 0, 0)]);
-
-    return 2 * ( (nu10 * (u10 - u00)/hxLong1) - (nu00 * (u00 - uM10)/hxLong0) ) /hxShort;
+    return 2*(lnu[scalarIndex1]*(lv[index1] - lv[index0])/(lm[index1]*lm[index1])
+        - lnu[scalarIndex0]*(lv[index0] - lv[indexM1])/(lm[index0]*lm[index0]));
 
 }
 
@@ -1190,18 +1186,14 @@ inline FLOAT DiffusiveTerm1G(const FLOAT * const lm, const FLOAT * const lv, con
 
 inline FLOAT DiffusiveTerm2G(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
 
-    const FLOAT v00  = lv[mapd( 0, 0, 0, 1)];
-    const FLOAT v01  = lv[mapd( 0, 1, 0, 1)];
-    const FLOAT v0M1 = lv[mapd( 0,-1, 0, 1)];
+    const FLOAT index0  = mapd(0, 0, 0, 1);
+    const FLOAT index1  = mapd(0, 1, 0, 1);
+    const FLOAT indexM1 = mapd(0, -1, 0, 1);
+    const FLOAT scalarIndex0 = mapScalar(0, 0, 0);
+    const FLOAT scalarIndex1 = mapScalar(0, 1, 0);
 
-    const FLOAT nu00 = lnu[mapd( 0, 0, 0, 0)];
-    const FLOAT nu01 = lnu[mapd( 0, 1, 0 ,0)];
-
-    const FLOAT hyShort = 0.5 *  lm[mapd( 0, 0, 0, 1)];
-    const FLOAT hyLong1 = 0.5 * (lm[mapd( 0, 1, 0, 1)] + lm[mapd( 0, 0, 0, 1)]);
-    const FLOAT hyLong0 = 0.5 * (lm[mapd( 0,-1, 0, 1)] + lm[mapd( 0, 0, 0, 1)]);
-
-    return 2 * ( (nu01 * (v01 - v00)/hyLong1) - (nu00 * (v00 - v0M1)/hyLong0) ) /hyShort;
+    return 2*(lnu[scalarIndex1]*(lv[index1] - lv[index0])/(lm[index1]*lm[index1])
+        - lnu[scalarIndex0]*(lv[index0] - lv[indexM1])/(lm[index0]*lm[index0]));
 
 }
 
@@ -1222,18 +1214,14 @@ inline FLOAT DiffusiveTerm2H(const FLOAT * const lm, const FLOAT * const lv, con
 
 inline FLOAT DiffusiveTerm3H(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
 
-    const FLOAT w00  = lv[mapd( 0, 0, 0, 2)];
-    const FLOAT w01  = lv[mapd( 0, 0, 1, 2)];
-    const FLOAT w0M1 = lv[mapd( 0, 0,-1, 2)];
+    const FLOAT index0  = mapd(0, 0, 0, 2);
+    const FLOAT index1  = mapd(0, 0, 1, 2);
+    const FLOAT indexM1 = mapd(0, 0, -1, 2);
+    const FLOAT scalarIndex0 = mapScalar(0, 0, 0);
+    const FLOAT scalarIndex1 = mapScalar(0, 0, 1);
 
-    const FLOAT nu00 = lnu[mapd( 0, 0, 0, 0)];
-    const FLOAT nu01 = lnu[mapd( 0, 0, 1 ,0)];
-
-    const FLOAT hzShort = 0.5 *  lm[mapd( 0, 0, 0, 2)];
-    const FLOAT hzLong1 = 0.5 * (lm[mapd( 0, 0, 1, 2)] + lm[mapd( 0, 0, 0, 2)]);
-    const FLOAT hzLong0 = 0.5 * (lm[mapd( 0, 0,-1, 2)] + lm[mapd( 0, 0, 0, 2)]);
-
-    return 2 * ( (nu01 * (w01 - w00)/hzLong1) - (nu00 * (w00 - w0M1)/hzLong0) ) /hzShort;
+    return 2*(lnu[scalarIndex1]*(lv[index1] - lv[index0])/(lm[index1]*lm[index1])
+        - lnu[scalarIndex0]*(lv[index0] - lv[indexM1])/(lm[index0]*lm[index0]));
 }
 
 ///computing F,G,H with RST modeled as turbulent viscosity

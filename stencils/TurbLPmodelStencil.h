@@ -7,7 +7,7 @@
 #include "StencilFunctions.h"
 // #include "Definitions.h"
 
-/** Stencil to compute the velocity once the pressure has been found.
+/** Stencil to compute the turbulent viscosity (LP = Ludwig Prandtl).
  */
 class TurbLPmodel : public FieldStencil<TurbFlowField> {
 

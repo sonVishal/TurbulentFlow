@@ -840,7 +840,7 @@ inline FLOAT dudy_b( const FLOAT * const lv, const FLOAT * const lm) {
 }
 
 inline FLOAT dudy_fM1( const FLOAT * const lv, const FLOAT * const lm) {
-    // evaluate dudy at the cell face by a central difference
+    // evaluate dudy at the cell face by a forward difference
     const FLOAT uM10   = lv[mapd(-1, 0, 0, 0)];
     const FLOAT uM11   = lv[mapd(-1, 1, 0, 0)];
 
@@ -880,7 +880,7 @@ inline FLOAT dudz_fM1( const FLOAT * const lv, const FLOAT * const lm) {
 }
 
 inline FLOAT dvdx_f( const FLOAT * const lv, const FLOAT * const lm) {
-    // evaluate dudy at the cell face by a central difference
+    // evaluate dvdx at the cell face by a forward difference
     const FLOAT v00   = lv[mapd( 0, 0, 0, 1)];
     const FLOAT v10   = lv[mapd( 1, 0, 0, 1)];
 
@@ -890,7 +890,7 @@ inline FLOAT dvdx_f( const FLOAT * const lv, const FLOAT * const lm) {
 }
 
 inline FLOAT dvdx_b( const FLOAT * const lv, const FLOAT * const lm) {
-    // evaluate dudy at the cell face by a central difference
+    // evaluate dvdx at the cell face by a backward difference
     const FLOAT v00   = lv[mapd( 0, 0, 0, 1)];
     const FLOAT vM10  = lv[mapd(-1, 0, 0, 1)];
 
@@ -900,7 +900,7 @@ inline FLOAT dvdx_b( const FLOAT * const lv, const FLOAT * const lm) {
 }
 
 inline FLOAT dvdx_fM1( const FLOAT * const lv, const FLOAT * const lm) {
-    // evaluate dudy at the cell face by a central difference
+    // evaluate dudy at the cell face by a forward difference
     const FLOAT v0M1   = lv[mapd( 0,-1, 0, 1)];
     const FLOAT v1M1   = lv[mapd( 1,-1, 0, 1)];
 
@@ -912,8 +912,8 @@ inline FLOAT dvdx_fM1( const FLOAT * const lv, const FLOAT * const lm) {
 
 inline FLOAT dvdz_f( const FLOAT * const lv, const FLOAT * const lm) {
     // evaluate dvdz at the cell face by a central difference
-    const FLOAT v00   = lv[mapd( 0, 0, 0, 0)];
-    const FLOAT v01   = lv[mapd( 0, 0, 1, 0)];
+    const FLOAT v00   = lv[mapd( 0, 0, 0, 1)];
+    const FLOAT v01   = lv[mapd( 0, 0, 1, 1)];
 
     const FLOAT hzLong = 0.5*(lm[mapd( 0, 0, 0, 2)] + lm[mapd( 0, 0, 1, 2)]);
 
@@ -922,8 +922,8 @@ inline FLOAT dvdz_f( const FLOAT * const lv, const FLOAT * const lm) {
 
 inline FLOAT dvdz_b( const FLOAT * const lv, const FLOAT * const lm) {
     // evaluate dvdz at the cell face by a central difference
-    const FLOAT v00   = lv[mapd( 0, 0, 0, 0)];
-    const FLOAT v0M1  = lv[mapd( 0, 0,-1, 0)];
+    const FLOAT v00   = lv[mapd( 0, 0, 0, 1)];
+    const FLOAT v0M1  = lv[mapd( 0, 0,-1, 1)];
 
     const FLOAT hzLong = 0.5*(lm[mapd( 0, 0, 0, 2)] + lm[mapd( 0, 0,-1, 2)]);
 
@@ -932,13 +932,14 @@ inline FLOAT dvdz_b( const FLOAT * const lv, const FLOAT * const lm) {
 
 inline FLOAT dvdz_fM1( const FLOAT * const lv, const FLOAT * const lm) {
     // evaluate dvdz at the cell face by a central difference
-    const FLOAT vM10   = lv[mapd( 0,-1, 0, 0)];
-    const FLOAT vM11   = lv[mapd( 0,-1, 1, 0)];
+    const FLOAT vM10   = lv[mapd( 0,-1, 0, 1)];
+    const FLOAT vM11   = lv[mapd( 0,-1, 1, 1)];
 
     const FLOAT hzLong = 0.5*(lm[mapd( 0,-1, 0, 2)] + lm[mapd( 0,-1, 1, 2)]);
 
     return (vM11 - vM10) / hzLong;
 }
+
 inline FLOAT dwdx_f( const FLOAT * const lv, const FLOAT * const lm) {
     // evaluate dwdx at the cell face by a central difference
     const FLOAT w00   = lv[mapd( 0, 0, 0, 2)];
@@ -966,7 +967,7 @@ inline FLOAT dwdx_fM1( const FLOAT * const lv, const FLOAT * const lm) {
 
     const FLOAT hxLong = 0.5*(lm[mapd( 0, 0,-1, 0)] + lm[mapd( 1, 0,-1, 0)]);
 
-    return (w0M1 - w1M1) / hxLong;
+    return (w1M1 - w0M1) / hxLong;
 }
 
 inline FLOAT dwdy_f( const FLOAT * const lv, const FLOAT * const lm) {
@@ -999,17 +1000,23 @@ inline FLOAT dwdy_fM1( const FLOAT * const lv, const FLOAT * const lm) {
     return (w1M1 - w0M1) / hyLong;
 }
 
-inline FLOAT Nu110(const FLOAT * const lm, const FLOAT * const lnu){
+// determining the turbulent viscosities at the cell edges (3D)
+// nomenclature: Nuxyz = turbulent viscosity at the location x,y,z relative to the cell center
+// example: Nu101: x=1, y=0, z=1 => the turbulent viscosity at the edge that connects
+// the right face and the back face
+
+// nu_{i+0.5,j+0.5,k} : h = +0.5 and Mh = -0.5
+inline FLOAT Nuhh0(const FLOAT * const lm, const FLOAT * const lnu){
 
     const FLOAT hxShort = 0.5* lm[mapd( 0, 0, 0, 0)];
     const FLOAT hxLong  = 0.5*(lm[mapd( 1, 0, 0, 0)] + lm[mapd( 0, 0, 0, 0)]);
     const FLOAT hyShort = 0.5* lm[mapd( 0, 0, 0, 1)];
     const FLOAT hyLong  = 0.5*(lm[mapd( 0, 1, 0, 1)] + lm[mapd( 0, 0, 0, 1)]);
 
-    const FLOAT nu00 = lnu[mapd( 0, 0, 0, 0)];
-    const FLOAT nu10 = lnu[mapd( 1, 0, 0, 0)];
-    const FLOAT nu01 = lnu[mapd( 0, 1, 0, 0)];
-    const FLOAT nu11 = lnu[mapd( 1, 1, 0, 0)];
+    const FLOAT nu00 = lnu[mapScalar( 0, 0, 0)];
+    const FLOAT nu10 = lnu[mapScalar( 1, 0, 0)];
+    const FLOAT nu01 = lnu[mapScalar( 0, 1, 0)];
+    const FLOAT nu11 = lnu[mapScalar( 1, 1, 0)];
 
 
     return ((nu00*(hxLong-hxShort) + nu10*hxShort)/hxLong) * (hyLong-hyShort)/hyLong +
@@ -1018,12 +1025,8 @@ inline FLOAT Nu110(const FLOAT * const lm, const FLOAT * const lnu){
 
 }
 
-/// determining the turbulent viscosities at the cell edges (3D)
-/// nomenclature: Nuxyz = turbulent viscosity at the location x,y,z relative to the cell center
-/// example: Nu101: x=1, y=0, z=1 => the turbulent viscosity at the edge that connects
-/// the right face and the back face
-
-inline FLOAT Nu1M10(const FLOAT *const lm, const FLOAT * const lnu){
+// nu_{i+0.5,j-0.5,k}
+inline FLOAT NuhMh0(const FLOAT *const lm, const FLOAT * const lnu){
 
     const FLOAT hxShort = 0.5* lm[mapd( 0, 0, 0, 0)];
     const FLOAT hxLong  = 0.5*(lm[mapd( 1, 0, 0, 0)] + lm[mapd( 0, 0, 0, 0)]);
@@ -1039,10 +1042,11 @@ inline FLOAT Nu1M10(const FLOAT *const lm, const FLOAT * const lnu){
            ((nu0M1*(hxLong-hxShort)+ nu1M1*hxShort)/hxLong)*  hyShort/hyLong;
 }
 
-inline FLOAT NuM110(const FLOAT *const lm, const FLOAT * const lnu){
+// nu_{i-0.5,j+0.5,k}
+inline FLOAT NuMhh0(const FLOAT *const lm, const FLOAT * const lnu){
 
     const FLOAT hxShort = 0.5* lm[mapd( 0, 0, 0, 0)];
-    const FLOAT hxLong  = 0.5*(lm[mapd( 0, 0, 1, 0)] + lm[mapd( 0, 0, 0, 0)]);
+    const FLOAT hxLong  = 0.5*(lm[mapd(-1, 0, 0, 0)] + lm[mapd( 0, 0, 0, 0)]);
     const FLOAT hyShort = 0.5* lm[mapd( 0, 0, 0, 1)];
     const FLOAT hyLong  = 0.5*(lm[mapd( 0, 1, 0, 1)] + lm[mapd( 0, 0, 0, 1)]);
 
@@ -1055,7 +1059,8 @@ inline FLOAT NuM110(const FLOAT *const lm, const FLOAT * const lnu){
            ((nuM10*(hyLong-hyShort)+ nuM11*hyShort)/hyLong)*  hxShort/hxLong;
 }
 
-inline FLOAT Nu101(const FLOAT *const lm, const FLOAT * const lnu){
+// nu_{i+0.5,j,k+0.5}
+inline FLOAT Nuh0h(const FLOAT *const lm, const FLOAT * const lnu){
 
     const FLOAT hxShort = 0.5* lm[mapd( 0, 0, 0, 0)];
     const FLOAT hxLong  = 0.5*(lm[mapd( 1, 0, 0, 0)] + lm[mapd( 0, 0, 0, 0)]);
@@ -1071,10 +1076,11 @@ inline FLOAT Nu101(const FLOAT *const lm, const FLOAT * const lnu){
            ((nu01*(hxLong-hxShort) + nu11*hxShort)/hxLong)*  hzShort/hzLong;
 }
 
-inline FLOAT Nu011(const FLOAT *const lm, const FLOAT * const lnu){
+// nu_{i,j+0.5,k+0.5}
+inline FLOAT Nu0hh(const FLOAT *const lm, const FLOAT * const lnu){
 
     const FLOAT hyShort = 0.5* lm[mapd( 0, 0, 0, 1)];
-    const FLOAT hyLong  = 0.5*(lm[mapd( 0, 1, 0, 1)] + lm[mapd( 0, 0, 0, 0)]);
+    const FLOAT hyLong  = 0.5*(lm[mapd( 0, 1, 0, 1)] + lm[mapd( 0, 0, 0, 1)]);
     const FLOAT hzShort = 0.5* lm[mapd( 0, 0, 0, 2)];
     const FLOAT hzLong  = 0.5*(lm[mapd( 0, 0, 1, 2)] + lm[mapd( 0, 0, 0, 2)]);
 
@@ -1087,10 +1093,11 @@ inline FLOAT Nu011(const FLOAT *const lm, const FLOAT * const lnu){
            ((nu01*(hyLong-hyShort) + nu11*hyShort)/hyLong) *  hzShort/hzLong;
 }
 
-inline FLOAT Nu01M1(const FLOAT *const lm, const FLOAT * const lnu){
+// nu_{i,j+0.5,k-0.5}
+inline FLOAT Nu0hMh(const FLOAT *const lm, const FLOAT * const lnu){
 
     const FLOAT hyShort = 0.5* lm[mapd( 0, 0, 0, 1)];
-    const FLOAT hyLong  = 0.5*(lm[mapd( 0, 1, 0, 1)] + lm[mapd( 0, 0, 0, 0)]);
+    const FLOAT hyLong  = 0.5*(lm[mapd( 0, 1, 0, 1)] + lm[mapd( 0, 0, 0, 1)]);
     const FLOAT hzShort = 0.5* lm[mapd( 0, 0, 0, 2)];
     const FLOAT hzLong  = 0.5*(lm[mapd( 0, 0,-1, 2)] + lm[mapd( 0, 0, 0, 2)]);
 
@@ -1103,7 +1110,8 @@ inline FLOAT Nu01M1(const FLOAT *const lm, const FLOAT * const lnu){
            ((nu0M1*(hyLong-hyShort)+ nu1M1*hyShort)/hyLong)*  hzShort/hzLong;
 }
 
-inline FLOAT Nu10M1(const FLOAT *const lm, const FLOAT * const lnu){
+// nu_{i+0.5,j,k-0.5}
+inline FLOAT Nuh0Mh(const FLOAT *const lm, const FLOAT * const lnu){
 
     const FLOAT hxShort = 0.5* lm[mapd( 0, 0, 0, 0)];
     const FLOAT hxLong  = 0.5*(lm[mapd( 1, 0, 0, 0)] + lm[mapd( 0, 0, 0, 0)]);
@@ -1119,7 +1127,8 @@ inline FLOAT Nu10M1(const FLOAT *const lm, const FLOAT * const lnu){
            ((nu0M1*(hxLong-hxShort) + nu1M1*hxShort)/hxLong) *  hzShort/hzLong;
 }
 
-inline FLOAT Nu0M11(const FLOAT *const lm, const FLOAT * const lnu){
+// nu_{i,j-0.5,k+0.5}
+inline FLOAT Nu0Mhh(const FLOAT *const lm, const FLOAT * const lnu){
 
     const FLOAT hyShort = 0.5* lm[mapd( 0, 0, 0, 1)];
     const FLOAT hyLong  = 0.5*(lm[mapd( 0,-1, 0, 1)] + lm[mapd( 0, 0, 0, 1)]);
@@ -1135,7 +1144,8 @@ inline FLOAT Nu0M11(const FLOAT *const lm, const FLOAT * const lnu){
            ((nu01 *(hyLong-hyShort) + nuM11*hyShort)/hyLong) *  hzShort/hzLong;
 }
 
-inline FLOAT NuM101(const FLOAT *const lm, const FLOAT * const lnu){
+// nu_{i-0.5,j,k+0.5}
+inline FLOAT NuMh0h(const FLOAT *const lm, const FLOAT * const lnu){
 
     const FLOAT hxShort = 0.5* lm[mapd( 0, 0, 0, 0)];
     const FLOAT hxLong  = 0.5*(lm[mapd(-1, 0, 0, 0)] + lm[mapd( 0, 0, 0, 0)]);
@@ -1154,71 +1164,71 @@ inline FLOAT NuM101(const FLOAT *const lm, const FLOAT * const lnu){
 
 /// determining the diffusive terms of the NSE equation for 2D and 3D
 
-inline FLOAT DiffusiveTerm1F(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
+inline FLOAT DiffusiveTermF1(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
 
-    const FLOAT index0  = mapd(0, 0, 0, 0);
-    const FLOAT index1  = mapd(1, 0, 0, 0);
-    const FLOAT indexM1 = mapd(-1, 0, 0, 0);
-    const FLOAT scalarIndex0 = mapScalar(0, 0, 0);
-    const FLOAT scalarIndex1 = mapScalar(1, 0, 0);
+    const int index0  = mapd(0, 0, 0, 0);
+    const int index1  = mapd(1, 0, 0, 0);
+    const int indexM1 = mapd(-1, 0, 0, 0);
+    const int scalarIndex0 = mapScalar(0, 0, 0);
+    const int scalarIndex1 = mapScalar(1, 0, 0);
 
     return 2*(lnu[scalarIndex1]*(lv[index1] - lv[index0])/(lm[index1]*lm[index1])
         - lnu[scalarIndex0]*(lv[index0] - lv[indexM1])/(lm[index0]*lm[index0]));
 
 }
 
-inline FLOAT DiffusiveTerm2F(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
+inline FLOAT DiffusiveTermF2(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
 
-   return (Nu110(lm,lnu) * (dudy_f(lv,lm) + dvdx_f(lv,lm)) - Nu1M10(lm,lnu) * (dudy_b(lv,lm)) + dvdx_fM1(lv,lm))
+   return (Nuhh0(lm,lnu) * (dudy_f(lv,lm) + dvdx_f(lv,lm)) - NuhMh0(lm,lnu) * (dudy_b(lv,lm)) + dvdx_fM1(lv,lm))
            / lm[mapd( 0, 0, 0, 1)];
 
 }
 
-inline FLOAT DiffusiveTerm3F(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
-    return (Nu101(lm,lnu) * (dudz_f(lv,lm) + dwdx_f(lv,lm)) - Nu10M1(lm,lv) * (dudz_b(lv,lm) + dwdx_fM1(lv,lm)))
+inline FLOAT DiffusiveTermF3(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
+    return (Nuh0h(lm,lnu) * (dudz_f(lv,lm) + dwdx_f(lv,lm)) - Nuh0Mh(lm,lv) * (dudz_b(lv,lm) + dwdx_fM1(lv,lm)))
             / lm[mapd(0, 0, 0, 2)];
 }
 
-inline FLOAT DiffusiveTerm1G(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
-    return (Nu110(lm,lnu) * (dvdx_f(lv,lm) + dudy_f(lv,lm)) - NuM110(lm,lnu) * (dvdx_b(lv,lm) + dudy_fM1(lv,lm)))
+inline FLOAT DiffusiveTermG1(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
+    return (Nuhh0(lm,lnu) * (dvdx_f(lv,lm) + dudy_f(lv,lm)) - NuMhh0(lm,lnu) * (dvdx_b(lv,lm) + dudy_fM1(lv,lm)))
             / lm[mapd( 0, 0, 0, 0)];
 }
 
-inline FLOAT DiffusiveTerm2G(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
+inline FLOAT DiffusiveTermG2(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
 
-    const FLOAT index0  = mapd(0, 0, 0, 1);
-    const FLOAT index1  = mapd(0, 1, 0, 1);
-    const FLOAT indexM1 = mapd(0, -1, 0, 1);
-    const FLOAT scalarIndex0 = mapScalar(0, 0, 0);
-    const FLOAT scalarIndex1 = mapScalar(0, 1, 0);
+    const int index0  = mapd(0, 0, 0, 1);
+    const int index1  = mapd(0, 1, 0, 1);
+    const int indexM1 = mapd(0, -1, 0, 1);
+    const int scalarIndex0 = mapScalar(0, 0, 0);
+    const int scalarIndex1 = mapScalar(0, 1, 0);
 
     return 2*(lnu[scalarIndex1]*(lv[index1] - lv[index0])/(lm[index1]*lm[index1])
         - lnu[scalarIndex0]*(lv[index0] - lv[indexM1])/(lm[index0]*lm[index0]));
 
 }
 
-inline FLOAT DiffusiveTerm3G(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
-    return (Nu011(lm,lnu) * (dvdz_f(lv,lm) + dwdy_f(lv,lm)) - Nu01M1(lm,lnu) * (dvdz_b(lv,lm) + dwdy_fM1(lv,lm)))
+inline FLOAT DiffusiveTermG3(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
+    return (Nu0hh(lm,lnu) * (dvdz_f(lv,lm) + dwdy_f(lv,lm)) - Nu0hMh(lm,lnu) * (dvdz_b(lv,lm) + dwdy_fM1(lv,lm)))
             / lm[mapd( 0, 0, 0, 2)];
 }
 
-inline FLOAT DiffusiveTerm1H(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
-    return (Nu101(lm,lnu) * (dwdx_f(lv,lm) + dudz_f(lv,lm)) - NuM101(lm,lnu) * (dwdx_b(lv,lm) + dudz_fM1(lv,lm)))
+inline FLOAT DiffusiveTermH1(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
+    return (Nuh0h(lm,lnu) * (dwdx_f(lv,lm) + dudz_f(lv,lm)) - NuMh0h(lm,lnu) * (dwdx_b(lv,lm) + dudz_fM1(lv,lm)))
             / lm[mapd( 0, 0, 0, 0)];
 }
 
-inline FLOAT DiffusiveTerm2H(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
-    return (Nu011(lm,lnu) * (dwdy_f(lv,lm) + dvdz_f(lv,lm)) - Nu0M11(lm,lnu) * (dwdy_b(lv,lm) + dvdz_fM1(lv,lm)))
+inline FLOAT DiffusiveTermH2(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
+    return (Nu0hh(lm,lnu) * (dwdy_f(lv,lm) + dvdz_f(lv,lm)) - Nu0Mhh(lm,lnu) * (dwdy_b(lv,lm) + dvdz_fM1(lv,lm)))
             / lm[mapd( 0, 0, 0, 1)];
 }
 
-inline FLOAT DiffusiveTerm3H(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
+inline FLOAT DiffusiveTermH3(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
 
-    const FLOAT index0  = mapd(0, 0, 0, 2);
-    const FLOAT index1  = mapd(0, 0, 1, 2);
-    const FLOAT indexM1 = mapd(0, 0, -1, 2);
-    const FLOAT scalarIndex0 = mapScalar(0, 0, 0);
-    const FLOAT scalarIndex1 = mapScalar(0, 0, 1);
+    const int index0  = mapd(0, 0, 0, 2);
+    const int index1  = mapd(0, 0, 1, 2);
+    const int indexM1 = mapd(0, 0, -1, 2);
+    const int scalarIndex0 = mapScalar(0, 0, 0);
+    const int scalarIndex1 = mapScalar(0, 0, 1);
 
     return 2*(lnu[scalarIndex1]*(lv[index1] - lv[index0])/(lm[index1]*lm[index1])
         - lnu[scalarIndex0]*(lv[index0] - lv[indexM1])/(lm[index0]*lm[index0]));
@@ -1229,72 +1239,59 @@ inline FLOAT DiffusiveTerm3H(const FLOAT * const lm, const FLOAT * const lv, con
 inline FLOAT computeF2D(const FLOAT * const localVelocity, const FLOAT * const localTurbViscosity,
     const FLOAT * const localMeshsize, const Parameters & parameters, FLOAT dt){
      return localVelocity [mapd(0,0,0,0)]
-         + dt * (   DiffusiveTerm1F(localMeshsize, localVelocity, localTurbViscosity)
-                  + DiffusiveTerm2F(localMeshsize, localVelocity, localTurbViscosity)
+         + dt * (   DiffusiveTermF1(localMeshsize, localVelocity, localTurbViscosity)
+                  + DiffusiveTermF2(localMeshsize, localVelocity, localTurbViscosity)
                   - du2dx (localVelocity, parameters, localMeshsize)
                   - duvdy (localVelocity, parameters, localMeshsize)
                   + parameters.environment.gx );
-
-    handleError(1, "TODO");
-
 }
 
 inline FLOAT computeG2D(const FLOAT * const localVelocity, const FLOAT * const localTurbViscosity,
     const FLOAT * const localMeshsize, const Parameters & parameters, FLOAT dt){
      return localVelocity [mapd(0,0,0,1)]
-         + dt * (   DiffusiveTerm1G(localMeshsize, localVelocity, localTurbViscosity)
-                  + DiffusiveTerm2G(localMeshsize, localVelocity, localTurbViscosity)
+         + dt * (   DiffusiveTermG1(localMeshsize, localVelocity, localTurbViscosity)
+                  + DiffusiveTermG2(localMeshsize, localVelocity, localTurbViscosity)
                   - duvdx (localVelocity, parameters, localMeshsize)
                   - dv2dy (localVelocity, parameters, localMeshsize)
                   + parameters.environment.gy );
-
-     handleError(1, "TODO");
-
 }
 
 
 inline FLOAT computeF3D(const FLOAT * const localVelocity, const FLOAT * const localTurbViscosity,
     const FLOAT * const localMeshsize, const Parameters & parameters, FLOAT dt){
      return localVelocity [mapd(0,0,0,0)]
-                 +  dt * (   DiffusiveTerm1F(localMeshsize, localVelocity, localTurbViscosity)
-                           + DiffusiveTerm2F(localMeshsize, localVelocity, localTurbViscosity)
-                           + DiffusiveTerm3F(localMeshsize, localVelocity, localTurbViscosity)
+                 +  dt * (   DiffusiveTermF1(localMeshsize, localVelocity, localTurbViscosity)
+                           + DiffusiveTermF2(localMeshsize, localVelocity, localTurbViscosity)
+                           + DiffusiveTermF3(localMeshsize, localVelocity, localTurbViscosity)
                            - du2dx ( localVelocity, parameters, localMeshsize )
                            - duvdy ( localVelocity, parameters, localMeshsize )
                            - duwdz ( localVelocity, parameters, localMeshsize )
                            + parameters.environment.gx );
-
-    handleError(1, "TODO");
 }
 
 
 inline FLOAT computeG3D(const FLOAT * const localVelocity, const FLOAT * const localTurbViscosity,
     const FLOAT * const localMeshsize, const Parameters & parameters, FLOAT dt){
      return localVelocity [mapd(0,0,0,1)]
-                 +  dt * (   DiffusiveTerm1G(localMeshsize, localVelocity, localTurbViscosity)
-                           + DiffusiveTerm2G(localMeshsize, localVelocity, localTurbViscosity)
-                           + DiffusiveTerm3G(localMeshsize, localVelocity, localTurbViscosity)
+                 +  dt * (   DiffusiveTermG1(localMeshsize, localVelocity, localTurbViscosity)
+                           + DiffusiveTermG2(localMeshsize, localVelocity, localTurbViscosity)
+                           + DiffusiveTermG3(localMeshsize, localVelocity, localTurbViscosity)
                            - dv2dy ( localVelocity, parameters, localMeshsize )
                            - duvdx ( localVelocity, parameters, localMeshsize )
                            - dvwdz ( localVelocity, parameters, localMeshsize )
                            + parameters.environment.gy );
-
-     handleError(1, "TODO");
-
 }
 
 
 inline FLOAT computeH3D(const FLOAT * const localVelocity, const FLOAT * const localTurbViscosity,
     const FLOAT * const localMeshsize, const Parameters & parameters, FLOAT dt){
      return localVelocity [mapd(0,0,0,2)]
-                 +  dt * (   DiffusiveTerm1H(localMeshsize, localVelocity, localTurbViscosity)
-                           + DiffusiveTerm2H(localMeshsize, localVelocity, localTurbViscosity)
-                           + DiffusiveTerm3H(localMeshsize, localVelocity, localTurbViscosity)
+                 +  dt * (   DiffusiveTermH1(localMeshsize, localVelocity, localTurbViscosity)
+                           + DiffusiveTermH2(localMeshsize, localVelocity, localTurbViscosity)
+                           + DiffusiveTermH3(localMeshsize, localVelocity, localTurbViscosity)
                            - dw2dz ( localVelocity, parameters, localMeshsize )
                            - duwdx ( localVelocity, parameters, localMeshsize )
                            - dvwdy ( localVelocity, parameters, localMeshsize )
                            + parameters.environment.gz );
-
-    handleError(1, "TODO");
 }
 #endif

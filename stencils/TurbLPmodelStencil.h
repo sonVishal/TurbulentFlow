@@ -18,10 +18,10 @@ class TurbLPmodel : public FieldStencil<TurbFlowField> {
         // local meshsize
         FLOAT _localMeshsize [ 27 * 3 ];
 
-        void getShearStressTensorProduct( TurbFlowField flowField,
+        void getShearStressTensorProduct( TurbFlowField &flowField,
             FLOAT &prod, int i, int j );
 
-        void getShearStressTensorProduct( TurbFlowField flowField,
+        void getShearStressTensorProduct( TurbFlowField &flowField,
             FLOAT &prod, int i, int j, int k );
 
     public:

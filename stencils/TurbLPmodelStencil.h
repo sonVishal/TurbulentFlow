@@ -45,12 +45,6 @@ class TurbLPmodel : public FieldStencil<TurbFlowField> {
          * @param k Position in the Z direction
          */
         void apply ( TurbFlowField & flowField, int i, int j, int k );
-
-        // /** get the mixing length
-        //  *
-        //  */
-        // void getMixingLength( TurbFlowField & flowField, FLOAT& l_mix, int i, int j );
-        // void getMixingLength( TurbFlowField & flowField, FLOAT& l_mix, int i, int j, int k );
 };
 
 

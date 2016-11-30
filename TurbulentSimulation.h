@@ -58,6 +58,7 @@ public:
     	// set obstacle boundaries
     	_obstacleIterator.iterate();
         // TODO WS2: communicate velocity values
+        // TODO WS2: communicate turbulent viscosity values
         // Iterate for velocities on the boundary
         _wallVelocityIterator.iterate();
         // TODO: Wall viscosity iterator??

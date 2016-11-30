@@ -32,6 +32,7 @@ class EnvironmentalParameters{
 class FlowParameters{
     public:
         FLOAT Re;  //! Reynolds number
+        FLOAT viscosity;  //! Viscosity in case of Turbulent simulations
 };
 
 class SolverParameters{

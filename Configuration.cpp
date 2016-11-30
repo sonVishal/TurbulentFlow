@@ -235,6 +235,10 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
         }
 
         readFloatMandatory(parameters.flow.Re, node, "Re");
+        if (parameters.flow.Re == 0.0) {
+            handleError(1, "Error: Reynolds number cannot be 0.0!");
+        }
+        parameters.flow.viscosity = 1/parameters.flow.Re;
 
         //--------------------------------------------------
         // Solver parameters

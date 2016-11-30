@@ -12,7 +12,7 @@ void TurbLPmodel::apply( TurbFlowField & flowField, int i, int j ){
 
     getShearStressTensorProduct(flowField, tensorProd, i, j);
 
-    flowField.setTurbulentViscosity(l_mix * l_mix * tensorProd, i, j);
+    flowField.setTurbulentViscosity(l_mix * l_mix * tensorProd + _parameters.flow.viscosity, i, j);
 }
 
 void TurbLPmodel::apply ( TurbFlowField & flowField, int i, int j, int k ){
@@ -24,7 +24,7 @@ void TurbLPmodel::apply ( TurbFlowField & flowField, int i, int j, int k ){
 
     getShearStressTensorProduct(flowField, tensorProd, i, j, k);
 
-    flowField.setTurbulentViscosity(l_mix * l_mix * tensorProd, i, j, k);
+    flowField.setTurbulentViscosity(l_mix * l_mix * tensorProd + _parameters.flow.viscosity, i, j, k);
 }
 
 void TurbLPmodel::getShearStressTensorProduct( TurbFlowField flowField,

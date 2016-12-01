@@ -41,6 +41,8 @@ void DistToWallStencil::apply ( TurbFlowField & flowField,  int i, int j ){
         } else {
             handleError(1, "This block should not be reached.\nSomething went wrong with the scenario.\n");
         }
+
+        // flowField.getMixingLength().getScalar(i, j) = 
     }
 }
 

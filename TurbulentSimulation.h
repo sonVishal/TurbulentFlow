@@ -6,6 +6,8 @@
 #include "stencils/TurbVTKStencil.h"
 #include "stencils/TurbFGHStencil.h"
 #include "stencils/TurbLPmodelStencil.h"
+#include "stencils/MinTurbViscosityStencil.h"
+
 class TurbulentSimulation : public Simulation {
 private:
     // TODO: Add other members such as TurbFGH when done
@@ -18,6 +20,10 @@ private:
 
     TurbLPmodel _turbLPmodelStencil;
     FieldIterator<TurbFlowField> _turbLPmodelIterator;
+
+    MinTurbViscosityStencil _minTurbViscosityStencil;
+    FieldIterator<TurbFlowField> _minTurbViscosityFieldIterator;
+    GlobalBoundaryIterator<TurbFlowField> _minTurbViscosityBoundaryIterator;
 public:
     TurbulentSimulation(Parameters &parameters, TurbFlowField &turbFlowField) :
         Simulation(parameters, turbFlowField),
@@ -27,7 +33,10 @@ public:
         _turbFGHStencil(parameters),
         _turbFGHIterator(turbFlowField,parameters,_turbFGHStencil),
         _turbLPmodelStencil(parameters),
-        _turbLPmodelIterator(turbFlowField,parameters,_turbLPmodelStencil) {}
+        _turbLPmodelIterator(turbFlowField,parameters,_turbLPmodelStencil),
+        _minTurbViscosityStencil(parameters),
+        _minTurbViscosityFieldIterator(turbFlowField,parameters,_minTurbViscosityStencil),
+        _minTurbViscosityBoundaryIterator(turbFlowField,parameters,_minTurbViscosityStencil) {}
     ~TurbulentSimulation() {}
     void initializeFlowField() {
         Simulation::initializeFlowField();
@@ -37,9 +46,15 @@ public:
         distToWallIterator.iterate();
     }
     void solveTimestep() {
-        // TODO
         handleError(1,"TODO");
 
+        // compute viscosity
+        _turbLPmodelIterator.iterate();
+        // TODO: communicate turbulent viscosity values
+        // TODO: Wall viscosity iterator
+
+        // Do the viscosity first so that the min viscosity is not 0 while setting up dt
+        // This is equivalent as changing order in a cyclic manner does not change the algorithm
         // determine and set max. timestep which is allowed in this simulation
         setTimeStep();
         // compute fgh
@@ -53,15 +68,11 @@ public:
         // TODO WS2: communicate pressure values
         // compute velocity
         _velocityIterator.iterate();
-        // compute viscosity
-        _turbLPmodelIterator.iterate();
     	// set obstacle boundaries
     	_obstacleIterator.iterate();
         // TODO WS2: communicate velocity values
-        // TODO WS2: communicate turbulent viscosity values
         // Iterate for velocities on the boundary
         _wallVelocityIterator.iterate();
-        // TODO: Wall viscosity iterator??
     }
     void plotVTK(int timeStep) {
         if (_turbVTKStencil.openFile(timeStep)) {
@@ -74,8 +85,44 @@ public:
     }
 private:
     void setTimeStep() {
-        // TODO
-        handleError(1,"TODO");
+        FLOAT localMin, globalMin;
+        assertion(_parameters.geometry.dim == 2 || _parameters.geometry.dim == 3);
+        FLOAT factor = 1.0/(_parameters.meshsize->getDxMin() * _parameters.meshsize->getDxMin()) +
+                       1.0/(_parameters.meshsize->getDyMin() * _parameters.meshsize->getDyMin());
+
+        // determine maximum velocity
+        _maxUStencil.reset();
+        _maxUFieldIterator.iterate();
+        _maxUBoundaryIterator.iterate();
+
+        // determine the minimum turbulent viscosity (we store nu + nu_t as turbulent viscosity)
+        _minTurbViscosityStencil.reset();
+        _minTurbViscosityFieldIterator.iterate();
+        _minTurbViscosityBoundaryIterator.iterate();
+
+        assertion(_minTurbViscosityStencil.getMinValue() > 0.0);
+
+        if (_parameters.geometry.dim == 3) {
+          factor += 1.0/(_parameters.meshsize->getDzMin() * _parameters.meshsize->getDzMin());
+          _parameters.timestep.dt = 1.0 / _maxUStencil.getMaxValues()[2];
+        } else {
+          _parameters.timestep.dt = 1.0 / _maxUStencil.getMaxValues()[0];
+        }
+
+        localMin = std::min(_parameters.timestep.dt,
+                                          std::min(std::min(1.0/(2*factor*_minTurbViscosityStencil.getMinValue()),
+                                          1.0 / _maxUStencil.getMaxValues()[0]),
+                                          1.0 / _maxUStencil.getMaxValues()[1]));
+
+        // Here, we select the type of operation before compiling. This allows to use the correct
+        // data type for MPI. Not a concern for small simulations, but useful if using heterogeneous
+        // machines.
+
+        globalMin = MY_FLOAT_MAX;
+        MPI_Allreduce(&localMin, &globalMin, 1, MY_MPI_FLOAT, MPI_MIN, PETSC_COMM_WORLD);
+
+        _parameters.timestep.dt = globalMin;
+        _parameters.timestep.dt *= _parameters.timestep.tau;
     }
 };
 

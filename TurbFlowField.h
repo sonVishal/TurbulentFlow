@@ -13,8 +13,12 @@ class TurbFlowField : public FlowField {
 
     private:
 
-        ScalarField _turbViscosity; //! Scalar field representing the turbulent viscosity
+        ScalarField _turbViscosity; //! Scalar field representing the turbulent viscosity (= nu + nu_t)
+
         ScalarField _distToWall; //! Scalar field representing the distance to wall
+
+        ScalarField _mixingLength; //! Scalar field representing the mixing length
+        // Mixing length is computed here as it depends on static parameters
 
     public:
 
@@ -62,10 +66,13 @@ class TurbFlowField : public FlowField {
          */
         ScalarField & getDistanceToWall ();
 
+        /** Get the Mixing length
+         * @return Scalar field with the mixing length
+         */
+        ScalarField & getMixingLength ();
+
         void getPressureVelocityAndTurbVisc(FLOAT &pressure, FLOAT &turbViscosity, FLOAT* const velocity, int i, int j);
         void getPressureVelocityAndTurbVisc(FLOAT &pressure, FLOAT &turbViscosity, FLOAT* const velocity, int i, int j, int k);
-        void setTurbulentViscosity(const FLOAT turbViscosity, int i, int j);
-        void setTurbulentViscosity(const FLOAT turbViscosity, int i, int j, int k);
 };
 
 #endif

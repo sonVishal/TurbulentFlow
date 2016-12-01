@@ -1,38 +1,29 @@
-/// TODO boundary values???
 #include "TurbLPmodelStencil.h"
 
 TurbLPmodel::TurbLPmodel ( const Parameters & parameters ) : FieldStencil<TurbFlowField> ( parameters ) {}
 
 void TurbLPmodel::apply( TurbFlowField & flowField, int i, int j ){
-    const int obstacle = flowField.getFlags().getValue(i, j);
+    // Don't check for fluid cell as we will get base visocity for obstacle cells which makes min turb viscosity non-zero : look at dt
+    // TODO: get mixing length. For now use distToWall*kappa
+    FLOAT l_mix = flowField.getDistanceToWall().getScalar(i, j)*_parameters.turbulence.kappa;
 
-    // If fluid cell
-    if ((obstacle & OBSTACLE_SELF) == 0) {
-        // TODO: get mixing length. For now use distToWall*kappa
-        FLOAT l_mix = flowField.getDistanceToWall().getScalar(i, j)*_parameters.turbulence.kappa;
+    FLOAT tensorProd = 0.0;
 
-        FLOAT tensorProd = 0.0;
+    getShearStressTensorProduct(flowField, tensorProd, i, j);
 
-        getShearStressTensorProduct(flowField, tensorProd, i, j);
-
-        flowField.setTurbulentViscosity(l_mix * l_mix * tensorProd + _parameters.flow.viscosity, i, j);
-    }
+    flowField.getTurbViscosity().getScalar(i, j) = l_mix * l_mix * tensorProd + _parameters.flow.viscosity;
 }
 
 void TurbLPmodel::apply ( TurbFlowField & flowField, int i, int j, int k ){
-    const int obstacle = flowField.getFlags().getValue(i, j);
+    // Don't check for fluid cell as we will get base visocity for obstacle cells which makes min turb viscosity non-zero : look at dt
+    // TODO: get mixing length. For now use distToWall*kappa
+    FLOAT l_mix = flowField.getDistanceToWall().getScalar(i, j, k)*_parameters.turbulence.kappa;
 
-    // If fluid cell
-    if ((obstacle & OBSTACLE_SELF) == 0) {
-        // TODO: get mixing length. For now use distToWall*kappa
-        FLOAT l_mix = flowField.getDistanceToWall().getScalar(i, j, k)*_parameters.turbulence.kappa;
+    FLOAT tensorProd = 0.0;
 
-        FLOAT tensorProd = 0.0;
+    getShearStressTensorProduct(flowField, tensorProd, i, j, k);
 
-        getShearStressTensorProduct(flowField, tensorProd, i, j, k);
-
-        flowField.setTurbulentViscosity(l_mix * l_mix * tensorProd + _parameters.flow.viscosity, i, j, k);
-    }
+    flowField.getTurbViscosity().getScalar(i, j, k) = l_mix * l_mix * tensorProd + _parameters.flow.viscosity;
 }
 
 void TurbLPmodel::getShearStressTensorProduct( TurbFlowField &flowField,

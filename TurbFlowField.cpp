@@ -3,14 +3,16 @@
 TurbFlowField::TurbFlowField ( int Nx, int Ny ) :
     FlowField( Nx, Ny ),
     _turbViscosity ( ScalarField ( Nx + 3, Ny + 3 ) ),
-    _distToWall ( ScalarField ( Nx + 3, Ny + 3 ) )
+    _distToWall ( ScalarField ( Nx + 3, Ny + 3 ) ),
+    _mixingLength ( ScalarField ( Nx + 3, Ny + 3 ) )
 { }
 
 
 TurbFlowField::TurbFlowField ( int Nx, int Ny, int Nz ) :
     FlowField( Nx, Ny, Nz ),
     _turbViscosity ( ScalarField ( Nx + 3, Ny + 3, Nz + 3 ) ),
-    _distToWall ( ScalarField ( Nx + 3, Ny + 3, Nz + 3 ) )
+    _distToWall ( ScalarField ( Nx + 3, Ny + 3, Nz + 3 ) ),
+    _mixingLength ( ScalarField ( Nx + 3, Ny + 3, Nz + 3 ) )
 { }
 
 
@@ -20,6 +22,8 @@ TurbFlowField::TurbFlowField (const Parameters & parameters) :
     _turbViscosity(parameters.geometry.dim==2?ScalarField(_size_x + 3, _size_y + 3):
             ScalarField(_size_x + 3, _size_y + 3, _size_z + 3)),
     _distToWall(parameters.geometry.dim==2?ScalarField(_size_x + 3, _size_y + 3):
+            ScalarField(_size_x + 3, _size_y + 3, _size_z + 3)),
+    _mixingLength(parameters.geometry.dim==2?ScalarField(_size_x + 3, _size_y + 3):
             ScalarField(_size_x + 3, _size_y + 3, _size_z + 3))
 { }
 
@@ -33,6 +37,10 @@ ScalarField & TurbFlowField::getTurbViscosity () {
 
 ScalarField & TurbFlowField::getDistanceToWall() {
     return _distToWall;
+}
+
+ScalarField & TurbFlowField::getMixingLength() {
+    return _mixingLength;
 }
 
 void TurbFlowField::getPressureVelocityAndTurbVisc(FLOAT &pressure, FLOAT &turbViscosity, FLOAT* const velocity,  int i, int j){
@@ -59,11 +67,4 @@ void TurbFlowField::getPressureVelocityAndTurbVisc(FLOAT &pressure, FLOAT &turbV
 
     pressure = getPressure().getScalar(i,j,k);
     turbViscosity = getTurbViscosity().getScalar(i,j,k);
-}
-
-void TurbFlowField::setTurbulentViscosity(const FLOAT turbViscosity, int i, int j) {
-    getTurbViscosity().getScalar(i,j) = turbViscosity;
-}
-void TurbFlowField::setTurbulentViscosity(const FLOAT turbViscosity, int i, int j, int k) {
-    getTurbViscosity().getScalar(i,j,k) = turbViscosity;
 }

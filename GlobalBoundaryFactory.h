@@ -9,6 +9,7 @@
 #include "stencils/NeumannBoundaryStencils.h"
 #include "stencils/BFInputStencils.h"
 #include "FlowField.h"
+#include "TurbFlowField.h"
 
 /** Class that returns instances of the global boundary iterator. It also contains the stencils.
  * Right now, it works only with Dirichlet and periodic boundary conditions
@@ -23,6 +24,12 @@ class GlobalBoundaryFactory{
         BoundaryStencil<FlowField> * _periodic[2];      //! Pointers to the periodic stencils, if any
         BoundaryStencil<FlowField> * _outflow[2];     //! Pointers for the outflow conditions
         BoundaryStencil<FlowField> * _channelInput[2];    //! For the velocity input
+
+        BoundaryStencil<TurbFlowField> * _turbViscosityStencils[6];
+        BoundaryStencil<TurbFlowField> * _turbMoving;
+        BoundaryStencil<TurbFlowField> * _turbOutflow;
+        BoundaryStencil<TurbFlowField> * _turbChannelInput;
+        BoundaryStencil<TurbFlowField> * _turbPeriodic;
         const Parameters & _parameters;         //! Reference to the parameters
 
     public:
@@ -46,6 +53,11 @@ class GlobalBoundaryFactory{
          * @param flowField Flow field information
          */
         GlobalBoundaryIterator<FlowField> getGlobalBoundaryFGHIterator(FlowField & flowField);
+
+        /** Returns an instance of the global boundary iterator for turbulent viscosity.
+         * @param flowField Flow field information
+         */
+        GlobalBoundaryIterator<TurbFlowField> getGlobalBoundaryTurbViscosityIterator(TurbFlowField & flowField);
 };
 
 #endif

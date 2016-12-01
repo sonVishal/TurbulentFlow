@@ -9,15 +9,19 @@ GlobalBoundaryFactory::GlobalBoundaryFactory(Parameters & parameters):
 
     _periodic[0] = new PeriodicBoundaryVelocityStencil(parameters);
     _periodic[1] = new PeriodicBoundaryFGHStencil(parameters);
+    _turbPeriodic = new PeriodicBoundaryTurbViscosityStencil(parameters);
 
     _moving[0] = new MovingWallVelocityStencil(parameters);
     _moving[1] = new MovingWallFGHStencil(parameters);
+    _turbMoving = new MovingWallTurbViscosityStencil(parameters);
 
     _outflow[0] = new NeumannVelocityBoundaryStencil(parameters);
     _outflow[1] = new NeumannFGHBoundaryStencil(parameters);
+    _turbOutflow = new NeumannTurbViscosityBoundaryStencil(parameters);
 
     _channelInput[0] = new BFInputVelocityStencil(parameters);
     _channelInput[1] = new BFInputFGHStencil(parameters);
+    _turbChannelInput = new BFInputTurbViscosityStencil(parameters);
 
     // Then, assign them according to the scenario
     std::string scenario = parameters.simulation.scenario;
@@ -27,6 +31,7 @@ GlobalBoundaryFactory::GlobalBoundaryFactory(Parameters & parameters):
         for (int i = 0; i < 6; i++){
             _velocityStencils[i] = _moving[0];
             _FGHStencils[i] = _moving[1];
+            _turbViscosityStencils[i] = _turbMoving;
         }
         parameters.walls.typeLeft   = DIRICHLET;
         parameters.walls.typeRight  = DIRICHLET;
@@ -38,15 +43,18 @@ GlobalBoundaryFactory::GlobalBoundaryFactory(Parameters & parameters):
         // To the left, we have the input
         _velocityStencils[0] = _channelInput[0];
         _FGHStencils[0] = _channelInput[1];
+        _turbViscosityStencils[0] = _turbChannelInput;
 
         // To the right, there is an outflow boundary
         _velocityStencils[1] = _outflow[0];
         _FGHStencils[1] = _outflow[1];
+        _turbViscosityStencils[1] = _turbOutflow;
 
         // The other walls are moving walls
         for (int i = 2; i < 6; i++){
             _velocityStencils[i] = _moving[0];
             _FGHStencils[i] = _moving[1];
+            _turbViscosityStencils[i] = _turbMoving;
         }
 
         parameters.walls.typeLeft   = DIRICHLET;
@@ -60,15 +68,18 @@ GlobalBoundaryFactory::GlobalBoundaryFactory(Parameters & parameters):
       // hence outflow conditions for the velocities
       _velocityStencils[0]=_outflow[0];
       _FGHStencils[0] = _outflow[1];
+      _turbViscosityStencils[0] = _turbOutflow;
 
       // To the right, there is an outflow boundary
       _velocityStencils[1] = _outflow[0];
       _FGHStencils[1] = _outflow[1];
+      _turbViscosityStencils[1] = _turbOutflow;
 
       // The other walls are moving walls
       for (int i = 2; i < 6; i++){
           _velocityStencils[i] = _moving[0];
           _FGHStencils[i] = _moving[1];
+          _turbViscosityStencils[i] = _turbMoving;
       }
 
       parameters.walls.typeLeft   = NEUMANN;
@@ -81,6 +92,7 @@ GlobalBoundaryFactory::GlobalBoundaryFactory(Parameters & parameters):
       for (int i = 0; i < 6; i++){
         _velocityStencils[i] = _periodic[0];
         _FGHStencils[i] = _periodic[1];
+        _turbViscosityStencils[i] = _turbPeriodic;
       }
       parameters.walls.typeLeft   = PERIODIC;
       parameters.walls.typeRight  = PERIODIC;
@@ -105,6 +117,9 @@ GlobalBoundaryFactory::~GlobalBoundaryFactory(){
 
     delete _channelInput[0];
     delete _channelInput[1];
+
+    delete _turbMoving;
+    delete _turbPeriodic;
 }
 
 GlobalBoundaryIterator<FlowField> GlobalBoundaryFactory::
@@ -134,5 +149,20 @@ GlobalBoundaryIterator<FlowField> GlobalBoundaryFactory::
                                   *(_FGHStencils[0]), *(_FGHStencils[1]),
                                   *(_FGHStencils[2]), *(_FGHStencils[3]),
                                   *(_FGHStencils[4]), *(_FGHStencils[5]),
+                                  1, 0);
+}
+
+GlobalBoundaryIterator<TurbFlowField> GlobalBoundaryFactory::
+    getGlobalBoundaryTurbViscosityIterator(TurbFlowField & flowField){
+    if (_parameters.geometry.dim == 2){
+        return GlobalBoundaryIterator<TurbFlowField>(flowField, _parameters,
+                                      *(_turbViscosityStencils[0]), *(_turbViscosityStencils[1]),
+                                      *(_turbViscosityStencils[2]), *(_turbViscosityStencils[3]),
+                                      1, 0);
+    }
+    return GlobalBoundaryIterator<TurbFlowField>(flowField, _parameters,
+                                  *(_turbViscosityStencils[0]), *(_turbViscosityStencils[1]),
+                                  *(_turbViscosityStencils[2]), *(_turbViscosityStencils[3]),
+                                  *(_turbViscosityStencils[4]), *(_turbViscosityStencils[5]),
                                   1, 0);
 }

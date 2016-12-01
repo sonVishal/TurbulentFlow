@@ -24,6 +24,8 @@ private:
     MinTurbViscosityStencil _minTurbViscosityStencil;
     FieldIterator<TurbFlowField> _minTurbViscosityFieldIterator;
     GlobalBoundaryIterator<TurbFlowField> _minTurbViscosityBoundaryIterator;
+
+    GlobalBoundaryIterator<TurbFlowField> _wallTurbViscosityIterator;
 public:
     TurbulentSimulation(Parameters &parameters, TurbFlowField &turbFlowField) :
         Simulation(parameters, turbFlowField),
@@ -36,7 +38,8 @@ public:
         _turbLPmodelIterator(turbFlowField,parameters,_turbLPmodelStencil),
         _minTurbViscosityStencil(parameters),
         _minTurbViscosityFieldIterator(turbFlowField,parameters,_minTurbViscosityStencil),
-        _minTurbViscosityBoundaryIterator(turbFlowField,parameters,_minTurbViscosityStencil) {}
+        _minTurbViscosityBoundaryIterator(turbFlowField,parameters,_minTurbViscosityStencil),
+        _wallTurbViscosityIterator(_globalBoundaryFactory.getGlobalBoundaryTurbViscosityIterator(_turbFlowField)) {}
     ~TurbulentSimulation() {}
     void initializeFlowField() {
         Simulation::initializeFlowField();
@@ -51,7 +54,7 @@ public:
         // compute viscosity
         _turbLPmodelIterator.iterate();
         // TODO: communicate turbulent viscosity values
-        // TODO: Wall viscosity iterator
+        _wallTurbViscosityIterator.iterate();
 
         // Do the viscosity first so that the min viscosity is not 0 while setting up dt
         // This is equivalent as changing order in a cyclic manner does not change the algorithm

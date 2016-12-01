@@ -4,6 +4,7 @@
 #include "../Parameters.h"
 #include "../DataStructures.h"
 #include "../FlowField.h"
+#include "../TurbFlowField.h"
 #include "../Stencil.h"
 
 class NeumannVelocityBoundaryStencil: public BoundaryStencil<FlowField> {
@@ -63,5 +64,31 @@ class NeumannFGHBoundaryStencil : public BoundaryStencil<FlowField> {
 
 };
 
+class NeumannTurbViscosityBoundaryStencil: public BoundaryStencil<TurbFlowField> {
 
+    public:
+
+        /** Constructor
+         * @param parameters Parameters of the simulation
+         */
+        NeumannTurbViscosityBoundaryStencil(const Parameters & parameters);
+
+        //@brief Functions for the 2D problem. Coordinates entered in alphabetical order.
+        //@{
+        void applyLeftWall   ( TurbFlowField & flowField, int i, int j );
+        void applyRightWall  ( TurbFlowField & flowField, int i, int j );
+        void applyBottomWall ( TurbFlowField & flowField, int i, int j );
+        void applyTopWall    ( TurbFlowField & flowField, int i, int j );
+        //@}
+
+        //@brief Functions for the 3D problem. Coordinates entered in alphabetical order.
+        //@{
+        void applyLeftWall   ( TurbFlowField & flowField, int i, int j, int k );
+        void applyRightWall  ( TurbFlowField & flowField, int i, int j, int k );
+        void applyBottomWall ( TurbFlowField & flowField, int i, int j, int k );
+        void applyTopWall    ( TurbFlowField & flowField, int i, int j, int k );
+        void applyFrontWall  ( TurbFlowField & flowField, int i, int j, int k );
+        void applyBackWall   ( TurbFlowField & flowField, int i, int j, int k );
+        //@}
+};
 #endif

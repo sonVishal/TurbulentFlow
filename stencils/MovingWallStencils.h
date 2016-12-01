@@ -4,6 +4,7 @@
 #include "../Stencil.h"
 #include "../Parameters.h"
 #include "../FlowField.h"
+#include "../TurbFlowField.h"
 
 /** Boundary stencil to set constant velocities at the faces.
  *
@@ -70,5 +71,39 @@ class MovingWallFGHStencil: public BoundaryStencil<FlowField> {
         void applyFrontWall  ( FlowField & flowField, int i, int j, int k );
         void applyBackWall   ( FlowField & flowField, int i, int j, int k );
         //@}
+};
+
+/** Boundary stencil to set constant velocities at the faces.
+ *
+ * The values for the velocities are stored in the parameters.
+ */
+class MovingWallTurbViscosityStencil: public BoundaryStencil<TurbFlowField> {
+
+    public:
+
+        /** Constructor
+         *
+         * @param parameters Parameters of the problem
+         */
+        MovingWallTurbViscosityStencil ( const Parameters & parameters );
+
+        //@brief Functions for the 2D problem. Coordinates entered in alphabetical order.
+        //@{
+        void applyLeftWall   ( TurbFlowField & flowField, int i, int j );
+        void applyRightWall  ( TurbFlowField & flowField, int i, int j );
+        void applyBottomWall ( TurbFlowField & flowField, int i, int j );
+        void applyTopWall    ( TurbFlowField & flowField, int i, int j );
+        //@}
+
+        //@brief Functions for the 3D problem. Coordinates entered in alphabetical order.
+        //@{
+        void applyLeftWall   ( TurbFlowField & flowField, int i, int j, int k );
+        void applyRightWall  ( TurbFlowField & flowField, int i, int j, int k );
+        void applyBottomWall ( TurbFlowField & flowField, int i, int j, int k );
+        void applyTopWall    ( TurbFlowField & flowField, int i, int j, int k );
+        void applyFrontWall  ( TurbFlowField & flowField, int i, int j, int k );
+        void applyBackWall   ( TurbFlowField & flowField, int i, int j, int k );
+        //@}
+
 };
 #endif

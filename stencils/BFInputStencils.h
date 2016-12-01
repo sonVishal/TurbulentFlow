@@ -4,6 +4,7 @@
 #include "../Stencil.h"
 #include "../Parameters.h"
 #include "../FlowField.h"
+#include "../TurbFlowField.h"
 
 /**
  * A stencil to set the input velocity in channel flows. Only implements the applyLeftWall(...) methods.
@@ -48,6 +49,30 @@ class BFInputFGHStencil : public BoundaryStencil<FlowField> {
         void applyTopWall    ( FlowField & flowField, int i, int j, int k );
         void applyFrontWall  ( FlowField & flowField, int i, int j, int k );
         void applyBackWall   ( FlowField & flowField, int i, int j, int k );
+
+    private:
+        FLOAT _stepSize; //! fixes the size of the step. If zero, is just channel flow
+};
+
+/**
+ * A stencil to set the input velocity in channel flows. Only implements the applyLeftWall(...) methods.
+ */
+class BFInputTurbViscosityStencil : public BoundaryStencil<TurbFlowField> {
+
+    public:
+        BFInputTurbViscosityStencil (const Parameters & parameters);
+
+        void applyLeftWall   ( TurbFlowField & flowField, int i, int j );
+        void applyRightWall  ( TurbFlowField & flowField, int i, int j );
+        void applyBottomWall ( TurbFlowField & flowField, int i, int j );
+        void applyTopWall    ( TurbFlowField & flowField, int i, int j );
+
+        void applyLeftWall   ( TurbFlowField & flowField, int i, int j, int k );
+        void applyRightWall  ( TurbFlowField & flowField, int i, int j, int k );
+        void applyBottomWall ( TurbFlowField & flowField, int i, int j, int k );
+        void applyTopWall    ( TurbFlowField & flowField, int i, int j, int k );
+        void applyFrontWall  ( TurbFlowField & flowField, int i, int j, int k );
+        void applyBackWall   ( TurbFlowField & flowField, int i, int j, int k );
 
     private:
         FLOAT _stepSize; //! fixes the size of the step. If zero, is just channel flow

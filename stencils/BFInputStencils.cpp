@@ -134,3 +134,30 @@ void BFInputFGHStencil::applyBottomWall ( FlowField & flowField, int i, int j, i
 void BFInputFGHStencil::applyTopWall    ( FlowField & flowField, int i, int j, int k ){}
 void BFInputFGHStencil::applyFrontWall  ( FlowField & flowField, int i, int j, int k ){}
 void BFInputFGHStencil::applyBackWall   ( FlowField & flowField, int i, int j, int k ){}
+
+
+BFInputTurbViscosityStencil::BFInputTurbViscosityStencil (const Parameters & parameters) :
+    BoundaryStencil<TurbFlowField> (parameters),
+    // Here, the obstacle size is set to zero if it was set as negative at the configuration
+    _stepSize (parameters.bfStep.yRatio > 0.0 ? parameters.bfStep.yRatio*parameters.geometry.lengthY : 0.0) {}
+
+// Most of the functions are empty, and they shouldn't be called, assuming that the input is always
+// located at the left.
+
+void BFInputTurbViscosityStencil::applyLeftWall   ( TurbFlowField & flowField, int i, int j ){
+    flowField.getTurbViscosity().getScalar(i,j) = flowField.getTurbViscosity().getScalar(i+1,j);
+}
+
+void BFInputTurbViscosityStencil::applyRightWall  ( TurbFlowField & flowField, int i, int j ){}
+void BFInputTurbViscosityStencil::applyBottomWall ( TurbFlowField & flowField, int i, int j ){}
+void BFInputTurbViscosityStencil::applyTopWall    ( TurbFlowField & flowField, int i, int j ){}
+
+void BFInputTurbViscosityStencil::applyLeftWall   ( TurbFlowField & flowField, int i, int j, int k ){
+    flowField.getTurbViscosity().getScalar(i,j,k) = flowField.getTurbViscosity().getScalar(i+1,j,k);
+}
+
+void BFInputTurbViscosityStencil::applyRightWall  ( TurbFlowField & flowField, int i, int j, int k ){}
+void BFInputTurbViscosityStencil::applyBottomWall ( TurbFlowField & flowField, int i, int j, int k ){}
+void BFInputTurbViscosityStencil::applyTopWall    ( TurbFlowField & flowField, int i, int j, int k ){}
+void BFInputTurbViscosityStencil::applyFrontWall  ( TurbFlowField & flowField, int i, int j, int k ){}
+void BFInputTurbViscosityStencil::applyBackWall   ( TurbFlowField & flowField, int i, int j, int k ){}

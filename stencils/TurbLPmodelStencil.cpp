@@ -5,7 +5,7 @@ TurbLPmodel::TurbLPmodel ( const Parameters & parameters ) : FieldStencil<TurbFl
 void TurbLPmodel::apply( TurbFlowField & flowField, int i, int j ){
     // Don't check for fluid cell as we will get base visocity for obstacle cells which makes min turb viscosity non-zero : look at dt
     // TODO: get mixing length. For now use distToWall*kappa
-    FLOAT l_mix = flowField.getDistanceToWall().getScalar(i, j)*_parameters.turbulence.kappa;
+    FLOAT l_mix = flowField.getMixingLength().getScalar(i, j);
 
     FLOAT tensorProd = 0.0;
 
@@ -17,7 +17,7 @@ void TurbLPmodel::apply( TurbFlowField & flowField, int i, int j ){
 void TurbLPmodel::apply ( TurbFlowField & flowField, int i, int j, int k ){
     // Don't check for fluid cell as we will get base visocity for obstacle cells which makes min turb viscosity non-zero : look at dt
     // TODO: get mixing length. For now use distToWall*kappa
-    FLOAT l_mix = flowField.getDistanceToWall().getScalar(i, j, k)*_parameters.turbulence.kappa;
+    FLOAT l_mix = flowField.getMixingLength().getScalar(i, j, k);
 
     FLOAT tensorProd = 0.0;
 

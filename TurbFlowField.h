@@ -15,10 +15,11 @@ class TurbFlowField : public FlowField {
 
         ScalarField _turbViscosity; //! Scalar field representing the turbulent viscosity (= nu + nu_t)
 
-        ScalarField _distToWall; //! Scalar field representing the distance to wall
-
         ScalarField _mixingLength; //! Scalar field representing the mixing length
         // Mixing length is computed here as it depends on static parameters
+        // NOTE: Works only for Channel flow since we know the input velocity profile
+        // Otherwise, for a general case we need to communicate the mean velocity at each x location
+        //  and use that to compute the Re_x term in the boundary layer thickness. Sorry!
 
     public:
 
@@ -60,11 +61,6 @@ class TurbFlowField : public FlowField {
          * @return Scalar field with the turbulent viscosity
          */
         ScalarField & getTurbViscosity ();
-
-        /** Get the nearest distance to a wall
-         * @return Scalar field with the nearest distance to wall
-         */
-        ScalarField & getDistanceToWall ();
 
         /** Get the Mixing length
          * @return Scalar field with the mixing length

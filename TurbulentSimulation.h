@@ -2,7 +2,7 @@
 #define _TURBULENT_SIMULATION_H_
 #include "Simulation.h"
 #include "TurbFlowField.h"
-#include "stencils/DistToWallStencil.h"
+#include "stencils/MixingLengthStencil.h"
 #include "stencils/TurbVTKStencil.h"
 #include "stencils/TurbFGHStencil.h"
 #include "stencils/TurbLPmodelStencil.h"
@@ -43,10 +43,11 @@ public:
     ~TurbulentSimulation() {}
     void initializeFlowField() {
         Simulation::initializeFlowField();
-        // Initialize the distance to wall
-        DistToWallStencil distToWallStencil(_parameters);
-        FieldIterator<TurbFlowField> distToWallIterator(_turbFlowField,_parameters,distToWallStencil,1,0);
-        distToWallIterator.iterate();
+        
+        // Initialize the mixing length
+        MixingLengthStencil mixingLengthStencil(_parameters);
+        FieldIterator<TurbFlowField> mixingLengthIterator(_turbFlowField,_parameters,mixingLengthStencil,1,0);
+        mixingLengthIterator.iterate();
     }
     void solveTimestep() {
         handleError(1,"TODO");

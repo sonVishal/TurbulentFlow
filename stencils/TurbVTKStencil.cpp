@@ -40,7 +40,7 @@ void TurbVTKStencil::apply ( TurbFlowField & flowField, int i, int j ) {
         _pressureStream << pressure << std::endl;
         _turbViscosityStream << turbViscosity << std::endl;
         _velocityStream << velocity[0] << ' ' << velocity[1] << ' ' << 0 << std::endl;
-        _turbDistToWall << flowField.getDistanceToWall().getScalar(i, j) << std::endl;
+        _turbDistToWall << flowField.getMixingLength().getScalar(i, j) << std::endl;
     } else {
     // Otherwise output 0 values
         _pressureStream << 0 << std::endl;
@@ -72,7 +72,7 @@ void TurbVTKStencil::apply ( TurbFlowField & flowField, int i, int j, int k ) {
         _pressureStream << pressure << std::endl;
         _turbViscosityStream << turbViscosity << std::endl;
         _velocityStream << velocity[0] << ' ' << velocity[1] << ' ' << velocity[2] << std::endl;
-        _turbDistToWall << flowField.getDistanceToWall().getScalar(i, j, k) << std::endl;
+        _turbDistToWall << flowField.getMixingLength().getScalar(i, j, k) << std::endl;
     } else {
     // Otherwise output 0 values
         _pressureStream << 0 << std::endl;

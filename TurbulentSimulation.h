@@ -33,7 +33,7 @@ public:
         Simulation::initializeFlowField();
         // Initialize the distance to wall
         DistToWallStencil distToWallStencil(_parameters);
-        FieldIterator<TurbFlowField> distToWallIterator(_turbFlowField,_parameters,distToWallStencil);
+        FieldIterator<TurbFlowField> distToWallIterator(_turbFlowField,_parameters,distToWallStencil,1,0);
         distToWallIterator.iterate();
     }
     void solveTimestep() {

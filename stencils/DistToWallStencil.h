@@ -7,6 +7,7 @@
 
 class DistToWallStencil : public FieldStencil<TurbFlowField> {
 private:
+    FLOAT _stepCornerPos[2];
     void getCellCenter( int i, int j, FLOAT* cellCenter);
     void getCellCenter( int i, int j, int k, FLOAT* cellCenter);
 public:

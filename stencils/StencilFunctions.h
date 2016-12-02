@@ -1172,8 +1172,8 @@ inline FLOAT DiffusiveTermF1(const FLOAT * const lm, const FLOAT * const lv, con
     const int scalarIndex0 = mapScalar(0, 0, 0);
     const int scalarIndex1 = mapScalar(1, 0, 0);
 
-    return 2*(lnu[scalarIndex1]*(lv[index1] - lv[index0])/(lm[index1]*lm[index1])
-        - lnu[scalarIndex0]*(lv[index0] - lv[indexM1])/(lm[index0]*lm[index0]));
+    return 4*(lnu[scalarIndex1]*(lv[index1] - lv[index0])/lm[index1]
+        - lnu[scalarIndex0]*(lv[index0] - lv[indexM1])/lm[index0])/(lm[index1]+lm[index0]);
 
 }
 
@@ -1202,8 +1202,8 @@ inline FLOAT DiffusiveTermG2(const FLOAT * const lm, const FLOAT * const lv, con
     const int scalarIndex0 = mapScalar(0, 0, 0);
     const int scalarIndex1 = mapScalar(0, 1, 0);
 
-    return 2*(lnu[scalarIndex1]*(lv[index1] - lv[index0])/(lm[index1]*lm[index1])
-        - lnu[scalarIndex0]*(lv[index0] - lv[indexM1])/(lm[index0]*lm[index0]));
+    return 4*(lnu[scalarIndex1]*(lv[index1] - lv[index0])/lm[index1]
+        - lnu[scalarIndex0]*(lv[index0] - lv[indexM1])/lm[index0])/(lm[index1]+lm[index0]);
 
 }
 
@@ -1230,8 +1230,8 @@ inline FLOAT DiffusiveTermH3(const FLOAT * const lm, const FLOAT * const lv, con
     const int scalarIndex0 = mapScalar(0, 0, 0);
     const int scalarIndex1 = mapScalar(0, 0, 1);
 
-    return 2*(lnu[scalarIndex1]*(lv[index1] - lv[index0])/(lm[index1]*lm[index1])
-        - lnu[scalarIndex0]*(lv[index0] - lv[indexM1])/(lm[index0]*lm[index0]));
+    return 4*(lnu[scalarIndex1]*(lv[index1] - lv[index0])/lm[index1]
+        - lnu[scalarIndex0]*(lv[index0] - lv[indexM1])/lm[index0])/(lm[index1]+lm[index0]);
 }
 
 ///computing F,G,H with RST modeled as turbulent viscosity

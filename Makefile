@@ -1,5 +1,5 @@
 #### The petsc environment can also be fixed in the makefile
-#PETSC_DIR = /home/zellner/Documents/workspaces/workspace/turbo/petsc/petsc-3.5.4/arch-linux2-c-debug
+PETSC_DIR = /home/zellner/Documents/workspaces/workspace/turbo/petsc/petsc-3.5.4/arch-linux2-c-debug
 # PETSC_ARCH =
 include ${PETSC_DIR}/conf/petscvariables
 
@@ -24,9 +24,11 @@ NSOBJ = FlowField.o LinearSolver.o Meshsize.o\
 stencils/MaxUStencil.o stencils/MovingWallStencils.o stencils/PeriodicBoundaryStencils.o\
 stencils/FGHStencil.o solvers/SORSolver.o solvers/PetscSolver.o \
 stencils/RHSStencil.o stencils/VelocityStencil.o stencils/VTKStencil.o \
+stencils/VTKBinaryStencil.o \
 stencils/VTKMPIStencil.o \
 parallelManagers/PetscParallelConfiguration.o\
 parallelManagers/PetscParallelManager.o\
+parallelManagers/PetscParallelManagerMPITypes.o \
 stencils/VelocityBufferFillStencil.o\
 stencils/VelocityBufferReadStencil.o\
 stencils/PressureBufferFillStencil.o\

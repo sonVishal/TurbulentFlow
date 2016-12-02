@@ -1,6 +1,10 @@
 #ifndef _SIMULATION_H_
 #define _SIMULATION_H_
 
+//Use MPI types to send data to another rank
+//#define Petsc_MPITypes
+#define VTKBinary
+
 #include <petscksp.h>
 #include <float.h>
 #include "FlowField.h"
@@ -9,7 +13,11 @@
 #include "stencils/RHSStencil.h"
 #include "stencils/VelocityStencil.h"
 #include "stencils/ObstacleStencil.h"
-#include "stencils/VTKStencil.h"
+#ifdef VTKBinary
+	#include "stencils/VTKBinaryStencil.h"
+#else
+	#include "stencils/VTKStencil.h"
+#endif
 #include "stencils/MaxUStencil.h"
 #include "stencils/PeriodicBoundaryStencils.h"
 #include "stencils/BFStepInitStencil.h"
@@ -24,9 +32,7 @@
 #include "LinearSolver.h"
 #include "solvers/SORSolver.h"
 #include "solvers/PetscSolver.h"
-
-#include "parallelManagers/PetscParallelManager.h"
-#include "stencils/VTKMPIStencil.h"
+#include "parallelManagers/PetscParallelManagerMPITypes.h"
 
 
 
@@ -56,13 +62,15 @@ class Simulation {
     FieldIterator<FlowField> _velocityIterator;
     FieldIterator<FlowField> _obstacleIterator;
 
-    VTKStencil _vtkStencil;
-    VTKMPIStencil _vtkMPIStencil;
+	#ifdef VTKBinary
+    	VTKBinaryStencil _vtkStencil;
+	#else
+		VTKStencil _vtkStencil;
+	#endif
     FieldIterator<FlowField> _vtkIterator;
-    FieldIterator<FlowField> _vtkMPIIterator;
 
     PetscSolver _solver;
-    PetscParallelManager _parallelManager;
+    PetscParallelManagerMPITypes _parallelManager;
 
 
   public:
@@ -84,13 +92,10 @@ class Simulation {
        _velocityIterator(_flowField,parameters,_velocityStencil),
        _obstacleIterator(_flowField,parameters,_obstacleStencil),
        _vtkStencil(parameters),
-	   _vtkMPIStencil(parameters),
        _vtkIterator(_flowField,parameters,_vtkStencil),
-	   _vtkMPIIterator(_flowField,parameters, _vtkMPIStencil,-1,1),
        _solver(_flowField,parameters),
 	   _parallelManager(_flowField, parameters)
-       {
-       }
+       {}
 
     virtual ~Simulation(){}
 
@@ -132,6 +137,7 @@ class Simulation {
       	_solver.reInitMatrix();
     }
 
+
     virtual void solveTimestep(){
         // determine and set max. timestep which is allowed in this simulation
         setTimeStep();
@@ -144,41 +150,40 @@ class Simulation {
         // solve for pressure
         _solver.solve();
         // TODO WS2: communicate pressure values
-        plotAllVTK(100);
+        //plotAllVTK(counter++);
         _parallelManager.communicatePressure();
-        plotAllVTK(101);
+        //plotAllVTK(counter++);
         // compute velocity
         _velocityIterator.iterate();
     	// set obstacle boundaries
     	_obstacleIterator.iterate();
-    	plotAllVTK(102);
+    	//plotAllVTK(counter++);
         // TODO WS2: communicate velocity values
     	_parallelManager.communicateVelocity();
-    	plotAllVTK(103);
+    	//plotAllVTK(counter++);
+    	//throw std::exception();
         // Iterate for velocities on the boundary
         _wallVelocityIterator.iterate();
     }
 
     /** plots the flow field. */
     virtual void plotVTK(int timeStep){
-        if (_vtkStencil.openFile(timeStep)) {
-            _vtkIterator.iterate();
-            _vtkStencil.write(_flowField, timeStep);
-        } else {
-            std::cout << "ERROR: Plotting VTK file at time: " << timeStep << " FAILED!" << std::endl;
-            std::cout << "\tReason: Could not open the file for writing." << std::endl << std::endl;
-        }
+	#ifdef VTKBinary
+    	_vtkIterator.iterate();
+    	_vtkStencil.write(_flowField, timeStep);
+
+	#else
+			if (_vtkStencil.openFile(timeStep)) {
+				_vtkIterator.iterate();
+				_vtkStencil.write(_flowField, timeStep);
+			} else {
+				std::cout << "ERROR: Plotting VTK file at time: " << timeStep << " FAILED!" << std::endl;
+				std::cout << "\tReason: Could not open the file for writing." << std::endl << std::endl;
+			}
+	#endif
+
     }
-    /** plots the flow field. */
-    virtual void plotAllVTK(int timeStep){
-        if (_vtkMPIStencil.openFile(timeStep)) {
-        	_vtkMPIIterator.iterate();
-            _vtkMPIStencil.write(_flowField, timeStep);
-        } else {
-            std::cout << "ERROR: Plotting All VTK file at time: " << timeStep << " FAILED!" << std::endl;
-            std::cout << "\tReason: Could not open the file for writing." << std::endl << std::endl;
-        }
-    }
+
 
   protected:
     /** sets the time step*/

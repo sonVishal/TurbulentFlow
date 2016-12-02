@@ -36,6 +36,7 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j ) {
         _pressureStream << 0 << std::endl;
         _velocityStream << 0 << ' ' << 0 << ' ' << 0 << std::endl;
     }
+
 }
 
 /** 3D operation for one position
@@ -112,7 +113,7 @@ void VTKStencil::writeHeaderAndCoords() {
  */
 bool VTKStencil::openFile( int timeStep ) {
 	int rank;
-	MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     // fileName stores the file name as per XML file
     // it adds current timestep + .vtk extension to it
     std::stringstream fileName;

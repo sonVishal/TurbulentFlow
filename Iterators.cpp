@@ -1,5 +1,3 @@
-
-
 template<class FlowField>
 FieldIterator<FlowField>::FieldIterator (FlowField & flowField, const Parameters& parameters, FieldStencil<FlowField> & stencil,
                                int lowOffset, int highOffset):

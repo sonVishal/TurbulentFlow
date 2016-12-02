@@ -7,7 +7,7 @@ PetscParallelManager::PetscParallelManager(FlowField & flowField, const Paramete
   _flowField(flowField),
   _pres_buf_fill(parameters),
   _pres_buf_read(parameters),
-  _presFillIterator(flowField,parameters,_pres_buf_fill,2,-1),
+  _presFillIterator(flowField,parameters,_pres_buf_fill,2,-1), //2,-1
   _presReadIterator(flowField,parameters,_pres_buf_read,2,-1),
   _velo_buf_fill(parameters),
   _velo_buf_read(parameters),
@@ -27,16 +27,20 @@ void PetscParallelManager::communicatePressure(){
 		std::cout<<"Communicate Pressure"<<std::endl;
 	#endif
 
+	_pres_buf_fill.resetCounter();
+
 	//Iterate over all communicator cells
 	MPI_Barrier(MPI_COMM_WORLD);
-		for(int i=0;i<size;i++){
-			if(i==rank){
-				//std::cout<<"rank "<<rank<<std::endl;
-				_presFillIterator.iterate();
-			}
-
-			MPI_Barrier(MPI_COMM_WORLD);
+	for(int i=0;i<size;i++){
+		if(i==rank){
+			//std::cout<<"rank "<<rank<<std::endl;
+			_presFillIterator.iterate();
 		}
+
+		MPI_Barrier(MPI_COMM_WORLD);
+	}
+
+	//throw std::exception();
 
 	_pres_buf_fill.resetCounter();
 
@@ -71,7 +75,7 @@ void PetscParallelManager::communicatePressure(){
 	#endif
 
 
-	//Communication to the left neighbor
+	//Communication to the left neighbore
 	MPI_Sendrecv(
 			_pres_buf_fill.getLeft()->arr, //sendbuffer
 			_pres_buf_fill.getLeft()->size,//sizeof buffer;
@@ -99,6 +103,18 @@ void PetscParallelManager::communicatePressure(){
 		}
 
 	#endif
+
+
+		MPI_Barrier(MPI_COMM_WORLD);
+		for(int i=0;i<size;i++){
+			if(i==rank){
+				//std::cout<<"rank "<<rank<<std::endl;
+				_presReadIterator.iterate();
+			}
+
+			MPI_Barrier(MPI_COMM_WORLD);
+		}
+		_pres_buf_read.resetCounter();
 
 	//communication to the top neighbor
 	MPI_Sendrecv(
@@ -142,8 +158,40 @@ void PetscParallelManager::communicatePressure(){
 		std::cout<<"Rank "<<rank<<"received "<<_parameters.parallel.topNb<<"\n"<<printComBuf(_pres_buf_read.getTop())<<std::endl;
 	#endif
 
+	//communication to the back neighbor
+	MPI_Sendrecv(
+			_pres_buf_fill.getFront()->arr, //sendbuffer
+			_pres_buf_fill.getFront()->size,//sizeof buffer;
+			MY_MPI_FLOAT,
+			_parameters.parallel.frontNb,
+			COMM_BACK_PRES,
+			_pres_buf_read.getBack()->arr,
+			_pres_buf_read.getBack()->size,
+			MY_MPI_FLOAT,
+			_parameters.parallel.backNb,
+			COMM_BACK_PRES, //recvtag
+			MPI_COMM_WORLD,
+			&stat			//MPIStatus
+	);
+
+	//communication to the back neighbor
+	MPI_Sendrecv(
+			_pres_buf_fill.getBack()->arr, //sendbuffer
+			_pres_buf_fill.getBack()->size,//sizeof buffer;
+			MY_MPI_FLOAT,
+			_parameters.parallel.backNb,
+			COMM_FRONT_PRES,
+			_pres_buf_read.getFront()->arr,
+			_pres_buf_read.getFront()->size,
+			MY_MPI_FLOAT,
+			_parameters.parallel.frontNb,
+			COMM_FRONT_PRES, //recvtag
+			MPI_COMM_WORLD,
+			&stat			//MPIStatus
+	);
 
 
+	_pres_buf_read.resetCounter();
 
 	MPI_Barrier(MPI_COMM_WORLD);
 	for(int i=0;i<size;i++){
@@ -163,6 +211,7 @@ void PetscParallelManager::communicateVelocity(){
 		std::cout<<"Communicate Velocity"<<std::endl;
 	#endif
 
+	_velo_buf_fill.resetCounter();
 
 	MPI_Barrier(MPI_COMM_WORLD);
 	for(int i=0;i<size;i++){
@@ -175,6 +224,7 @@ void PetscParallelManager::communicateVelocity(){
 	}
 
 	_velo_buf_fill.resetCounter();
+
 
 	MPI_Status stat;
 
@@ -238,7 +288,42 @@ void PetscParallelManager::communicateVelocity(){
 			&stat			//MPIStatus
 	);
 
+	//communication to the back neighbor
+	MPI_Sendrecv(
+			_velo_buf_fill.getFront()->arr, //sendbuffer
+			_velo_buf_fill.getFront()->size,//sizeof buffer;
+			MY_MPI_FLOAT,
+			_parameters.parallel.frontNb,
+			COMM_BACK_VELO,
+			_velo_buf_read.getBack()->arr,
+			_velo_buf_read.getBack()->size,
+			MY_MPI_FLOAT,
+			_parameters.parallel.backNb,
+			COMM_BACK_VELO, //recvtag
+			MPI_COMM_WORLD,
+			&stat			//MPIStatus
+	);
 
+	//communication to the back neighbor
+	MPI_Sendrecv(
+			_velo_buf_fill.getBack()->arr, //sendbuffer
+			_velo_buf_fill.getBack()->size,//sizeof buffer;
+			MY_MPI_FLOAT,
+			_parameters.parallel.backNb,
+			COMM_FRONT_VELO,
+			_velo_buf_read.getFront()->arr,
+			_velo_buf_read.getFront()->size,
+			MY_MPI_FLOAT,
+			_parameters.parallel.frontNb,
+			COMM_FRONT_VELO, //recvtag
+			MPI_COMM_WORLD,
+			&stat			//MPIStatus
+	);
+
+
+
+
+	_velo_buf_read.resetCounter();
 
 	MPI_Barrier(MPI_COMM_WORLD);
 	for(int i=0;i<size;i++){

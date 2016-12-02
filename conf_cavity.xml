@@ -7,8 +7,9 @@
     </simulation>
     <timestep dt="1" tau="0.5" />
     <solver gamma="0.5" />
-    <geometry dim="2"
-      lengthX="1.0" lengthY="1.0" lengthZ="0.0" sizeX="10" sizeY="10" sizeZ="0"
+    <geometry dim="3"
+      lengthX="1.0" lengthY="1.0" lengthZ="1.0"
+      sizeX="20" sizeY="20" sizeZ="20"
     >
       <mesh>uniform</mesh>
     </geometry>
@@ -21,7 +22,7 @@
             <vector x="0" y="0" z="0" />
         </right>
         <top>
-            <vector x="1" y="0" z="0" />
+            <vector x="1.0" y="0" z="0" />
         </top>
         <bottom>
             <vector x="0" y="0" z="0" />
@@ -35,5 +36,5 @@
     </walls>
     <vtk interval="1">cavity_result</vtk>
     <stdOut interval="1" />
-    <parallel numProcessorsX="2" numProcessorsY="2" numProcessorsZ="1" />
+    <parallel numProcessorsX="2" numProcessorsY="1" numProcessorsZ="1" />
 </configuration>

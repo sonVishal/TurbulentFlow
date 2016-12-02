@@ -46,6 +46,9 @@ private:
 	ParallelBoundaryIterator<FlowField> _veloFillIterator;
 	ParallelBoundaryIterator<FlowField> _veloReadIterator;
 
+
+
+
 	int rank;
 	int size;
 

@@ -4,9 +4,9 @@
 
 VelocityBufferFillStencil::VelocityBufferFillStencil ( const Parameters & parameters ) : BoundaryStencil<FlowField> ( parameters ){
 	unsigned int value_size=(unsigned int)sizeof(FLOAT);
-	int x = parameters.parallel.localSize[0];
-	int y = parameters.parallel.localSize[1];
-	int z = parameters.parallel.localSize[2];
+	int x = parameters.parallel.localSize[0]+3;
+	int y = parameters.parallel.localSize[1]+3;
+	int z = parameters.parallel.localSize[2]+3;
 
 	if(parameters.geometry.dim==2){
 		//todo reserve exactly the buffers which are needed
@@ -22,9 +22,6 @@ VelocityBufferFillStencil::VelocityBufferFillStencil ( const Parameters & parame
 		back_send.arr=NULL;
 
 	}else{
-		std::cerr<<"Not implemented yet!"<<std::endl;
-		system("1");
-
 		//Set the size of the arrays for 2d
 		left_send.size = 3*y*z;
 		right_send.size = 3*2*y*z;
@@ -81,6 +78,8 @@ void VelocityBufferFillStencil::applyRightWall  (FlowField & flowField, int i, i
 	right_send.arr[right_send.counter++]=flowField.getVelocity().getVector(i-1,j)[1];
 	right_send.arr[right_send.counter++]=flowField.getVelocity().getVector(i,j)[0];
 	right_send.arr[right_send.counter++]=flowField.getVelocity().getVector(i,j)[1];
+
+
 }
 void VelocityBufferFillStencil::applyBottomWall (FlowField & flowField, int i, int j){
 	#ifdef DEBUG_VELOFILL
@@ -90,6 +89,8 @@ void VelocityBufferFillStencil::applyBottomWall (FlowField & flowField, int i, i
 
 	bottom_send.arr[bottom_send.counter++]=flowField.getVelocity().getVector(i,j)[0];
 	bottom_send.arr[bottom_send.counter++]=flowField.getVelocity().getVector(i,j)[1];
+
+
 }
 void VelocityBufferFillStencil::applyTopWall    (FlowField & flowField, int i, int j){
 	#ifdef DEBUG_VELOFILL
@@ -101,37 +102,39 @@ void VelocityBufferFillStencil::applyTopWall    (FlowField & flowField, int i, i
 	top_send.arr[top_send.counter++]=flowField.getVelocity().getVector(i,j-1)[1];
 	top_send.arr[top_send.counter++]=flowField.getVelocity().getVector(i,j)[0];
 	top_send.arr[top_send.counter++]=flowField.getVelocity().getVector(i,j)[1];
+
 }
 
 
 void VelocityBufferFillStencil::applyLeftWall   (FlowField & flowField, int i, int j, int k){
-	std::cerr<<"VelocityBufferFillStencil not implemented"<<std::endl;
 	#ifdef DEBUG_VELOFILL
 		std::cout<<"Left Wall"<<std::endl;
 		std::cout<<i<<" "<<j<<" "<<k<<std::endl;
 	#endif
-	//left_send.arr[left_send.counter++]=flowField.getPressure().getScalar(i,j,k);
+	left_send.arr[left_send.counter++]=flowField.getVelocity().getVector(i,j,k)[0];
+	left_send.arr[left_send.counter++]=flowField.getVelocity().getVector(i,j,k)[1];
 }
 void VelocityBufferFillStencil::applyRightWall  (FlowField & flowField, int i, int j, int k){
-	std::cerr<<"VelocityBufferFillStencil not implemented"<<std::endl;
 	#ifdef DEBUG_VELOFILL
 		std::cout<<"Right Wall"<<std::endl;
 		std::cout<<i-1<<" "<<j<<" k "<<k<<std::endl;
 		std::cout<<i<<" "<<j<<" "<<k<<std::endl;
 	#endif
-	//right_send.arr[right_send.counter++]=flowField.getPressure().getScalar(i-1,j,k);
-	//right_send.arr[right_send.counter++]=flowField.getPressure().getScalar(i,j,k);
+	right_send.arr[right_send.counter++]=flowField.getVelocity().getVector(i-1,j,k)[0];
+	right_send.arr[right_send.counter++]=flowField.getVelocity().getVector(i-1,j,k)[1];
+	right_send.arr[right_send.counter++]=flowField.getVelocity().getVector(i,j,k)[0];
+	right_send.arr[right_send.counter++]=flowField.getVelocity().getVector(i,j,k)[1];
 }
 void VelocityBufferFillStencil::applyBottomWall (FlowField & flowField, int i, int j, int k){
-	std::cerr<<"VelocityBufferFillStencil not implemented"<<std::endl;
 	#ifdef DEBUG_VELOFILL
 		std::cout<<"Bottom Wall"<<std::endl;
 		std::cout<<i<<" "<<j<<" "<<k<<std::endl;
 	#endif
 	//bottom_send.arr[bottom_send.counter++]=flowField.getPressure().getScalar(i,j,k);
+	bottom_send.arr[bottom_send.counter++]=flowField.getVelocity().getVector(i,j,k)[0];
+	bottom_send.arr[bottom_send.counter++]=flowField.getVelocity().getVector(i,j,k)[1];
 }
 void VelocityBufferFillStencil::applyTopWall    (FlowField & flowField, int i, int j, int k){
-	std::cerr<<"VelocityBufferFillStencil not implemented"<<std::endl;
 	#ifdef DEBUG_VELOFILL
 		std::cout<<"Top Wall"<<std::endl;
 		std::cout<<i<<" "<<j-1<<" "<<k<<std::endl;
@@ -139,24 +142,29 @@ void VelocityBufferFillStencil::applyTopWall    (FlowField & flowField, int i, i
 	#endif
 	//top_send.arr[top_send.counter++]=flowField.getPressure().getScalar(i,j-1,k);
 	//top_send.arr[top_send.counter++]=flowField.getPressure().getScalar(i,j,k);
+	top_send.arr[top_send.counter++]=flowField.getVelocity().getVector(i,j-1,k)[0];
+	top_send.arr[top_send.counter++]=flowField.getVelocity().getVector(i,j-1,k)[1];
+	top_send.arr[top_send.counter++]=flowField.getVelocity().getVector(i,j,k)[0];
+	top_send.arr[top_send.counter++]=flowField.getVelocity().getVector(i,j,k)[1];
 }
 void VelocityBufferFillStencil::applyFrontWall  (FlowField & flowField, int i, int j, int k){
-	std::cerr<<"VelocityBufferFillStencil not implemented"<<std::endl;
 	#ifdef DEBUG_VELOFILL
 		std::cout<<"Front Wall"<<std::endl;
-		std::cout<<i<<" "<<j<<" "<<k<<std::endl;
+		std::cout<<i<<" "<<j<<" "<<k-1<<std::endl;
 	#endif
-	//front_send.arr[front_send.counter++]=flowField.getPressure().getScalar(i,j,k);
+	front_send.arr[front_send.counter++]=flowField.getVelocity().getVector(i,j,k-1)[0];
+	front_send.arr[front_send.counter++]=flowField.getVelocity().getVector(i,j,k-1)[1];
 }
 void VelocityBufferFillStencil::applyBackWall   (FlowField & flowField, int i, int j, int k){
-	std::cerr<<"VelocityBufferFillStencil not implemented"<<std::endl;
 	#ifdef DEBUG_VELOFILL
 		std::cout<<"Back Wall"<<std::endl;
 		std::cout<<i<<" "<<j<<" "<<k-1<<std::endl;
 		std::cout<<i<<" "<<j<<" "<<k<<std::endl;
 	#endif
-	//back_send.arr[back_send.counter++]=flowField.getPressure().getScalar(i,j,k-1);
-	//back_send.arr[back_send.counter++]=flowField.getPressure().getScalar(i,j,k);
+	back_send.arr[back_send.counter++]=flowField.getVelocity().getVector(i,j,k-1)[0];
+	back_send.arr[back_send.counter++]=flowField.getVelocity().getVector(i,j,k-1)[1];
+	back_send.arr[back_send.counter++]=flowField.getVelocity().getVector(i,j,k)[0];
+	back_send.arr[back_send.counter++]=flowField.getVelocity().getVector(i,j,k)[1];
 }
 
 /*

@@ -4,9 +4,9 @@
 
 PressureBufferFillStencil::PressureBufferFillStencil ( const Parameters & parameters ) : BoundaryStencil<FlowField> ( parameters ){
 	unsigned int value_size=(unsigned int)sizeof(FLOAT);
-	int x = parameters.parallel.localSize[0];
-	int y = parameters.parallel.localSize[1];
-	int z = parameters.parallel.localSize[2];
+	int x = parameters.parallel.localSize[0]+3;
+	int y = parameters.parallel.localSize[1]+3;
+	int z = parameters.parallel.localSize[2]+3;
 
 	if(parameters.geometry.dim==2){
 		//todo reserve exactly the buffers which are needed
@@ -22,9 +22,6 @@ PressureBufferFillStencil::PressureBufferFillStencil ( const Parameters & parame
 		back_send.arr=NULL;
 
 	}else{
-		std::cerr<<"Not implemented yet!"<<std::endl;
-		system("1");
-
 		//Set the size of the arrays for 2d
 		left_send.size = y*z;
 		right_send.size = 2*y*z;
@@ -66,7 +63,8 @@ void PressureBufferFillStencil::applyLeftWall   (FlowField & flowField, int i, i
 		std::cout<<"Left Wall"<<std::endl;
 		std::cout<<i<<" "<<j<<std::endl;
 	#endif
-	left_send.arr[left_send.counter++]=flowField.getPressure().getScalar(i,j);
+	//left_send.arr[left_send.counter++]=flowField.getPressure().getScalar(i,j);
+	left_send.arr[j-2]=flowField.getPressure().getScalar(i,j);
 }
 void PressureBufferFillStencil::applyRightWall  (FlowField & flowField, int i, int j){
 	#ifdef DEBUG_PRESFILL
@@ -74,15 +72,23 @@ void PressureBufferFillStencil::applyRightWall  (FlowField & flowField, int i, i
 		std::cout<<i-1<<" "<<j<<std::endl;
 		std::cout<<i<<" "<<j<<std::endl;
 #endif
-	right_send.arr[right_send.counter++]=flowField.getPressure().getScalar(i-1,j);
-	right_send.arr[right_send.counter++]=flowField.getPressure().getScalar(i,j);
+//		right_send.arr[right_send.counter++]=flowField.getPressure().getScalar(i-1,j);
+//		right_send.arr[right_send.counter++]=flowField.getPressure().getScalar(i,j);
+
+	int x=i-_parameters.parallel.localSize[0];
+	int y=j-2;
+	right_send.arr[2*y+x]=flowField.getPressure().getScalar(i-1,j);
+	x++;
+	right_send.arr[2*y+x]=flowField.getPressure().getScalar(i,j);
 }
 void PressureBufferFillStencil::applyBottomWall (FlowField & flowField, int i, int j){
 	#ifdef DEBUG_PRESFILL
 		std::cout<<"Bottom Wall"<<std::endl;
 		std::cout<<i<<" "<<j<<std::endl;
 	#endif
-	bottom_send.arr[bottom_send.counter++]=flowField.getPressure().getScalar(i,j);
+//		bottom_send.arr[bottom_send.counter++]=flowField.getPressure().getScalar(i,j);
+
+		bottom_send.arr[i-2]=flowField.getPressure().getScalar(i,j);
 }
 void PressureBufferFillStencil::applyTopWall    (FlowField & flowField, int i, int j){
 	#ifdef DEBUG_PRESFILL
@@ -90,64 +96,64 @@ void PressureBufferFillStencil::applyTopWall    (FlowField & flowField, int i, i
 		std::cout<<i<<" "<<j-1<<std::endl;
 		std::cout<<i<<" "<<j<<std::endl;
 	#endif
-	top_send.arr[top_send.counter++]=flowField.getPressure().getScalar(i,j-1);
-	top_send.arr[top_send.counter++]=flowField.getPressure().getScalar(i,j);
+//	top_send.arr[top_send.counter++]=flowField.getPressure().getScalar(i,j-1);
+//	top_send.arr[top_send.counter++]=flowField.getPressure().getScalar(i,j);
+	int x=i-2;
+	int y=_parameters.parallel.localSize[0];
+	top_send.arr[x]=flowField.getPressure().getScalar(i,j-1);
+
+	top_send.arr[x+y]=flowField.getPressure().getScalar(i,j);
+
 }
 
 
 void PressureBufferFillStencil::applyLeftWall   (FlowField & flowField, int i, int j, int k){
-	std::cerr<<"PressureBufferFillStencil not implemented"<<std::endl;
 	#ifdef DEBUG_PRESFILL
 		std::cout<<"Left Wall"<<std::endl;
 		std::cout<<i<<" "<<j<<" "<<k<<std::endl;
 	#endif
-	//left_send.arr[left_send.counter++]=flowField.getPressure().getScalar(i,j,k);
+	left_send.arr[left_send.counter++]=flowField.getPressure().getScalar(i,j,k);
 }
 void PressureBufferFillStencil::applyRightWall  (FlowField & flowField, int i, int j, int k){
-	std::cerr<<"PressureBufferFillStencil not implemented"<<std::endl;
 	#ifdef DEBUG_PRESFILL
 		std::cout<<"Right Wall"<<std::endl;
-		std::cout<<i-1<<" "<<j<<" k "<<k<<std::endl;
+		std::cout<<i<<" "<<j<<" "<<k<<std::endl;
 		std::cout<<i<<" "<<j<<" "<<k<<std::endl;
 	#endif
-	//right_send.arr[right_send.counter++]=flowField.getPressure().getScalar(i-1,j,k);
-	//right_send.arr[right_send.counter++]=flowField.getPressure().getScalar(i,j,k);
+	right_send.arr[right_send.counter++]=flowField.getPressure().getScalar(i-1,j,k);
+	right_send.arr[right_send.counter++]=flowField.getPressure().getScalar(i,j,k);
 }
 void PressureBufferFillStencil::applyBottomWall (FlowField & flowField, int i, int j, int k){
-	std::cerr<<"PressureBufferFillStencil not implemented"<<std::endl;
 	#ifdef DEBUG_PRESFILL
 		std::cout<<"Bottom Wall"<<std::endl;
 		std::cout<<i<<" "<<j<<" "<<k<<std::endl;
 	#endif
-	//bottom_send.arr[bottom_send.counter++]=flowField.getPressure().getScalar(i,j,k);
+	bottom_send.arr[bottom_send.counter++]=flowField.getPressure().getScalar(i,j,k);
 }
 void PressureBufferFillStencil::applyTopWall    (FlowField & flowField, int i, int j, int k){
-	std::cerr<<"PressureBufferFillStencil not implemented"<<std::endl;
 	#ifdef DEBUG_PRESFILL
 		std::cout<<"Top Wall"<<std::endl;
-		std::cout<<i<<" "<<j-1<<" "<<k<<std::endl;
+		std::cout<<i<<" "<<j<<" "<<k<<std::endl;
 		std::cout<<i<<" "<<j<<" "<<k<<std::endl;
 	#endif
-	//top_send.arr[top_send.counter++]=flowField.getPressure().getScalar(i,j-1,k);
-	//top_send.arr[top_send.counter++]=flowField.getPressure().getScalar(i,j,k);
+	top_send.arr[top_send.counter++]=flowField.getPressure().getScalar(i,j-1,k);
+	top_send.arr[top_send.counter++]=flowField.getPressure().getScalar(i,j,k);
 }
 void PressureBufferFillStencil::applyFrontWall  (FlowField & flowField, int i, int j, int k){
-	std::cerr<<"PressureBufferFillStencil not implemented"<<std::endl;
 	#ifdef DEBUG_PRESFILL
 		std::cout<<"Front Wall"<<std::endl;
 		std::cout<<i<<" "<<j<<" "<<k<<std::endl;
 	#endif
-	//front_send.arr[front_send.counter++]=flowField.getPressure().getScalar(i,j,k);
+	front_send.arr[front_send.counter++]=flowField.getPressure().getScalar(i,j,k);
 }
 void PressureBufferFillStencil::applyBackWall   (FlowField & flowField, int i, int j, int k){
-	std::cerr<<"PressureBufferFillStencil not implemented"<<std::endl;
 	#ifdef DEBUG_PRESFILL
 		std::cout<<"Back Wall"<<std::endl;
-		std::cout<<i<<" "<<j<<" "<<k-1<<std::endl;
+		std::cout<<i<<" "<<j<<" "<<k<<std::endl;
 		std::cout<<i<<" "<<j<<" "<<k<<std::endl;
 	#endif
-	//back_send.arr[back_send.counter++]=flowField.getPressure().getScalar(i,j,k-1);
-	//back_send.arr[back_send.counter++]=flowField.getPressure().getScalar(i,j,k);
+	back_send.arr[back_send.counter++]=flowField.getPressure().getScalar(i,j,k-1);
+	back_send.arr[back_send.counter++]=flowField.getPressure().getScalar(i,j,k);
 }
 
 /*

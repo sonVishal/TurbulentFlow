@@ -133,6 +133,6 @@ class ParallelBoundaryIterator : public Iterator<FlowField> {
                                  int lowOffset = 0, int highOffset = 0);
         void iterate();
 };
-#include "Iterators.cpph"
+#include "Iterators.cpp"
 
 #endif

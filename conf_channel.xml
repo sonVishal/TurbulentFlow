@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
-    <flow Re="100" />
-    <simulation finalTime="1.0" >
+    <flow Re="500" />
+    <simulation finalTime="10.0" >
         <type>dns</type>
         <scenario>channel</scenario>
     </simulation>
-    <backwardFacingStep xRatio="0.2" yRatio="0.2" />
+    <backwardFacingStep xRatio="0.0" yRatio="0.0" />
     <timestep dt="1" tau="0.5" />
     <solver gamma="0.5" />
     <geometry
-      dim="3"
+      dim="2"
       lengthX="5.0" lengthY="1.0" lengthZ="1.0"
-      sizeX="10" sizeY="20" sizeZ="10"
-      stretchX="false" stretchY="true" stretchZ="true"
-    >
-      <!--mesh>uniform</mesh-->
-      <mesh>stretched</mesh>
+      sizeX="10" sizeY="16" sizeZ="0" >
+      <mesh>uniform</mesh>
+      <!-- <mesh>stretched</mesh-->
     </geometry>
     <environment gx="0" gy="0" gz="0" />
     <walls>
@@ -26,7 +24,7 @@
             <vector x="0" y="0" z="0" />
         </right>
         <top>
-            <vector x="0.0" y="0." z="0." />
+            <vector x="0" y="0" z="0" />
         </top>
         <bottom>
             <vector x="0" y="0" z="0" />
@@ -38,7 +36,7 @@
             <vector x="0" y="0" z="0" />
         </back>
     </walls>
-    <vtk interval="1">channel_result</vtk>
+    <vtk interval="0.1">channel_result</vtk>
     <stdOut interval="1" />
-    <parallel numProcessorsX="1" numProcessorsY="1" numProcessorsZ="1" />
+    <parallel numProcessorsX="2" numProcessorsY="1" numProcessorsZ="1" />
 </configuration>

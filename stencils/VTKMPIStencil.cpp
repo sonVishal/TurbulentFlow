@@ -26,8 +26,10 @@ void VTKMPIStencil::apply ( FlowField & flowField, int i, int j ) {
     // Check if fluid cell and then print out to the stringstreams
     if ((flowField.getFlags().getValue(i,j) & OBSTACLE_SELF) == 0) {
         FLOAT pressure;
-        FLOAT velocity[2];
-        flowField.getPressureAndVelocity(pressure, velocity, i, j);
+        FLOAT* velocity;
+        //flowField.getPressureAndVelocity(pressure, velocity, i, j);
+        pressure = flowField.getPressure().getScalar(i,j);
+        velocity = flowField.getVelocity().getVector(i,j);
         _pressureStream << pressure << std::endl;
         _velocityStream << velocity[0] << ' ' << velocity[1] << ' ' << 0 << std::endl;
     } else {
@@ -71,8 +73,10 @@ void VTKMPIStencil::writeHeaderAndCoords() {
     // Write the header for the coordinates
     // Number of coordinates is 1 more than the number of cells in that direction
     _outputFile << "DATASET STRUCTURED_GRID\n" << "DIMENSIONS ";
-    _outputFile << _localSize[0]+4 << ' ' << _localSize[1]+4 << ' ' << _localSize[2]+1 << std::endl;
-    _outputFile << "POINTS " << (_localSize[0]+4)*(_localSize[1]+4)*(_localSize[2]+1) << " float" << std::endl;
+    _outputFile << _localSize[0]+4 << ' ' << _localSize[1]+4 << ' ' << (_localSize[2]==0?1:_localSize[2]+4) << std::endl;
+    _outputFile << "POINTS " << (_localSize[0]+4)*(_localSize[1]+4)*(_localSize[2]==0?1:_localSize[2]+4) << " float" << std::endl;
+
+    //(_localSize[2]==0?1:_localSize[2]+3)
 
     // Temporary variables to avoid calling function many times
     FLOAT y = 0.0, z = 0.0;
@@ -87,11 +91,11 @@ void VTKMPIStencil::writeHeaderAndCoords() {
             }
         }
     } else {
-        for (int k = 2; k < _localSize[2]+3; k++) {
+        for (int k = 0; k < _localSize[2]+4; k++) {
             z = _parameters.meshsize->getPosZ(2,2,k);
-            for (int j = 2; j < _localSize[1]+3; j++) {
+            for (int j = 0; j < _localSize[1]+4; j++) {
                 y = _parameters.meshsize->getPosY(2,j,k);
-                for (int i = 2; i < _localSize[0]+3; i++) {
+                for (int i = 0; i < _localSize[0]+4; i++) {
                     _outputFile << _parameters.meshsize->getPosX(i,j,k);
                     _outputFile << ' ' << y << ' ' << z << std::endl;
                 }
@@ -126,7 +130,7 @@ void VTKMPIStencil::write ( FlowField & flowField, int timeStep ) {
     // Write the header and coordinates
     writeHeaderAndCoords();
     // Write the header for pressure field
-    _outputFile << "\nCELL_DATA " << (_localSize[0]+3)*(_localSize[1]+3)*(_localSize[2]==0?1:_localSize[2]) << std::endl;
+    _outputFile << "\nCELL_DATA " << (_localSize[0]+3)*(_localSize[1]+3)*(_localSize[2]==0?1:_localSize[2]+3) << std::endl;
     _outputFile << "SCALARS pressure float 1\n";
     _outputFile << "LOOKUP_TABLE default\n";
     // Write the pressure

@@ -7,6 +7,8 @@
 #include "MeshsizeFactory.h"
 #include <iomanip>
 
+#define DEBUG
+
 int main (int argc, char *argv[]) {
 
     // Parallelization related. Initialize and identify
@@ -44,6 +46,8 @@ int main (int argc, char *argv[]) {
     std::cout << "Min. meshsizes: " << parameters.meshsize->getDxMin() << ", " << parameters.meshsize->getDyMin() << ", " << parameters.meshsize->getDzMin() << std::endl;
     #endif
 
+
+
     // initialise simulation
     if (parameters.simulation.type=="turbulence"){
       // TODO WS2: initialise turbulent flow field and turbulent simulation object
@@ -56,6 +60,8 @@ int main (int argc, char *argv[]) {
     } else {
       handleError(1, "Unknown simulation type! Currently supported: dns, turbulence");
     }
+
+
     // call initialization of simulation (initialize flow field)
     if(simulation == NULL){ handleError(1, "simulation==NULL!"); }
     simulation->initializeFlowField();
@@ -69,8 +75,9 @@ int main (int argc, char *argv[]) {
     FLOAT timeVTKOut = parameters.vtk.interval;
     // VTK: plot initial state
 	simulation->plotVTK(timeSteps);
-	simulation->plotAllVTK(timeSteps);
+
 	std::cout << "Plotting VTK file at time: " << time << std::endl << std::endl;
+
 
     // time loop
     while (time < parameters.simulation.finalTime){
@@ -91,7 +98,6 @@ int main (int argc, char *argv[]) {
       // Hence the check for rank == 0. In case parallel code is run, only rank 0 will write.
       if ( timeVTKOut <= time ){
           simulation->plotVTK(timeSteps);
-          simulation->plotAllVTK(timeSteps);
           std::cout << "Plotting VTK file at time: " << time << std::endl << std::endl;
           timeVTKOut += parameters.vtk.interval;
       }
@@ -101,7 +107,6 @@ int main (int argc, char *argv[]) {
 
     // VTK: plot final output
     simulation->plotVTK(timeSteps);
-    simulation->plotAllVTK(timeSteps);
     std::cout << "Plotting VTK file at time: " << time << std::endl << std::endl;
     
 

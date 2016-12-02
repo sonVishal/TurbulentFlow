@@ -8,9 +8,9 @@
  */
 VelocityBufferReadStencil::VelocityBufferReadStencil(const Parameters & parameters) : BoundaryStencil<FlowField> ( parameters ){
 	unsigned int value_size=(unsigned int)sizeof(FLOAT);
-	int x = parameters.parallel.localSize[0];
-	int y = parameters.parallel.localSize[1];
-	int z = parameters.parallel.localSize[2];
+	int x = parameters.parallel.localSize[0]+3;
+	int y = parameters.parallel.localSize[1]+3;
+	int z = parameters.parallel.localSize[2]+3;
 
 	//3d
 	if(parameters.geometry.dim==2){
@@ -27,8 +27,6 @@ VelocityBufferReadStencil::VelocityBufferReadStencil(const Parameters & paramete
 		front_recv.arr=NULL;
 
 	}else{
-		std::cerr<<"Not implemented yet!"<<std::endl;
-		system("1");
 		right_recv.size=3*y*z;
 		left_recv.size=3*2*y*z;
 
@@ -61,24 +59,19 @@ VelocityBufferReadStencil::~VelocityBufferReadStencil(){
 
 
 void VelocityBufferReadStencil::applyLeftWall(FlowField & flowField, int i, int j){
-	if(j==1) return;
 	#ifdef DEBUG_VELOREAD
 		std::cout<<"Left Wall"<<std::endl;
 		std::cout<<i-2<<" "<<j<<std::endl;
 		std::cout<<i-1<<" "<<j<<std::endl;
 		if(left_recv.arr==NULL) std::cerr<<"Left Wall was not initialized!"<<std::endl;
 	#endif
-
 	flowField.getVelocity().getVector(i-2,j)[0]=left_recv.arr[left_recv.counter++];
 	flowField.getVelocity().getVector(i-2,j)[1]=left_recv.arr[left_recv.counter++];
-
 	flowField.getVelocity().getVector(i-1,j)[0]=left_recv.arr[left_recv.counter++];
 	flowField.getVelocity().getVector(i-1,j)[1]=left_recv.arr[left_recv.counter++];
 
-
 }
 void VelocityBufferReadStencil::applyRightWall(FlowField & flowField, int i, int j){
-	if(j==1) return;
 	#ifdef DEBUG_VELOREAD
 		std::cout<<"Right Wall"<<std::endl;
 		std::cout<<i+1<<" "<<j<<std::endl;
@@ -86,6 +79,7 @@ void VelocityBufferReadStencil::applyRightWall(FlowField & flowField, int i, int
 	#endif
 	flowField.getVelocity().getVector(i+1,j)[0]=right_recv.arr[right_recv.counter++];
 	flowField.getVelocity().getVector(i+1,j)[1]=right_recv.arr[right_recv.counter++];
+
 }
 void VelocityBufferReadStencil::applyBottomWall(FlowField & flowField, int i, int j){
 	#ifdef DEBUG_VELOREAD
@@ -113,58 +107,68 @@ void VelocityBufferReadStencil::applyTopWall(FlowField & flowField, int i, int j
 
 
 
-
-
 void VelocityBufferReadStencil::applyLeftWall   (FlowField & flowField, int i, int j, int k){
-	std::cerr<<"VelocityBufferReadStencil not implemented"<<std::endl;
 	#ifdef DEBUG_VELOREAD
 		std::cout<<"Left Wall"<<std::endl;
 		std::cout<<i<<" "<<j<<" "<<k<<std::endl;
 		if(left_recv.arr==NULL) std::cerr<<"Left Wall was not initialized!"<<std::endl;
 	#endif
+	flowField.getVelocity().getVector(i-2,j,k)[0]=left_recv.arr[left_recv.counter++];
+	flowField.getVelocity().getVector(i-2,j,k)[1]=left_recv.arr[left_recv.counter++];
+	flowField.getVelocity().getVector(i-1,j,k)[0]=left_recv.arr[left_recv.counter++];
+	flowField.getVelocity().getVector(i-1,j,k)[1]=left_recv.arr[left_recv.counter++];
 
 }
 void VelocityBufferReadStencil::applyRightWall  (FlowField & flowField, int i, int j, int k){
-	std::cerr<<"VelocityBufferReadStencil not implemented"<<std::endl;
 	#ifdef DEBUG_VELOREAD
 		std::cout<<"Right Wall"<<std::endl;
 		std::cout<<i<<" "<<j<<" "<<k<<std::endl;
 		if(right_recv.arr==NULL) std::cerr<<"Right Wall was not initialized!"<<std::endl;
 	#endif
+	flowField.getVelocity().getVector(i+1,j,k)[0]=right_recv.arr[right_recv.counter++];
+	flowField.getVelocity().getVector(i+1,j,k)[1]=right_recv.arr[right_recv.counter++];
 }
 void VelocityBufferReadStencil::applyBottomWall (FlowField & flowField, int i, int j, int k){
-	std::cerr<<"VelocityBufferReadStencil not implemented"<<std::endl;
 	#ifdef DEBUG_VELOREAD
 		std::cout<<"Bottom Wall"<<std::endl;
 		std::cout<<i<<" "<<j<<" "<<k<<std::endl;
 		if(bottom_recv.arr==NULL) std::cerr<<"Bottom Wall was not initialized!"<<std::endl;
 	#endif
+	flowField.getVelocity().getVector(i,j-2,k)[0]=bottom_recv.arr[bottom_recv.counter++];
+	flowField.getVelocity().getVector(i,j-2,k)[1]=bottom_recv.arr[bottom_recv.counter++];
+	flowField.getVelocity().getVector(i,j-1,k)[0]=bottom_recv.arr[bottom_recv.counter++];
+	flowField.getVelocity().getVector(i,j-1,k)[1]=bottom_recv.arr[bottom_recv.counter++];
 }
 
 
 void VelocityBufferReadStencil::applyTopWall    (FlowField & flowField, int i, int j, int k){
-	std::cerr<<"VelocityBufferReadStencil not implemented"<<std::endl;
 	#ifdef DEBUG_VELOREAD
 		std::cout<<"Top Wall"<<std::endl;
 		std::cout<<i<<" "<<j<<" "<<k<<std::endl;
 		if(top_recv.arr==NULL) std::cerr<<"Top Wall was not initialized!"<<std::endl;
 	#endif
+	flowField.getVelocity().getVector(i,j+1,k)[0]=top_recv.arr[top_recv.counter++];
+	flowField.getVelocity().getVector(i,j+1,k)[1]=top_recv.arr[top_recv.counter++];
 }
 void VelocityBufferReadStencil::applyFrontWall  (FlowField & flowField, int i, int j, int k){
-	std::cerr<<"VelocityBufferReadStencil not implemented"<<std::endl;
 	#ifdef DEBUG_VELOREAD
 		std::cout<<"Front Wall"<<std::endl;
 		std::cout<<i<<" "<<j<<" "<<k<<std::endl;
 		if(front_recv.arr==NULL) std::cerr<<"Front Wall was not initialized!"<<std::endl;
 	#endif
+	flowField.getVelocity().getVector(i,j,k-2)[0]=front_recv.arr[front_recv.counter++];
+	flowField.getVelocity().getVector(i,j,k-2)[1]=front_recv.arr[front_recv.counter++];
+	flowField.getVelocity().getVector(i,j,k-1)[0]=front_recv.arr[front_recv.counter++];
+	flowField.getVelocity().getVector(i,j,k-1)[1]=front_recv.arr[front_recv.counter++];
 }
 void VelocityBufferReadStencil::applyBackWall   (FlowField & flowField, int i, int j, int k){
-	std::cerr<<"VelocityBufferReadStencil not implemented"<<std::endl;
 	#ifdef DEBUG_VELOREAD
 		std::cout<<"Back Wall"<<std::endl;
 		std::cout<<i<<" "<<j<<" "<<k<<std::endl;
 		if(back_recv.arr==NULL) std::cerr<<"Back Wall was not initialized!"<<std::endl;
 	#endif
+	flowField.getVelocity().getVector(i,j,k+1)[0]=back_recv.arr[back_recv.counter++];
+	flowField.getVelocity().getVector(i,j,k+1)[1]=back_recv.arr[back_recv.counter++];
 }
 
 /*

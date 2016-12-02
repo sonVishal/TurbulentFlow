@@ -127,6 +127,9 @@ void PetscParallelConfiguration::computeSizes(){
         _parameters.parallel.localSize[i] =
             _parameters.parallel.sizes[i][_parameters.parallel.indices[i]];
     }
+    if(dim == 2){
+        _parameters.parallel.localSize[2]=0;
+    }   
 
     // If the domain lies on an edge, add one to that direction, for the artificial external
     // pressures in the PETSc solver

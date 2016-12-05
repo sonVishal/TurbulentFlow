@@ -260,6 +260,8 @@ PetscSolver::PetscSolver(FlowField & flowField, Parameters & parameters):
 	    //if serial
 	    PCSetType(_pc,PCILU);
 	    PCFactorSetLevels(_pc,1);
+	    PCFactorSetShiftType(_pc,MAT_SHIFT_NONZERO);
+	    PCFactorSetShiftAmount(_pc,1e-10);
 	    KSPSetPC(_ksp,_pc);
     }
     else {
@@ -285,11 +287,18 @@ PetscSolver::PetscSolver(FlowField & flowField, Parameters & parameters):
 
 	PetscBool has_fl;
 	PetscBool has_sub_type;
-	PetscOptionsHasName(NULL,"-sub_pc_factor_levels", &has_fl);
-	PetscOptionsHasName(NULL,"-sub_pc_type", &has_sub_type);
+#if (PETSC_VERSION_MAJOR ==3 && PETSC_VERSION_MINOR>=7)
+    PetscOptionsHasName(NULL,NULL,"-sub_pc_factor_levels", &has_fl);
+    PetscOptionsHasName(NULL,NULL,"-sub_pc_type", &has_sub_type);
+#else
+    PetscOptionsHasName(NULL,"-sub_pc_factor_levels", &has_fl);
+    PetscOptionsHasName(NULL,"-sub_pc_type", &has_sub_type);
+#endif
 
 	if (!(has_sub_type)) PCSetType(subpc,PCILU);
 	if (!(has_fl)) PCFactorSetLevels(subpc,1);
+	PCFactorSetShiftType(subpc,MAT_SHIFT_NONZERO);
+	PCFactorSetShiftAmount(subpc,1e-10);
 
 	KSPSetUp(_ksp);
     }

@@ -23,7 +23,7 @@ private:
 
     MinTurbViscosityStencil _minTurbViscosityStencil;
     FieldIterator<TurbFlowField> _minTurbViscosityFieldIterator;
-    GlobalBoundaryIterator<TurbFlowField> _minTurbViscosityBoundaryIterator;
+    //GlobalBoundaryIterator<TurbFlowField> _minTurbViscosityBoundaryIterator;
 
     GlobalBoundaryIterator<TurbFlowField> _wallTurbViscosityIterator;
 public:
@@ -37,8 +37,8 @@ public:
         _turbLPmodelStencil(parameters),
         _turbLPmodelIterator(turbFlowField,parameters,_turbLPmodelStencil),
         _minTurbViscosityStencil(parameters),
-        _minTurbViscosityFieldIterator(turbFlowField,parameters,_minTurbViscosityStencil),
-        _minTurbViscosityBoundaryIterator(turbFlowField,parameters,_minTurbViscosityStencil),
+        _minTurbViscosityFieldIterator(turbFlowField,parameters,_minTurbViscosityStencil,2,-1),
+        //_minTurbViscosityBoundaryIterator(turbFlowField,parameters,_minTurbViscosityStencil),
         _wallTurbViscosityIterator(_globalBoundaryFactory.getGlobalBoundaryTurbViscosityIterator(_turbFlowField)) {}
     ~TurbulentSimulation() {}
     void initializeFlowField() {
@@ -102,7 +102,7 @@ private:
         // determine the minimum turbulent viscosity (we store nu + nu_t as turbulent viscosity)
         _minTurbViscosityStencil.reset();
         _minTurbViscosityFieldIterator.iterate();
-        _minTurbViscosityBoundaryIterator.iterate();
+        //_minTurbViscosityBoundaryIterator.iterate();
 
         assertion(_minTurbViscosityStencil.getMinValue() > 0.0);
 

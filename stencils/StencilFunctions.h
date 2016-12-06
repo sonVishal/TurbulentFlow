@@ -205,8 +205,8 @@ inline FLOAT dwdy ( const FLOAT * const lv, const FLOAT * const lm) {
     // evaluate dudy in the cell center by a central difference
     const FLOAT w00   = lv[mapd( 0, 0, 0, 2)];
     const FLOAT w10   = lv[mapd( 0, 1, 0, 2)];
-    const FLOAT w0M1  = lv[mapd( 0,-1, 0, 2)];
-    const FLOAT wM10  = lv[mapd( 0, 0,-1, 2)];
+    const FLOAT wM10  = lv[mapd( 0,-1, 0, 2)];
+    const FLOAT w0M1  = lv[mapd( 0, 0,-1, 2)];
     const FLOAT w1M1  = lv[mapd( 0, 1,-1, 2)];
     const FLOAT wM1M1 = lv[mapd( 0,-1,-1, 2)];
 
@@ -1179,7 +1179,7 @@ inline FLOAT DiffusiveTermF1(const FLOAT * const lm, const FLOAT * const lv, con
 
 inline FLOAT DiffusiveTermF2(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
 
-   return (Nuhh0(lm,lnu) * (dudy_f(lv,lm) + dvdx_f(lv,lm)) - NuhMh0(lm,lnu) * (dudy_b(lv,lm)) + dvdx_fM1(lv,lm))
+   return (Nuhh0(lm,lnu) * (dudy_f(lv,lm) + dvdx_f(lv,lm)) - NuhMh0(lm,lnu) * (dudy_b(lv,lm) + dvdx_fM1(lv,lm)))
            / lm[mapd( 0, 0, 0, 1)];
 
 }

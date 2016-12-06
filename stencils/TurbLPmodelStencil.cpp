@@ -23,7 +23,7 @@ void TurbLPmodel::apply ( TurbFlowField & flowField, int i, int j, int k ){
 
     getShearStressTensorProduct(flowField, tensorProd, i, j, k);
 
-    flowField.getTurbViscosity().getScalar(i, j, k) = l_mix * l_mix * tensorProd + _parameters.flow.viscosity;
+    flowField.getTurbViscosity().getScalar(i, j, k) = l_mix * l_mix * tensorProd +  _parameters.flow.viscosity;
 }
 
 void TurbLPmodel::getShearStressTensorProduct( TurbFlowField &flowField,
@@ -37,7 +37,8 @@ void TurbLPmodel::getShearStressTensorProduct( TurbFlowField &flowField,
     FLOAT dudy_ =  dudy( _localVelocity, _localMeshsize );
     FLOAT dvdx_ =  dvdx( _localVelocity, _localMeshsize );
 
-    prod = std::sqrt( 2*( dudx_ * dudx_  +  dvdy_ * dvdy_  +  2 * (dudy_ + dvdx_) * (dudy_ + dvdx_) ) );
+
+    prod = std::sqrt( 2*( dudx_ * dudx_  +  dvdy_ * dvdy_  +  0.5 * (dudy_ + dvdx_) * (dudy_ + dvdx_) ) );
 
 }
 

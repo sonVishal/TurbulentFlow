@@ -103,82 +103,80 @@ inline FLOAT dudx ( const FLOAT * const lv, const FLOAT * const lm ) {
     return tmp2;*/
 }
 
-inline FLOAT dudy ( const FLOAT * const lv, const FLOAT * const lm ) {
-// new structured naming system:
-// 0 represents left side of cell
-// 1 represents right side of cell (from 0 -> 1)
-// M represents shift in layer downwards
-// P represents shift in layer upwards
+//inline FLOAT dudy ( const FLOAT * const lv, const FLOAT * const lm ) {
+//// new structured naming system:
+//// 0 represents left side of cell
+//// 1 represents right side of cell (from 0 -> 1)
+//// M represents shift in layer downwards
+//// P represents shift in layer upwards
 
-const int vel = 0;
+//const int vel = 0;
 
-const int index_M0 = mapd(-1,-1,0,vel);
-// u[i-1,j-1,k]
-const int index_M1 = mapd( 0,-1,0,vel);
-// u[i,j-1,k]
-const int index_0 = mapd(-1, 0,0,vel);
-// u[i-1,j,k]
-const int index_1 = mapd( 0, 0,0,vel);
-// u[i,j,k]
-const int index_P0 = mapd(-1, 1,0,vel);
-// u[i-1,j+1,k]
-const int index_P1 = mapd( 0, 1,0,vel);
-// u[i,j+1,k]
+//const int index_M0 = mapd(-1,-1,0,vel);
+//// u[i-1,j-1,k]
+//const int index_M1 = mapd( 0,-1,0,vel);
+//// u[i,j-1,k]
+//const int index_0 = mapd(-1, 0,0,vel);
+//// u[i-1,j,k]
+//const int index_1 = mapd( 0, 0,0,vel);
+//// u[i,j,k]
+//const int index_P0 = mapd(-1, 1,0,vel);
+//// u[i-1,j+1,k]
+//const int index_P1 = mapd( 0, 1,0,vel);
+//// u[i,j+1,k]
 
-// specified length indices (0 current, M downwards, P upwards)
+//// specified length indices (0 current, M downwards, P upwards)
 
-const int dist = 1;
-const int index_lM = mapd(0,-1,0,dist);
-const int index_l0 = mapd(0, 0,0,dist);
-const int index_lP = mapd(0, 1,0,dist);
+//const int dist = 1;
+//const int index_lM = mapd(0,-1,0,dist);
+//const int index_l0 = mapd(0, 0,0,dist);
+//const int index_lP = mapd(0, 1,0,dist);
 
-// substitution and selecting required terms (leave constant throughout)
+//// substitution and selecting required terms (leave constant throughout)
 
-// distances
-const FLOAT hShort = 0.5*lm[index_l0];
-// distance of center u-value from upper edge of cell
+//// distances
+//const FLOAT hShort = 0.5*lm[index_l0];
+//// distance of center u-value from upper edge of cell
 
-const FLOAT hLongP = 0.5*(hShort + lm[index_lP]);
-// distance of south and center u-value
+//const FLOAT hLongP = 0.5*(hShort + lm[index_lP]);
+//// distance of south and center u-value
 
-const FLOAT hLongM = 0.5*(hShort + lm[index_lM]);
-// distance of north and center u-value
+//const FLOAT hLongM = 0.5*(hShort + lm[index_lM]);
+//// distance of north and center u-value
 
-// averages
-const FLOAT AveP0 = lv[index_P0]*(hShort)/hLongP + lv[index_0]*(hLongP-hShort)/hLongP;
-const FLOAT AveP1 = lv[index_P1]*(hShort)/hLongP + lv[index_1]*(hLongP-hShort)/hLongP;
-const FLOAT AveM0 = lv[index_M0]*(hShort)/hLongM + lv[index_0]*(hLongM-hShort)/hLongM;
-const FLOAT AveM1 = lv[index_M1]*(hShort)/hLongM + lv[index_1]*(hLongM-hShort)/hLongM;
+//// averages
+//const FLOAT AveP0 = lv[index_P0]*(hShort)/hLongP + lv[index_0]*(hLongP-hShort)/hLongP;
+//const FLOAT AveP1 = lv[index_P1]*(hShort)/hLongP + lv[index_1]*(hLongP-hShort)/hLongP;
+//const FLOAT AveM0 = lv[index_M0]*(hShort)/hLongM + lv[index_0]*(hLongM-hShort)/hLongM;
+//const FLOAT AveM1 = lv[index_M1]*(hShort)/hLongM + lv[index_1]*(hLongM-hShort)/hLongM;
 
-return ( 0.5*(AveP0 + AveP1) - 0.5*(AveM0 + AveM1) ) / (2*hShort); }
-
-
+//return ( 0.5*(AveP0 + AveP1) - 0.5*(AveM0 + AveM1) ) / (2*hShort); }
 
 
-//inline FLOAT dudy ( const FLOAT * const lv, const FLOAT * const lm) {
-//    //return 1;
-//    // evaluate dudy in the cell center by a central difference
-//    const FLOAT u00   = lv[mapd( 0, 0, 0, 0)];
-//    const FLOAT u01   = lv[mapd( 0, 1, 0, 0)];
-//    const FLOAT u0M1  = lv[mapd( 0,-1, 0, 0)];
-//    const FLOAT uM10  = lv[mapd(-1, 0, 0, 0)];
-//    const FLOAT uM11  = lv[mapd(-1, 1, 0, 0)];
-//    const FLOAT uM1M1 = lv[mapd(-1,-1, 0, 0)];
 
-//    std::cout << "dudyV: " << u00 <<' ' << u01 << ' ' << u0M1 << ' ' << uM10 << ' ' << uM11 << ' ' << uM1M1  << std::endl;
-//    std::cout << "dudy : " << std::abs(u01 + uM11 - (u0M1 +uM1M1)) << std::endl;
-//    return  std::abs(u01 + uM11 - (u0M1 +uM1M1));
-//    //Vorzeichen in abständen berücksichtigen??
 
-//    const FLOAT hyShort = 0.5*(lm[mapd( 0, 0, 0, 1)]);                           // distance between u-value and upper edge of center-cell
-//    const FLOAT hyLong0 = 0.5*(lm[mapd( 0, 0, 0, 1)] + lm[mapd( 0,-1, 0, 1)]);  // distance between center and south u-value
-//    const FLOAT hyLong1 = 0.5*(lm[mapd( 0, 0, 0, 1)] + lm[mapd( 0, 1, 0, 1)]);  // distance between center and north u-value
+inline FLOAT dudy ( const FLOAT * const lv, const FLOAT * const lm) {
+    //return 1;
+    // evaluate dudy in the cell center by a central difference
+    const FLOAT u00   = lv[mapd( 0, 0, 0, 0)];
+    const FLOAT u01   = lv[mapd( 0, 1, 0, 0)];
+    const FLOAT u0M1  = lv[mapd( 0,-1, 0, 0)];
+    const FLOAT uM10  = lv[mapd(-1, 0, 0, 0)];
+    const FLOAT uM11  = lv[mapd(-1, 1, 0, 0)];
+    const FLOAT uM1M1 = lv[mapd(-1,-1, 0, 0)];
 
-//    FLOAT tmp = 1.0/(4.0*hyShort) * ( ( (hyLong1-hyShort)/hyLong1 * u00 + hyShort/hyLong1 * u01  )+ ( (hyLong1-hyShort)/hyLong1 * uM10 + hyShort/hyLong1 * uM11  )
-//                                    - ( (hyLong0-hyShort)/hyLong0 * u00 + hyShort/hyLong0 * u0M1 ) + ( (hyLong0-hyShort)/hyLong0 * uM10 + hyShort/hyLong0 * uM1M1 ) ) ;
-//    std::cout << "dudy: " << tmp << std::endl;
-//    return std::abs(tmp);
-//}
+    const FLOAT hyShort = 0.5*(lm[mapd( 0, 0, 0, 1)]);                           // distance between u-value and upper edge of center-cell
+    const FLOAT hyLong0 = 0.5*(lm[mapd( 0, 0, 0, 1)] + lm[mapd( 0,-1, 0, 1)]);  // distance between center and south u-value
+    const FLOAT hyLong1 = 0.5*(lm[mapd( 0, 0, 0, 1)] + lm[mapd( 0, 1, 0, 1)]);  // distance between center and north u-value
+
+    return 1.0/(4.0*hyShort) * ( ( (hyLong1-hyShort)/hyLong1 * u00 + hyShort/hyLong1 * u01  ) + ( (hyLong1-hyShort)/hyLong1 * uM10 + hyShort/hyLong1 * uM11  )
+                                 - ( ( (hyLong0-hyShort)/hyLong0 * u00 + hyShort/hyLong0 * u0M1 ) + ( (hyLong0-hyShort)/hyLong0 * uM10 + hyShort/hyLong0 * uM1M1 ) ) ) ;
+
+    /*FLOAT tmp = 1.0/(4.0*hyShort) * ( ( (hyLong1-hyShort)/hyLong1 * u00 + hyShort/hyLong1 * u01  ) + ( (hyLong1-hyShort)/hyLong1 * uM10 + hyShort/hyLong1 * uM11  )
+                                  - ( ( (hyLong0-hyShort)/hyLong0 * u00 + hyShort/hyLong0 * u0M1 ) + ( (hyLong0-hyShort)/hyLong0 * uM10 + hyShort/hyLong0 * uM1M1 ) ) ) ;
+    std::cout << "dudy: " << tmp << std::endl;
+    return std::abs(tmp)*/;
+}
 
 inline FLOAT dudz ( const FLOAT * const lv, const FLOAT * const lm) {
     // evaluate dudz in the cell center by a central difference
@@ -194,64 +192,67 @@ inline FLOAT dudz ( const FLOAT * const lv, const FLOAT * const lm) {
     const FLOAT hzLong1 = 0.5*(lm[mapd( 0, 0, 0, 2)] + lm[mapd( 0, 0, 1, 2)]);  //
 
     return 1.0/(4.0*hzShort) * ( ( (hzLong1-hzShort)/hzLong1 * u00 + hzShort/hzLong1 * u01  ) + ( (hzLong1-hzShort)/hzLong1 * uM10 + hzShort/hzLong1 * uM11 )
-                           - ( (hzLong0-hzShort)/hzLong0 * u00 + hzShort/hzLong0 * u0M1 ) + ( (hzLong0-hzShort)/hzLong0 * uM10 + hzShort/hzLong0 * uM1M1) );
+                             - ( ( (hzLong0-hzShort)/hzLong0 * u00 + hzShort/hzLong0 * u0M1 ) + ( (hzLong0-hzShort)/hzLong0 * uM10 + hzShort/hzLong0 * uM1M1) ) );
 }
-inline FLOAT dvdx ( const FLOAT * const lv, const FLOAT * const lm ) {
+//inline FLOAT dvdx ( const FLOAT * const lv, const FLOAT * const lm ) {
 
-    // specified velocity indices (0 = left, 1 = right, M downwards, P upwards)
+//    // specified velocity indices (0 = left, 1 = right, M downwards, P upwards)
 
-    const int vel = 1;
+//    const int vel = 1;
 
-    const int index_M0    = mapd(-1,-1,0,vel);
-    const int index_M1    = mapd(-1, 0,0,vel);
-    const int index_0     = mapd( 0,-1,0,vel);
-    const int index_1     = mapd( 0, 0,0,vel);
-    const int index_P0    = mapd( 1,-1,0,vel);
-    const int index_P1    = mapd( 1, 0,0,vel);
+//    const int index_M0    = mapd(-1,-1,0,vel);
+//    const int index_M1    = mapd(-1, 0,0,vel);
+//    const int index_0     = mapd( 0,-1,0,vel);
+//    const int index_1     = mapd( 0, 0,0,vel);
+//    const int index_P0    = mapd( 1,-1,0,vel);
+//    const int index_P1    = mapd( 1, 0,0,vel);
 
-    // specified length indices (0 current, M downwards, P upwards)
+//    // specified length indices (0 current, M downwards, P upwards)
 
-    const int dist = 0;
+//    const int dist = 0;
 
-    const int index_lM    = mapd(-1,0,0,dist);
-    const int index_l0    = mapd( 0,0,0,dist);
-    const int index_lP    = mapd( 1,0,0,dist);
+//    const int index_lM    = mapd(-1,0,0,dist);
+//    const int index_l0    = mapd( 0,0,0,dist);
+//    const int index_lP    = mapd( 1,0,0,dist);
 
-    // substitution and selecting required terms (leave constant throughout)
+//    // substitution and selecting required terms (leave constant throughout)
 
-    // distances
-    const FLOAT hShort  = 0.5*lm[index_l0];
-    const FLOAT hLongP  = 0.5*(lm[index_l0] + lm[index_lP]);
-    const FLOAT hLongM  = 0.5*(lm[index_l0] + lm[index_lM]);
+//    // distances
+//    const FLOAT hShort  = 0.5*lm[index_l0];
+//    const FLOAT hLongP  = 0.5*(lm[index_l0] + lm[index_lP]);
+//    const FLOAT hLongM  = 0.5*(lm[index_l0] + lm[index_lM]);
 
-    // averages
-    const FLOAT AveP0 = lv[index_P0]*(hShort)/hLongP + lv[index_0]*(hLongP-hShort)/hLongP;
-    const FLOAT AveP1 = lv[index_P1]*(hShort)/hLongP + lv[index_1]*(hLongP-hShort)/hLongP;
-    const FLOAT AveM0 = lv[index_M0]*(hShort)/hLongM + lv[index_0]*(hLongM-hShort)/hLongM;
-    const FLOAT AveM1 = lv[index_M1]*(hShort)/hLongM + lv[index_1]*(hLongM-hShort)/hLongM;
+//    // averages
+//    const FLOAT AveP0 = lv[index_P0]*(hShort)/hLongP + lv[index_0]*(hLongP-hShort)/hLongP;
+//    const FLOAT AveP1 = lv[index_P1]*(hShort)/hLongP + lv[index_1]*(hLongP-hShort)/hLongP;
+//    const FLOAT AveM0 = lv[index_M0]*(hShort)/hLongM + lv[index_0]*(hLongM-hShort)/hLongM;
+//    const FLOAT AveM1 = lv[index_M1]*(hShort)/hLongM + lv[index_1]*(hLongM-hShort)/hLongM;
 
-    return ( 0.5*(AveP0 + AveP1) - 0.5*(AveM0 + AveM1) ) / (2*hShort);
-}
+//    return ( 0.5*(AveP0 + AveP1) - 0.5*(AveM0 + AveM1) ) / (2*hShort);
+//}
 
-//inline FLOAT dvdx ( const FLOAT * const lv, const FLOAT * const lm) {
-//    //return 1;// evaluate dudy in the cell center by a central difference
-//    const FLOAT v00   = lv[mapd( 0, 0, 0, 1)];
-//    const FLOAT v10   = lv[mapd( 1, 0, 0, 1)];
-//    const FLOAT vM10  = lv[mapd(-1, 0, 0, 1)];
-//    const FLOAT v0M1  = lv[mapd( 0,-1, 0, 1)];
-//    const FLOAT v1M1  = lv[mapd( 1,-1, 0, 1)];
-//    const FLOAT vM1M1 = lv[mapd(-1,-1, 0, 1)];
+inline FLOAT dvdx ( const FLOAT * const lv, const FLOAT * const lm) {
+    //return 1;// evaluate dudy in the cell center by a central difference
+    const FLOAT v00   = lv[mapd( 0, 0, 0, 1)];
+    const FLOAT v10   = lv[mapd( 1, 0, 0, 1)];
+    const FLOAT vM10  = lv[mapd(-1, 0, 0, 1)];
+    const FLOAT v0M1  = lv[mapd( 0,-1, 0, 1)];
+    const FLOAT v1M1  = lv[mapd( 1,-1, 0, 1)];
+    const FLOAT vM1M1 = lv[mapd(-1,-1, 0, 1)];
 
-//    const FLOAT hxShort = 0.5*(lm[mapd( 0, 0, 0, 0)]);                           //
-//    const FLOAT hxLong0 = 0.5*(lm[mapd( 0, 0, 0, 0)] + lm[mapd(-1, 0, 0, 0)]);  //
-//    const FLOAT hxLong1 = 0.5*(lm[mapd( 0, 0, 0, 0)] + lm[mapd( 1, 0, 0, 0)]);  //
+    const FLOAT hxShort = 0.5*(lm[mapd( 0, 0, 0, 0)]);                           //
+    const FLOAT hxLong0 = 0.5*(lm[mapd( 0, 0, 0, 0)] + lm[mapd(-1, 0, 0, 0)]);  //
+    const FLOAT hxLong1 = 0.5*(lm[mapd( 0, 0, 0, 0)] + lm[mapd( 1, 0, 0, 0)]);  //
+
+    return 1.0/(4.0*hxShort) * ( ( (hxLong1-hxShort)/hxLong1 * v00 + hxShort/hxLong1 * v10  ) + ( (hxLong1-hxShort)/hxLong1 * v0M1 + hxShort/hxLong1 * v1M1 )
+                             - ( ( (hxLong0-hxShort)/hxLong0 * v00 + hxShort/hxLong0 * vM10 ) + ( (hxLong0-hxShort)/hxLong0 * v0M1 + hxShort/hxLong0 * vM1M1) ) );
 
 //    FLOAT tmp = 1.0/(4.0*hxShort) * ( ( (hxLong1-hxShort)/hxLong1 * v00 + hxShort/hxLong1 * v10  ) + ( (hxLong1-hxShort)/hxLong1 * v0M1 + hxShort/hxLong1 * v1M1 )
-//                                    - ( (hxLong0-hxShort)/hxLong0 * v00 + hxShort/hxLong0 * vM10 ) + ( (hxLong0-hxShort)/hxLong0 * v0M1 + hxShort/hxLong0 * vM1M1) );
+//                                  - ( ( (hxLong0-hxShort)/hxLong0 * v00 + hxShort/hxLong0 * vM10 ) + ( (hxLong0-hxShort)/hxLong0 * v0M1 + hxShort/hxLong0 * vM1M1) ) );
 //    std::cout << "dvdx: " << tmp << std::endl;
 //    return abs(tmp);
 
-//}
+}
 
 inline FLOAT dvdy ( const FLOAT * const lv, const FLOAT * const lm ) {
     //double tmp1= ( lv [mapd(0,0,0,1)] - lv [mapd(0,-1,0,1)] ) / GeometricParameters::dy;
@@ -278,7 +279,7 @@ inline FLOAT dvdz ( const FLOAT * const lv, const FLOAT * const lm) {
     const FLOAT hzLong1 = 0.5*(lm[mapd( 0, 0, 0, 2)] + lm[mapd( 0, 0, 1, 2)]);  //
 
     return 1/(4*hzShort) * ( ( (hzLong1-hzShort)/hzLong1 * v00 + hzShort/hzLong1 * v01  ) + ( (hzLong1-hzShort)/hzLong1 * vM10 + hzShort/hzLong1 * vM11 )
-                           - ( (hzLong0-hzShort)/hzLong0 * v00 + hzShort/hzLong0 * v0M1 ) + ( (hzLong0-hzShort)/hzLong0 * vM10 + hzShort/hzLong0 * vM1M1) );
+                         - ( ( (hzLong0-hzShort)/hzLong0 * v00 + hzShort/hzLong0 * v0M1 ) + ( (hzLong0-hzShort)/hzLong0 * vM10 + hzShort/hzLong0 * vM1M1) ) );
 }
 
 inline FLOAT dwdx ( const FLOAT * const lv, const FLOAT * const lm) {
@@ -295,7 +296,7 @@ inline FLOAT dwdx ( const FLOAT * const lv, const FLOAT * const lm) {
     const FLOAT hxLong1 = 0.5*(lm[mapd( 0, 0, 0, 0)] + lm[mapd( 1, 0, 0, 0)]);  //
 
     return 1/(4*hxShort) * ( ( (hxLong1-hxShort)/hxLong1 * w00 + hxShort/hxLong1 * w10  ) + ( (hxLong1-hxShort)/hxLong1 * w0M1 + hxShort/hxLong1 * w1M1 )
-                           - ( (hxLong0-hxShort)/hxLong0 * w00 + hxShort/hxLong0 * wM10 ) + ( (hxLong0-hxShort)/hxLong0 * w0M1 + hxShort/hxLong0 * wM1M1) );
+                         - ( ( (hxLong0-hxShort)/hxLong0 * w00 + hxShort/hxLong0 * wM10 ) + ( (hxLong0-hxShort)/hxLong0 * w0M1 + hxShort/hxLong0 * wM1M1) ) );
 }
 
 inline FLOAT dwdy ( const FLOAT * const lv, const FLOAT * const lm) {
@@ -312,7 +313,7 @@ inline FLOAT dwdy ( const FLOAT * const lv, const FLOAT * const lm) {
     const FLOAT hyLong1 = 0.5*(lm[mapd( 0, 0, 0, 1)] + lm[mapd( 0, 1, 0, 1)]);  //
 
     return 1/(4*hyShort) * ( ( (hyLong1-hyShort)/hyLong1 * w00 + hyShort/hyLong1 * w10  ) + ( (hyLong1-hyShort)/hyLong1 * w0M1 + hyShort/hyLong1 * w1M1 )
-                           - ( (hyLong0-hyShort)/hyLong0 * w00 + hyShort/hyLong0 * wM10 ) + ( (hyLong0-hyShort)/hyLong0 * w0M1 + hyShort/hyLong0 * wM1M1) );
+                         - ( ( (hyLong0-hyShort)/hyLong0 * w00 + hyShort/hyLong0 * wM10 ) + ( (hyLong0-hyShort)/hyLong0 * w0M1 + hyShort/hyLong0 * wM1M1) ) );
 }
 
 inline FLOAT dwdz ( const FLOAT * const lv, const FLOAT * const lm ) {

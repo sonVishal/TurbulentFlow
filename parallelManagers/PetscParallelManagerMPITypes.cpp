@@ -441,11 +441,6 @@ void PetscParallelManagerMPITypes::communicatePressure(){
 			MPI_COMM_WORLD,
 			&stat			//MPIStatus
 	);
-
-
-
-
-
 }
 
 
@@ -541,6 +536,110 @@ void PetscParallelManagerMPITypes::communicateVelocity(){
 			_velo_front,
 			_parameters.parallel.backNb,
 			COMM_FRONT_VELO, //recvtag
+			MPI_COMM_WORLD,
+			&stat			//MPIStatus
+	);
+}
+
+
+void PetscParallelManagerMPITypes::communicateViscosity(){
+	//NOTE! Datatype for pressure is the same for the viscosity thereful its reused!
+	MPI_Status stat;
+
+	TurbFlowField & turbField = dynamic_cast<TurbFlowField &>(_flowField);
+
+	//Communication to the right neighbor
+	MPI_Sendrecv(
+			&turbField.getTurbViscosity().getScalar(_send_right_i, _send_right_j, _send_right_k),		//sendbuffer in this case memory location
+			1,			//sizeof datatype in this case 1
+			_pres_right,
+			_parameters.parallel.rightNb,
+			COMM_RIGHT_VIS,
+			&turbField.getPressure().getScalar(_recv_left_i, _recv_left_j, _recv_left_k),		//resvbuffer in this case memory location
+			1,			//size
+			_pres_right,
+			_parameters.parallel.leftNb,
+			COMM_RIGHT_VIS, //recvtag
+			MPI_COMM_WORLD,
+			&stat			//MPIStatus
+	);
+
+
+	MPI_Sendrecv(
+			&turbField.getPressure().getScalar(_send_left_i, _send_left_j, _send_left_k),		//sendbuffer in this case memory location
+			1,			//sizeof datatype in this case 1
+			_pres_left,
+			_parameters.parallel.leftNb,
+			COMM_LEFT_VIS,
+			&turbField.getPressure().getScalar(_recv_right_i, _recv_right_j, _recv_right_k),		//resvbuffer in this case memory location
+			1,			//size
+			_pres_left,
+			_parameters.parallel.rightNb,
+			COMM_LEFT_VIS, //recvtag
+			MPI_COMM_WORLD,
+			&stat			//MPIStatus
+	);
+
+	MPI_Sendrecv(
+			&turbField.getPressure().getScalar(_send_top_i, _send_top_j, _send_top_k),		//sendbuffer in this case memory location
+			1,			//sizeof datatype in this case 1
+			_pres_top,
+			_parameters.parallel.topNb,
+			COMM_TOP_VIS,
+			&turbField.getPressure().getScalar(_recv_bot_i, _recv_bot_j, _recv_bot_k),		//resvbuffer in this case memory location
+			1,			//size
+			_pres_top,
+			_parameters.parallel.bottomNb,
+			COMM_TOP_VIS, //recvtag
+			MPI_COMM_WORLD,
+			&stat			//MPIStatus
+	);
+
+
+	MPI_Sendrecv(
+			&turbField.getPressure().getScalar(_send_bot_i, _send_bot_j, _send_bot_k),		//sendbuffer in this case memory location
+			1,			//sizeof datatype in this case 1
+			_pres_bottom,
+			_parameters.parallel.bottomNb,
+			COMM_BOTTOM_VIS,
+			&turbField.getPressure().getScalar(_recv_top_i, _recv_top_j, _recv_top_k),		//resvbuffer in this case memory location
+			1,			//size
+			_pres_bottom,
+			_parameters.parallel.topNb,
+			COMM_BOTTOM_VIS, //recvtag
+			MPI_COMM_WORLD,
+			&stat			//MPIStatus
+	);
+
+
+	//front back
+	MPI_Sendrecv(
+			&turbField.getPressure().getScalar(_send_back_i, _send_back_j, _send_back_k),		//sendbuffer in this case memory location
+			1,			//sizeof datatype in this case 1
+			_pres_back,
+			_parameters.parallel.backNb,
+			COMM_BACK_VIS,
+			&turbField.getPressure().getScalar(_recv_front_i, _recv_front_j, _recv_front_k),		//resvbuffer in this case memory location
+			1,			//size
+			_pres_back,
+			_parameters.parallel.frontNb,
+			COMM_BACK_VIS, //recvtag
+			MPI_COMM_WORLD,
+			&stat			//MPIStatus
+	);
+
+	//front back
+	MPI_Sendrecv(
+			&turbField.getPressure().getScalar(_send_front_i, _send_front_j, _send_front_k),		//sendbuffer in this case memory location
+			1,			//sizeof datatype in this case 1
+			_pres_front,
+			_parameters.parallel.frontNb,
+			COMM_FRONT_VIS,
+			&turbField.getPressure().getScalar(_recv_back_i, _recv_back_j, _recv_back_k),		//resvbuffer in this case memory location
+			1,			//size
+			_pres_front,
+			_parameters.parallel.backNb,
+			COMM_FRONT_VIS, //recvtag
 			MPI_COMM_WORLD,
 			&stat			//MPIStatus
 	);

@@ -24,6 +24,7 @@
 #include "LinearSolver.h"
 #include "solvers/SORSolver.h"
 #include "solvers/PetscSolver.h"
+#include "parallelManagers/PetscParallelManagerMPITypes.h"
 
 
 
@@ -57,6 +58,7 @@ class Simulation {
     FieldIterator<FlowField> _vtkIterator;
 
     PetscSolver _solver;
+    PetscParallelManagerMPITypes _petscParallelManager;
 
 
   public:
@@ -79,7 +81,8 @@ class Simulation {
        _obstacleIterator(_flowField,parameters,_obstacleStencil),
        _vtkStencil(parameters),
        _vtkIterator(_flowField,parameters,_vtkStencil),
-       _solver(_flowField,parameters)
+       _solver(_flowField,parameters),
+	   _petscParallelManager(_flowField, parameters)
        {
        }
 

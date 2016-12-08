@@ -6,10 +6,7 @@
 #include "../Parameters.h"
 #include "../Stencil.h"
 #include "../FlowField.h"
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <iomanip>
+#include "../TurbFlowField.h"
 
 #define COMM_LEFT_PRES 0
 #define COMM_RIGHT_PRES 1
@@ -25,6 +22,13 @@
 #define COMM_FRONT_VELO 10
 #define COMM_BACK_VELO 11
 
+#define COMM_LEFT_VIS 12
+#define COMM_RIGHT_VIS 13
+#define COMM_TOP_VIS 14
+#define COMM_BOTTOM_VIS 15
+#define COMM_FRONT_VIS 16
+#define COMM_BACK_VIS 17
+
 //#define DEBUG_PARMNG
 
 
@@ -34,6 +38,7 @@ public:
 	virtual ~PetscParallelManagerMPITypes();
 	void communicatePressure();
 	void communicateVelocity();
+	void communicateViscosity();
 
 
 private:

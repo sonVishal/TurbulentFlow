@@ -495,6 +495,7 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
     // broadcast turbulence parameters
     MPI_Bcast(&(parameters.turbulence.mixLenMethod),     1, MPI_INT, 0, communicator);
     MPI_Bcast(&(parameters.turbulence.bdLayerThickness), 1, MY_MPI_FLOAT, 0, communicator);
+    MPI_Bcast(&(parameters.flow.viscosity), 1, MY_MPI_FLOAT,0, communicator);
 
 
 }

@@ -39,7 +39,7 @@ public:
         _minTurbViscosityStencil(parameters),
         _minTurbViscosityFieldIterator(turbFlowField,parameters,_minTurbViscosityStencil,2,-1),
         //_minTurbViscosityBoundaryIterator(turbFlowField,parameters,_minTurbViscosityStencil),
-        _wallTurbViscosityIterator(_globalBoundaryFactory.getGlobalBoundaryTurbViscosityIterator(_turbFlowField)) {}
+        _wallTurbViscosityIterator(_globalBoundaryFactory.getGlobalBoundaryTurbViscosityIterator(_turbFlowField)){}
     ~TurbulentSimulation() {}
     void initializeFlowField() {
         Simulation::initializeFlowField();
@@ -50,11 +50,10 @@ public:
         mixingLengthIterator.iterate();
     }
     void solveTimestep() {
-        handleError(1,"TODO");
-
         // compute viscosity
         _turbLPmodelIterator.iterate();
         // TODO: communicate turbulent viscosity values
+        _petscParallelManager.communicateViscosity();
         _wallTurbViscosityIterator.iterate();
 
         // Do the viscosity first so that the min viscosity is not 0 while setting up dt
@@ -70,11 +69,13 @@ public:
         // solve for pressure
         _solver.solve();
         // TODO WS2: communicate pressure values
+        _petscParallelManager.communicatePressure();
         // compute velocity
         _velocityIterator.iterate();
     	// set obstacle boundaries
     	_obstacleIterator.iterate();
         // TODO WS2: communicate velocity values
+    	_petscParallelManager.communicateVelocity();
         // Iterate for velocities on the boundary
         _wallVelocityIterator.iterate();
     }

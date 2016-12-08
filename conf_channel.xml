@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
     <flow Re="100" />
-    <simulation finalTime="0.0" >
+    <simulation finalTime="1.0" >
         <type>turbulence</type>
         <scenario>channel</scenario>
     </simulation>
@@ -12,7 +12,7 @@
       dim="2"
       lengthX="5.0" lengthY="1.0" lengthZ="1.0"
       sizeX="10" sizeY="20" sizeZ="10"
-      stretchX="false" stretchY="true" stretchZ="true"
+      stretchX="false" stretchY="false" stretchZ="true"
     >
       <!--mesh>uniform</mesh-->
       <mesh>stretched</mesh>

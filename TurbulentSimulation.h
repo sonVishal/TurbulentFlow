@@ -7,6 +7,7 @@
 #include "stencils/TurbFGHStencil.h"
 #include "stencils/TurbLPmodelStencil.h"
 #include "stencils/MinTurbViscosityStencil.h"
+#include "stencils/MinDtStencil.h"
 
 class TurbulentSimulation : public Simulation {
 private:
@@ -23,6 +24,9 @@ private:
 
     MinTurbViscosityStencil _minTurbViscosityStencil;
     FieldIterator<TurbFlowField> _minTurbViscosityFieldIterator;
+
+    MinDtStencil _minDtStencil;
+    FieldIterator<TurbFlowField> _minDtFieldIterator;
     //GlobalBoundaryIterator<TurbFlowField> _minTurbViscosityBoundaryIterator;
 
     GlobalBoundaryIterator<TurbFlowField> _wallTurbViscosityIterator;
@@ -38,12 +42,14 @@ public:
         _turbLPmodelIterator(turbFlowField,parameters,_turbLPmodelStencil),
         _minTurbViscosityStencil(parameters),
         _minTurbViscosityFieldIterator(turbFlowField,parameters,_minTurbViscosityStencil,2,-1),
+        _minDtStencil(parameters),
+        _minDtFieldIterator(turbFlowField,parameters,_minDtStencil,2,-1),
         //_minTurbViscosityBoundaryIterator(turbFlowField,parameters,_minTurbViscosityStencil),
         _wallTurbViscosityIterator(_globalBoundaryFactory.getGlobalBoundaryTurbViscosityIterator(_turbFlowField)){}
     ~TurbulentSimulation() {}
     void initializeFlowField() {
         Simulation::initializeFlowField();
-        
+
         // Initialize the mixing length
         MixingLengthStencil mixingLengthStencil(_parameters);
         FieldIterator<TurbFlowField> mixingLengthIterator(_turbFlowField,_parameters,mixingLengthStencil,1,0);
@@ -101,11 +107,11 @@ private:
         _maxUBoundaryIterator.iterate();
 
         // determine the minimum turbulent viscosity (we store nu + nu_t as turbulent viscosity)
-        _minTurbViscosityStencil.reset();
-        _minTurbViscosityFieldIterator.iterate();
+        _minDtStencil.reset();
+        _minDtFieldIterator.iterate();
         //_minTurbViscosityBoundaryIterator.iterate();
 
-        assertion(_minTurbViscosityStencil.getMinValue() > 0.0);
+        assertion(_minDtStencil.getMinValue() > 0.0);
 
         if (_parameters.geometry.dim == 3) {
           factor += 1.0/(_parameters.meshsize->getDzMin() * _parameters.meshsize->getDzMin());
@@ -115,7 +121,7 @@ private:
         }
 
         localMin = std::min(_parameters.timestep.dt,
-                                          std::min(std::min(1.0/(2*factor*_minTurbViscosityStencil.getMinValue()),
+                                          std::min(std::min(_minDtStencil.getMinValue(),
                                           1.0 / _maxUStencil.getMaxValues()[0]),
                                           1.0 / _maxUStencil.getMaxValues()[1]));
 

@@ -11,7 +11,7 @@ void TurbLPmodel::apply( TurbFlowField & flowField, int i, int j ){
 
     getShearStressTensorProduct(flowField, tensorProd, i, j);
 
-    flowField.getTurbViscosity().getScalar(i, j) = l_mix * l_mix * tensorProd + _parameters.flow.viscosity;
+    flowField.getTurbViscosity().getScalar(i, j) = l_mix * l_mix * tensorProd + 1/_parameters.flow.Re;//_parameters.flow.viscosity;
 }
 
 void TurbLPmodel::apply ( TurbFlowField & flowField, int i, int j, int k ){
@@ -23,7 +23,7 @@ void TurbLPmodel::apply ( TurbFlowField & flowField, int i, int j, int k ){
 
     getShearStressTensorProduct(flowField, tensorProd, i, j, k);
 
-    flowField.getTurbViscosity().getScalar(i, j, k) = l_mix * l_mix * tensorProd +  _parameters.flow.viscosity;
+    flowField.getTurbViscosity().getScalar(i, j, k) = l_mix * l_mix * tensorProd + 1/_parameters.flow.Re;//_parameters.flow.viscosity;
 }
 
 void TurbLPmodel::getShearStressTensorProduct( TurbFlowField &flowField,
@@ -38,7 +38,7 @@ void TurbLPmodel::getShearStressTensorProduct( TurbFlowField &flowField,
     FLOAT dvdx_ =  dvdx( _localVelocity, _localMeshsize );
 
 
-    prod = std::sqrt( 2*( dudx_ * dudx_  +  dvdy_ * dvdy_  +  0.5 * (dudy_ + dvdx_) * (dudy_ + dvdx_) ) );
+    prod = std::sqrt( dudx_ * dudx_  +  dvdy_ * dvdy_   +  0.5 * (dudy_ + dvdx_) * (dudy_ + dvdx_) );
 
 }
 
@@ -58,6 +58,6 @@ void TurbLPmodel::getShearStressTensorProduct( TurbFlowField &flowField,
     FLOAT dwdy_ =  dwdy(_localVelocity,_localMeshsize);
     FLOAT dwdz_ =  dwdz(_localVelocity,_localMeshsize);
 
-    prod = std::sqrt( 2*( dudx_ * dudx_  +  dvdy_ * dvdy_  +  dwdz_ * dwdz_ +
-        2*( (dudy_ + dvdx_) * (dudy_ + dvdx_) + (dudz_ + dwdx_) * (dudz_ + dwdx_) + (dvdz_ + dwdy_) * (dvdz_ + dwdy_) ) ) );
+    prod = std::sqrt( dudx_ * dudx_  +  dvdy_ * dvdy_  +  dwdz_ * dwdz_ +
+        0.5*( (dudy_ + dvdx_) * (dudy_ + dvdx_) + (dudz_ + dwdx_) * (dudz_ + dwdx_) + (dvdz_ + dwdy_) * (dvdz_ + dwdy_) )  );
 }

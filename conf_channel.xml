@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
-    <flow Re="100" />
-    <simulation finalTime="1.0" >
+    <flow Re="10000" />
+    <simulation finalTime="10.0" >
         <type>turbulence</type>
         <scenario>channel</scenario>
     </simulation>
-    <backwardFacingStep xRatio="0.2" yRatio="0.2" />
+    <backwardFacingStep xRatio="0.0" yRatio="0.0" />
     <timestep dt="1" tau="0.5" />
     <solver gamma="0.5" />
     <geometry
@@ -39,6 +39,7 @@
         </back>
     </walls>
     <vtk interval="1">channel_result</vtk>
+    <turbulence MixingLengthMethod="1" />
     <stdOut interval="1" />
     <parallel numProcessorsX="1" numProcessorsY="1" numProcessorsZ="1" />
 </configuration>

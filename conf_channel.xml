@@ -39,7 +39,7 @@
         </back>
     </walls>
     <vtk interval="1">channel_result</vtk>
-    <turbulence MixingLengthMethod="1" />
+    <turbulence MixingLengthMethod="3" /> <!--> 0=Default 1=Ignore boundary layer 2=Laminar 3=Turbulent</-->
     <stdOut interval="1" />
     <parallel numProcessorsX="1" numProcessorsY="1" numProcessorsZ="1" />
 </configuration>

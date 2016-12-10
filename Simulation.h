@@ -137,12 +137,12 @@ class Simulation {
         _rhsIterator.iterate();
         // solve for pressure
         _solver.solve();
-        // TODO WS2: communicate pressure values
+		_petscParallelManager.communicatePressure();
         // compute velocity
         _velocityIterator.iterate();
     	// set obstacle boundaries
     	_obstacleIterator.iterate();
-        // TODO WS2: communicate velocity values
+		_petscParallelManager.communicateVelocity();
         // Iterate for velocities on the boundary
         _wallVelocityIterator.iterate();
     }

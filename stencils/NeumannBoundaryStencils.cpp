@@ -86,42 +86,26 @@ NeumannTurbViscosityBoundaryStencil::NeumannTurbViscosityBoundaryStencil(const P
     BoundaryStencil<TurbFlowField>(parameters) {}
 
 
-void NeumannTurbViscosityBoundaryStencil::applyLeftWall   ( TurbFlowField & flowField, int i, int j ){
-    flowField.getTurbViscosity().getScalar(i,j) = flowField.getTurbViscosity().getScalar(i+1,j);
-}
+void NeumannTurbViscosityBoundaryStencil::applyLeftWall   ( TurbFlowField & flowField, int i, int j ){}
 
 void NeumannTurbViscosityBoundaryStencil::applyRightWall  ( TurbFlowField & flowField, int i, int j ){
     flowField.getTurbViscosity().getScalar(i,j) = flowField.getTurbViscosity().getScalar(i-1,j);
 }
 
-void NeumannTurbViscosityBoundaryStencil::applyBottomWall ( TurbFlowField & flowField, int i, int j ){
-    flowField.getTurbViscosity().getScalar(i,j) = flowField.getTurbViscosity().getScalar(i,j+1);
-}
+void NeumannTurbViscosityBoundaryStencil::applyBottomWall ( TurbFlowField & flowField, int i, int j ){}
 
-void NeumannTurbViscosityBoundaryStencil::applyTopWall    ( TurbFlowField & flowField, int i, int j ){
-    flowField.getTurbViscosity().getScalar(i,j) = flowField.getTurbViscosity().getScalar(i,j-1);
-}
+void NeumannTurbViscosityBoundaryStencil::applyTopWall    ( TurbFlowField & flowField, int i, int j ){}
 
-void NeumannTurbViscosityBoundaryStencil::applyLeftWall   ( TurbFlowField & flowField, int i, int j, int k ){
-    flowField.getTurbViscosity().getScalar(i,j,k) = flowField.getTurbViscosity().getScalar(i+1,j,k);
-}
+void NeumannTurbViscosityBoundaryStencil::applyLeftWall   ( TurbFlowField & flowField, int i, int j, int k ){}
 
 void NeumannTurbViscosityBoundaryStencil::applyRightWall  ( TurbFlowField & flowField, int i, int j, int k ){
     flowField.getTurbViscosity().getScalar(i,j,k) = flowField.getTurbViscosity().getScalar(i-1,j,k);
 }
 
-void NeumannTurbViscosityBoundaryStencil::applyBottomWall ( TurbFlowField & flowField, int i, int j, int k ){
-    flowField.getTurbViscosity().getScalar(i,j,k) = flowField.getTurbViscosity().getScalar(i,j+1,k);
-}
+void NeumannTurbViscosityBoundaryStencil::applyBottomWall ( TurbFlowField & flowField, int i, int j, int k ){}
 
-void NeumannTurbViscosityBoundaryStencil::applyTopWall    ( TurbFlowField & flowField, int i, int j, int k ){
-    flowField.getTurbViscosity().getScalar(i,j,k) = flowField.getTurbViscosity().getScalar(i,j-1,k);
-}
+void NeumannTurbViscosityBoundaryStencil::applyTopWall    ( TurbFlowField & flowField, int i, int j, int k ){}
 
-void NeumannTurbViscosityBoundaryStencil::applyFrontWall  ( TurbFlowField & flowField, int i, int j, int k ){
-    flowField.getTurbViscosity().getScalar(i,j,k) = flowField.getTurbViscosity().getScalar(i,j,k+1);
-}
+void NeumannTurbViscosityBoundaryStencil::applyFrontWall  ( TurbFlowField & flowField, int i, int j, int k ){}
 
-void NeumannTurbViscosityBoundaryStencil::applyBackWall   ( TurbFlowField & flowField, int i, int j, int k ){
-    flowField.getTurbViscosity().getScalar(i,j,k) = flowField.getTurbViscosity().getScalar(i,j,k-1);
-}
+void NeumannTurbViscosityBoundaryStencil::applyBackWall   ( TurbFlowField & flowField, int i, int j, int k ){}

@@ -35,17 +35,17 @@ void MixingLengthStencil::apply ( TurbFlowField & flowField,  int i, int j ){
                     distToWall = std::min(_parameters.geometry.lengthY-cellCenterPos[1],
                         cellCenterPos[1]-_stepCornerPos[1]);
                     // For debugging
-                    distToWall = 10;
+                    // distToWall = 10;
                 } else if (cellCenterPos[1] < _stepCornerPos[1]) { // Cell below the height of step
                     distToWall = std::min(cellCenterPos[0] - _stepCornerPos[0], std::min(_parameters.geometry.lengthY-cellCenterPos[1], cellCenterPos[1]));
                     // For debugging
-                    distToWall = 15;
+                    // distToWall = 15;
                 } else { // Cell beyond the height and width of step
                     FLOAT diag = std::sqrt((_stepCornerPos[0] - cellCenterPos[0])*(_stepCornerPos[0] - cellCenterPos[0]) +
                         (_stepCornerPos[1] - cellCenterPos[1])*(_stepCornerPos[1] - cellCenterPos[1]));
                     distToWall = std::min(diag,std::min(cellCenterPos[1], _parameters.geometry.lengthY-cellCenterPos[1]));
                     // For debugging
-                    distToWall = 20;
+                    // distToWall = 20;
                 } // Not required to check in x direction since we do not have walls in x direction
             }
             flowField.getMixingLength().getScalar(i, j) = (this->*_mixLenFuncPtr2D[_parameters.turbulence.mixLenMethod])(distToWall, _parameters.walls.vectorLeft[0], i, j);

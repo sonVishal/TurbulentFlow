@@ -429,11 +429,12 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
         parameters.turbulence.kappa = 0.41;
         node = confFile.FirstChildElement()->FirstChildElement("turbulence");
         if (node != NULL) {
-            readIntOptional(parameters.turbulence.mixLenMethod, node, "MixingLengthMethod");
+            readIntOptional(parameters.turbulence.mixLenMethod, node, "MixingLengthMethod", 0);
             std::cout << "Mixing length method = " << parameters.turbulence.mixLenMethod << '\n';
-            readFloatOptional(parameters.turbulence.kappa, node, "Kappa");
+            readFloatOptional(parameters.turbulence.kappa, node, "Kappa", 0.41);
+            std::cout << "Kappa " << parameters.turbulence.kappa << '\n';
             if (parameters.turbulence.mixLenMethod == 0) {
-                readFloatOptional(parameters.turbulence.bdLayerThickness, node, "BoundaryLayerThickness");
+                readFloatOptional(parameters.turbulence.bdLayerThickness, node, "BoundaryLayerThickness", 1.0);
             }
         }
     }
@@ -497,6 +498,6 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
     MPI_Bcast(&(parameters.turbulence.mixLenMethod),     1, MPI_INT, 0, communicator);
     MPI_Bcast(&(parameters.turbulence.bdLayerThickness), 1, MY_MPI_FLOAT, 0, communicator);
     MPI_Bcast(&(parameters.flow.viscosity), 1, MY_MPI_FLOAT,0, communicator);
-
+    MPI_Bcast(&(parameters.turbulence.kappa), 1, MY_MPI_FLOAT, 0, communicator);
 
 }

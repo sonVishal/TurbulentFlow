@@ -38,7 +38,7 @@ void TurbLPmodel::getShearStressTensorProduct( TurbFlowField &flowField,
     FLOAT dvdx_ =  dvdx( _localVelocity, _localMeshsize );
 
 
-    prod = std::sqrt( dudx_ * dudx_  +  dvdy_ * dvdy_   +  0.5 * (dudy_ + dvdx_) * (dudy_ + dvdx_) );
+    prod = std::sqrt( 2*dudx_ * dudx_  +  2*dvdy_ * dvdy_   +  (dudy_ + dvdx_) * (dudy_ + dvdx_) );
 
 }
 
@@ -58,6 +58,6 @@ void TurbLPmodel::getShearStressTensorProduct( TurbFlowField &flowField,
     FLOAT dwdy_ =  dwdy(_localVelocity,_localMeshsize);
     FLOAT dwdz_ =  dwdz(_localVelocity,_localMeshsize);
 
-    prod = std::sqrt( dudx_ * dudx_  +  dvdy_ * dvdy_  +  dwdz_ * dwdz_ +
-        0.5*( (dudy_ + dvdx_) * (dudy_ + dvdx_) + (dudz_ + dwdx_) * (dudz_ + dwdx_) + (dvdz_ + dwdy_) * (dvdz_ + dwdy_) )  );
+    prod = std::sqrt( 2*(dudx_ * dudx_  +  dvdy_ * dvdy_  +  dwdz_ * dwdz_) +
+        (dudy_ + dvdx_) * (dudy_ + dvdx_) + (dudz_ + dwdx_) * (dudz_ + dwdx_) + (dvdz_ + dwdy_) * (dvdz_ + dwdy_)   );
 }

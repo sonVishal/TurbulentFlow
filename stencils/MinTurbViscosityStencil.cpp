@@ -76,6 +76,6 @@ void MinTurbViscosityStencil::reset () {
     _minValue = std::numeric_limits<FLOAT>::max();
 }
 
-const FLOAT MinTurbViscosityStencil::getMinValue() const{
+FLOAT MinTurbViscosityStencil::getMinValue() const{
     return _minValue;
 }

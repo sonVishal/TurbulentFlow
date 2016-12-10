@@ -59,7 +59,7 @@ class MinDtStencil : public FieldStencil<TurbFlowField> {
         /** Returns the array with the maximum modules of the components of the velocity,
          *  divided by the respective local meshsize
          */
-        const FLOAT getMinValue() const;
+        FLOAT getMinValue() const;
 };
 
 #endif

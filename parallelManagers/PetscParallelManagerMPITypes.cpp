@@ -12,7 +12,6 @@ PetscParallelManagerMPITypes::PetscParallelManagerMPITypes(FlowField & flowField
 
 	_localSize = _parameters.parallel.localSize;
 
-
 	int x = _localSize[0];
 	int y = _localSize[1];
 	int z = _localSize[2];
@@ -22,6 +21,7 @@ PetscParallelManagerMPITypes::PetscParallelManagerMPITypes(FlowField & flowField
 
 
 	if(dim==2){
+
 		//Start locations for the communication
 		_send_right_k = _recv_right_k = _send_left_k = _recv_left_k =
 		_send_top_k = _recv_top_k = _send_bot_k = _recv_bot_k =
@@ -31,24 +31,27 @@ PetscParallelManagerMPITypes::PetscParallelManagerMPITypes(FlowField & flowField
 		_recv_back_i=  _recv_back_j = _recv_back_k = 0;
 
 		_send_right_i = _localSize[0];
-		_send_right_j = 2;
+		_send_right_j = 0;
 		_recv_left_i = 0;
-		_recv_left_j = 2;
+		_recv_left_j = 0;
 
 		_send_left_i = 2;
-		_send_left_j = 2;
+		_send_left_j = 0;
 		_recv_right_i = _localSize[0]+2;
-		_recv_right_j = 2;
+		_recv_right_j = 0;
 
-		_send_top_i = 2;
+		_send_top_i = 0;
 		_send_top_j = _localSize[1];
-		_recv_bot_i = 2;
+		_recv_bot_i = 0;
 		_recv_bot_j = 0;
 
-		_send_bot_i = 2;
+		_send_bot_i = 0;
 		_send_bot_j = 2;
-		_recv_top_i = 2;
+		_recv_top_i = 0;
 		_recv_top_j = _localSize[1]+2;
+		x = _localSize[0]+3;
+		y = _localSize[1]+3;
+		z = _localSize[2]+3;
 
 		/*
 		 * Pressure Datatypes
@@ -59,7 +62,7 @@ PetscParallelManagerMPITypes::PetscParallelManagerMPITypes(FlowField & flowField
 		MPI_Type_vector(
 				y, //count how many blocks we want to send
 				1, //blocklength how long
-				x+3, //stride offset to the data
+				x, //stride offset to the data
 				MY_MPI_FLOAT,	//MPI Datatype
 				&_pres_left
 		);
@@ -67,7 +70,7 @@ PetscParallelManagerMPITypes::PetscParallelManagerMPITypes(FlowField & flowField
 		MPI_Type_vector(
 				y, //count how many blocks we want to send
 				2, //blocklength how long
-				x+3, //stride offset to the data
+				x, //stride offset to the data
 				MY_MPI_FLOAT,	//MPI Datatype
 				&_pres_right
 		);
@@ -85,8 +88,8 @@ PetscParallelManagerMPITypes::PetscParallelManagerMPITypes(FlowField & flowField
 		//Vector to top
 		MPI_Type_vector(
 				2, //count how many blocks we want to send
-				2*x, //blocklength how long
-				4, //stride offset to the data
+				x, //blocklength how long
+				x, //stride offset to the data
 				MY_MPI_FLOAT,	//MPI Datatype
 				&_pres_top
 		);
@@ -116,7 +119,7 @@ PetscParallelManagerMPITypes::PetscParallelManagerMPITypes(FlowField & flowField
 		MPI_Type_vector(
 				y, //count how many blocks we want to send
 				2, //blocklength how long
-				(x+3)*2, //stride offset to the data
+				x*2, //stride offset to the data
 				MY_MPI_FLOAT,	//MPI Datatype
 				&_velo_left
 		);
@@ -124,7 +127,7 @@ PetscParallelManagerMPITypes::PetscParallelManagerMPITypes(FlowField & flowField
 		MPI_Type_vector(
 				y, //count how many blocks we want to send
 				4, //blocklength how long
-				(x+3)*2, //stride offset to the data
+				x*2, //stride offset to the data
 				MY_MPI_FLOAT,	//MPI Datatype
 				&_velo_right
 		);
@@ -141,7 +144,7 @@ PetscParallelManagerMPITypes::PetscParallelManagerMPITypes(FlowField & flowField
 		MPI_Type_vector(
 				2, //count how many blocks we want to send
 				x*2, //blocklength how long
-				6, //stride offset to the data 4*2
+				x*2, //stride offset to the data 4*2
 				MY_MPI_FLOAT,	//MPI Datatype
 				&_velo_top
 		);

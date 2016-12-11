@@ -6,7 +6,6 @@
 #include "stencils/TurbVTKStencil.h"
 #include "stencils/TurbFGHStencil.h"
 #include "stencils/TurbLPmodelStencil.h"
-#include "stencils/MinTurbViscosityStencil.h"
 #include "stencils/MinDtStencil.h"
 
 class TurbulentSimulation : public Simulation {
@@ -21,9 +20,6 @@ private:
 
     TurbLPmodel _turbLPmodelStencil;
     FieldIterator<TurbFlowField> _turbLPmodelIterator;
-
-    MinTurbViscosityStencil _minTurbViscosityStencil;
-    FieldIterator<TurbFlowField> _minTurbViscosityFieldIterator;
 
     MinDtStencil _minDtStencil;
     FieldIterator<TurbFlowField> _minDtFieldIterator;
@@ -40,8 +36,6 @@ public:
         _turbFGHIterator(turbFlowField,parameters,_turbFGHStencil),
         _turbLPmodelStencil(parameters),
         _turbLPmodelIterator(turbFlowField,parameters,_turbLPmodelStencil),
-        _minTurbViscosityStencil(parameters),
-        _minTurbViscosityFieldIterator(turbFlowField,parameters,_minTurbViscosityStencil,2,-1),
         _minDtStencil(parameters),
         _minDtFieldIterator(turbFlowField,parameters,_minDtStencil,2,-1),
         //_minTurbViscosityBoundaryIterator(turbFlowField,parameters,_minTurbViscosityStencil),

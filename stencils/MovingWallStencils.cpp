@@ -206,23 +206,23 @@ void MovingWallTurbViscosityStencil::applyRightWall ( TurbFlowField & flowField,
 
 void MovingWallTurbViscosityStencil::applyBottomWall ( TurbFlowField & flowField, int i, int j, int k ){
 
-    flowField.getTurbViscosity().getScalar(i, j, k) = -flowField.getTurbViscosity().getScalar(i, j+1, k);
+    flowField.getTurbViscosity().getScalar(i, j, k) = 2.0/_parameters.flow.Re-flowField.getTurbViscosity().getScalar(i, j+1, k);
 }
 
 
 void MovingWallTurbViscosityStencil::applyTopWall ( TurbFlowField & flowField, int i, int j, int k ){
 
-    flowField.getTurbViscosity().getScalar(i, j, k) = -flowField.getTurbViscosity().getScalar(i, j-1, k);
+    flowField.getTurbViscosity().getScalar(i, j, k) = 2.0/_parameters.flow.Re-flowField.getTurbViscosity().getScalar(i, j-1, k);
 }
 
 
 void MovingWallTurbViscosityStencil::applyFrontWall ( TurbFlowField & flowField, int i, int j, int k ){
 
-    flowField.getTurbViscosity().getScalar(i, j, k) = -flowField.getTurbViscosity().getScalar(i, j, k+1);
+    flowField.getTurbViscosity().getScalar(i, j, k) = 2.0/_parameters.flow.Re-flowField.getTurbViscosity().getScalar(i, j, k+1);
 }
 
 
 void MovingWallTurbViscosityStencil::applyBackWall ( TurbFlowField & flowField, int i, int j, int k ){
 
-    flowField.getTurbViscosity().getScalar(i, j, k) = -flowField.getTurbViscosity().getScalar(i, j, k-1);
+    flowField.getTurbViscosity().getScalar(i, j, k) = 2.0/_parameters.flow.Re-flowField.getTurbViscosity().getScalar(i, j, k-1);
 }

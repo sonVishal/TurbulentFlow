@@ -11,19 +11,19 @@ void TurbLPmodel::apply( TurbFlowField & flowField, int i, int j ){
 
     getShearStressTensorProduct(flowField, tensorProd, i, j);
 
-    flowField.getTurbViscosity().getScalar(i, j) = l_mix * l_mix * tensorProd + 1/_parameters.flow.Re;//_parameters.flow.viscosity;
+    flowField.getTurbViscosity().getScalar(i, j) = l_mix * l_mix * tensorProd +1/_parameters.flow.Re;//_parameters.flow.viscosity;
 }
 
 void TurbLPmodel::apply ( TurbFlowField & flowField, int i, int j, int k ){
     // Don't check for fluid cell as we will get base visocity for obstacle cells which makes min turb viscosity non-zero : look at dt
     // TODO: get mixing length. For now use distToWall*kappa
-    FLOAT l_mix = flowField.getMixingLength().getScalar(i, j, k);
+    // FLOAT l_mix = flowField.getMixingLength().getScalar(i, j, k);
 
     FLOAT tensorProd = 0.0;
 
     getShearStressTensorProduct(flowField, tensorProd, i, j, k);
 
-    flowField.getTurbViscosity().getScalar(i, j, k) = l_mix * l_mix * tensorProd + 1/_parameters.flow.Re;//_parameters.flow.viscosity;
+    flowField.getTurbViscosity().getScalar(i, j, k) = /*l_mix * l_mix * tensorProd +*/1/_parameters.flow.Re;//_parameters.flow.viscosity;
 }
 
 void TurbLPmodel::getShearStressTensorProduct( TurbFlowField &flowField,

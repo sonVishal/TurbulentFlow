@@ -25,6 +25,10 @@ VTKBinaryTurbStencil::VTKBinaryTurbStencil ( const Parameters & parameters ): Fi
 	int z=parameters.parallel.localSize[2];
 	int dim = parameters.geometry.dim;
 
+	if (dim == 2) {
+		z = 0;
+	}
+
 
 	//Initializing each variable
 	ss<<"# vtk DataFile Version 2.0\nMy fancy data\nBINARY\n"<<
@@ -313,4 +317,3 @@ VTKBinaryTurbStencil::~VTKBinaryTurbStencil(){
 	delete this->vis_b;
 	delete this->wall_b;
 }
-

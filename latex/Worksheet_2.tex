@@ -229,9 +229,10 @@ Done
 \subsection{Implementation of an algebraic turbulence model}
 \begin{itemize}
 	\item \textbf{Compute a laminar reference case. Therefore, set $v_T = 0$.}\\
-	\td{}
+	Done with 2D.\\
+	\td{3D}
 	\item \textbf{Implement the Prandtl mixing length model. Consider that you need to know the local distance to the nearest wall as well as $S_{ij}$.}\\
-	\td{}
+	Done.
 	\item \textbf{Following these instructions,}
 	\begin{itemize}
 		\item \textbf{experiment two of the four options.}\\
@@ -244,30 +245,30 @@ Done
 		\td{}\\
 		\td{Ensure to base all of your discussions on appropriate data!}
 	\end{itemize}
-	\td{}\\
 \end{itemize}
 \subsection{Implementational Details}
 \subsubsection{Prerequisites}
 	\begin{itemize}
 	\item \textbf{Extend the configuration of the simulation such that all parameters required by your turbulence model implementation can also be read from the xml-files.}\\
-	\td{}
+	Done.
 \end{itemize}
 \subsubsection{Turbulent viscosity and wall distance}
 \begin{itemize}
 	\item \textbf{Extend the data structures for the turbulent case. In order to keep things simple, you may add a new scalar field for both the distance to the (nearest) wall and a scalar field to store the turbulent viscosity $vT$ . We further evaluate the turbulent viscosity in the cell center, i.e. at the same location as the pressure.}\\
-	\td{}
+	Done.
 	\item \textbf{Consider the basic interplay of stencils, iterators and data structures in NS-EOF. How can you apply the concept of inheritance so that you can naturally extend your data structures and support both old and potentially new data structures in case of turbulence- model-based simulations?}\\
-	\td{}
+	Done.
 	\item \textbf{Implement a VTK visualization for the turbulent viscosity. You may base your implementations on the existing plotter (VTKStencil) for the turbulent case and create a new stencil for this purpose which operates on the new data structure.}\\
-	\td{}
+	Done.
 \end{itemize}
 
 \subsubsection{Momentum equations}
 \begin{itemize}
 	\item \textbf{Replace the discretization of the Laplacian in the evaluation of F, G and H by discrete expressions for}\\
-	\td{}
+	Done\\
 	\item \textbf{Improve your implementation by extending it to stretched meshes. How do you need to adapt the formulas for F, G, H from above?}\\
-	\td{}
+	\td{Check 3D}\\
+	We extend the implementation to stretched meshes by looking at the cell sizes and weighing the respective cell with the respective ratio. This is similar to what is already implemented in the code for other derivatives.
 \end{itemize}
 
 \subsubsection{Parallelization}
@@ -280,11 +281,11 @@ Done
 \subsubsection{Plugging things together}
 \begin{itemize}
 	\item \textbf{Use the concept of inheritance to create a simulation class TurbulentSimulation which possesses all properties of Simulation and incorporates the features of the algebraic turbulence modeling.}\\
-	\td{}
+	Done.
 	\item \textbf{Adapt the time step restriction in TurbulentSimulation. Due to your inhomogeneous viscosity, the original expression for diffusive time step limitations}\\
-	\td{}
+	Done.
 	\item \textbf{Implement the evaluation of the new time step criterion using the stencil-iterator concept.}\\
-	\td{}
+	Done.
 	
 	
 \end{itemize}

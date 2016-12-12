@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
-    <flow Re="1000" />
+    <flow Re="5600" />
     <simulation finalTime="10.0" >
         <type>turbulence</type>
         <scenario>channel</scenario>
@@ -9,9 +9,9 @@
     <timestep dt="1" tau="0.5" />
     <solver gamma="0.5" />
     <geometry
-      dim="3"
-      lengthX="5.0" lengthY="1.0" lengthZ="1.0"
-      sizeX="10" sizeY="20" sizeZ="20"
+      dim="2"
+      lengthX="20.0" lengthY="1.0" lengthZ="1.0"
+      sizeX="40" sizeY="40" sizeZ="20"
       stretchX="false" stretchY="true" stretchZ="true"
     >
       <!--mesh>uniform</mesh-->

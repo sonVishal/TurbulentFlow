@@ -21,7 +21,6 @@ GlobalBoundaryFactory::GlobalBoundaryFactory(Parameters & parameters):
 
     _channelInput[0] = new BFInputVelocityStencil(parameters);
     _channelInput[1] = new BFInputFGHStencil(parameters);
-    _turbChannelInput = new BFInputTurbViscosityStencil(parameters);
 
     // Then, assign them according to the scenario
     std::string scenario = parameters.simulation.scenario;
@@ -43,7 +42,7 @@ GlobalBoundaryFactory::GlobalBoundaryFactory(Parameters & parameters):
         // To the left, we have the input
         _velocityStencils[0] = _channelInput[0];
         _FGHStencils[0] = _channelInput[1];
-        _turbViscosityStencils[0] = _turbChannelInput;
+        _turbViscosityStencils[0] = _turbOutflow;
 
         // To the right, there is an outflow boundary
         _velocityStencils[1] = _outflow[0];
@@ -120,6 +119,7 @@ GlobalBoundaryFactory::~GlobalBoundaryFactory(){
 
     delete _turbMoving;
     delete _turbPeriodic;
+    delete _turbOutflow;
 }
 
 GlobalBoundaryIterator<FlowField> GlobalBoundaryFactory::
@@ -158,11 +158,11 @@ GlobalBoundaryIterator<TurbFlowField> GlobalBoundaryFactory::
         return GlobalBoundaryIterator<TurbFlowField>(flowField, _parameters,
                                       *(_turbViscosityStencils[0]), *(_turbViscosityStencils[1]),
                                       *(_turbViscosityStencils[2]), *(_turbViscosityStencils[3]),
-                                      1, 0);
+                                      0, 0);
     }
     return GlobalBoundaryIterator<TurbFlowField>(flowField, _parameters,
                                   *(_turbViscosityStencils[0]), *(_turbViscosityStencils[1]),
                                   *(_turbViscosityStencils[2]), *(_turbViscosityStencils[3]),
                                   *(_turbViscosityStencils[4]), *(_turbViscosityStencils[5]),
-                                  1, 0);
+                                  0, 0);
 }

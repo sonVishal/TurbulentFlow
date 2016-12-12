@@ -28,7 +28,6 @@ class GlobalBoundaryFactory{
         BoundaryStencil<TurbFlowField> * _turbViscosityStencils[6];
         BoundaryStencil<TurbFlowField> * _turbMoving;
         BoundaryStencil<TurbFlowField> * _turbOutflow;
-        BoundaryStencil<TurbFlowField> * _turbChannelInput;
         BoundaryStencil<TurbFlowField> * _turbPeriodic;
         const Parameters & _parameters;         //! Reference to the parameters
 

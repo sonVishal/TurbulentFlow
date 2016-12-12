@@ -1,8 +1,8 @@
 #### The petsc environment can also be fixed in the makefile
 # PETSC_DIR =
 # PETSC_ARCH =
-#include ${PETSC_DIR}/conf/variables
-include ${PETSC_DIR}/conf/petscvariables
+include ${PETSC_DIR}/conf/variables
+#include ${PETSC_DIR}/conf/petscvariables
 
 # default gnu compiler (currently not used)
 # CC = g++

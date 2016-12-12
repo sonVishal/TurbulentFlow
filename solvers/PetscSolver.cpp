@@ -1,6 +1,10 @@
 #include "PetscSolver.h"
 
 
+//#define PRINT_LIMITS
+#define likely(x)       __builtin_expect((x),1)
+#define unlikely(x)     __builtin_expect((x),0)
+
 // This function returns the ranges to work on the pressure with the non-boundary stencil.
 // Since the domain PETSc deals with has an additional layer of cells, the size is clipped to
 // ignore them.
@@ -371,8 +375,9 @@ PetscErrorCode computeMatrix2D(KSP ksp, Mat A, Mat pc, MatStructure * matStructu
 
     Nx = parameters.geometry.sizeX + 2;
     Ny = parameters.geometry.sizeY + 2;
-
+#ifdef PRINT_LIMITS
     std::cout << "Limits= " << limitsX[0] << ", " << limitsX[1] << "; " << limitsY[0] << " , " << limitsY[1] << std::endl;
+#endif
     // Loop for inner nodes
     for (j = limitsY[0]; j < limitsY[1]; j++){
         for (i = limitsX[0]; i < limitsX[1]; i++){
@@ -605,7 +610,7 @@ PetscErrorCode computeMatrix3D(KSP ksp, Mat A, Mat pc, MatStructure * matStructu
                 const int cellIndexZ = k-limitsZ[0]+2;
                 const int obstacle = flags.getValue(cellIndexX, cellIndexY, cellIndexZ);
 
-                if ((obstacle & OBSTACLE_SELF) == 0) { // If the cell is fluid
+                if (likely((obstacle & OBSTACLE_SELF) == 0)) { // If the cell is fluid
                     const FLOAT dx_0 = parameters.meshsize->getDx(cellIndexX  ,cellIndexY  ,cellIndexZ  );
                     const FLOAT dx_M1= parameters.meshsize->getDx(cellIndexX-1,cellIndexY  ,cellIndexZ  );
                     const FLOAT dx_P1= parameters.meshsize->getDx(cellIndexX+1,cellIndexY  ,cellIndexZ  );

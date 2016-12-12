@@ -8,6 +8,9 @@
 #include "MeshsizeFactory.h"
 #include <iomanip>
 
+#define likely(x)       __builtin_expect((x),1)
+#define unlikely(x)     __builtin_expect((x),0)
+
 int main (int argc, char *argv[]) {
 
     // Parallelization related. Initialize and identify
@@ -74,17 +77,17 @@ int main (int argc, char *argv[]) {
     FLOAT timeVTKOut = parameters.vtk.interval;
     // VTK: plot initial state
     simulation->plotVTK(timeSteps);
-    std::cout << "Plotting VTK file at time: " << time << std::endl << std::endl;
+    if(rank==0)std::cout << "Plotting VTK file at time: " << time << std::endl << std::endl;
 
     // time loop
-    while (time < parameters.simulation.finalTime){
+    while (likely(time < parameters.simulation.finalTime)){
 
       simulation->solveTimestep();
 
       time += parameters.timestep.dt;
 
       // std-out: terminal info
-      if ( (timeStdOut <= time) ){
+      if ( unlikely((timeStdOut <= time)&&(rank==0) )){
           std::cout << "Current time: " << time << "\ttimestep: " <<
                         parameters.timestep.dt << std::endl;
           timeStdOut += parameters.stdOut.interval;
@@ -93,9 +96,9 @@ int main (int argc, char *argv[]) {
       // VTK: trigger VTK output
       // NOTE: Only sequential code.
       // Hence the check for rank == 0. In case parallel code is run, only rank 0 will write.
-      if ( (timeVTKOut <= time) ){
+      if ( unlikely((timeVTKOut <= time))){
           simulation->plotVTK(timeSteps);
-          std::cout << "Plotting VTK file at time: " << time << std::endl << std::endl;
+          if(rank==0)std::cout << "Plotting VTK file at time: " << time << std::endl << std::endl;
           timeVTKOut += parameters.vtk.interval;
       }
 
@@ -103,10 +106,9 @@ int main (int argc, char *argv[]) {
     }
 
     // VTK: plot final output
-     if ( rank == 0 ) {
-         simulation->plotVTK(timeSteps);
-         std::cout << "Plotting VTK file at time: " << time << std::endl << std::endl;
-     }
+	simulation->plotVTK(timeSteps);
+	if(rank==0)std::cout << "Plotting VTK file at time: " << time << std::endl << std::endl;
+
 
     delete simulation; simulation=NULL;
     delete flowField;  flowField= NULL;

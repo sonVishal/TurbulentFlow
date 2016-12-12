@@ -28,6 +28,70 @@ int main (int argc, char *argv[]) {
     Configuration configuration(argv[1]);
     Parameters parameters;
     configuration.loadParameters(parameters);
+
+    /**
+     * Read commandline variables
+     */
+
+    for(int i=2;i<argc;i++){
+    	std::string input(argv[i]);
+
+    	std::cout<<input<<std::endl;
+    	if(input.compare("--help")==0){
+    		if(rank==0){
+    			std::cout<<"Additional command line options \n"<<
+    				"--x := Cells in x direction\n"<<
+					"--y := Cells in y direction\n"<<
+    				"--z := Cells in z direction\n"<<
+					"--r_x := Ranks in x direction\n"<<
+					"--r_y := Ranks in y direction\n"<<
+					"--r_z := Ranks in z direction"<<std::endl;
+    		}
+
+    		MPI_Barrier(PETSC_COMM_WORLD);
+
+    	    PetscFinalize();
+
+    	    exit(0);
+    	}else if(input.compare("--x")==0){
+    		int tmp = atoi(argv[i+1]);
+    		parameters.geometry.sizeX = tmp;
+    		parameters.parallel.localSize[0]=tmp;
+    		i++;
+
+    	}else if(input.compare("--y")==0){
+    		int tmp = atoi(argv[i+1]);
+			parameters.geometry.sizeY = tmp;
+			parameters.parallel.localSize[1]=tmp;
+			i++;
+		}
+    	else if(input.compare("--z")==0){
+			int tmp = atoi(argv[i+1]);
+			parameters.geometry.sizeZ = tmp;
+			parameters.parallel.localSize[2]=tmp;
+			i++;
+		}
+    	else if(input.compare("--r_x")==0){
+    		int tmp = atoi(argv[i+1]);
+			parameters.parallel.numProcessors[0]=tmp;
+			i++;
+    	}
+    	else if(input.compare("--r_y")==0){
+			int tmp = atoi(argv[i+1]);
+			parameters.parallel.numProcessors[1]=tmp;
+			i++;
+		}else if(input.compare("--r_z")==0){
+			int tmp = atoi(argv[i+1]);
+			parameters.parallel.numProcessors[2]=tmp;
+			i++;
+		}
+
+
+
+    }
+
+
+
     PetscParallelConfiguration parallelConfiguration(parameters);
     MeshsizeFactory::getInstance().initMeshsize(parameters);
     FlowField *flowField = NULL;
@@ -68,6 +132,8 @@ int main (int argc, char *argv[]) {
     if(simulation == NULL){ handleError(1, "simulation==NULL!"); }
     simulation->initializeFlowField();
     //flowField->getFlags().show();
+
+
 
     FLOAT time = 0.0;
     FLOAT timeStdOut=parameters.stdOut.interval;

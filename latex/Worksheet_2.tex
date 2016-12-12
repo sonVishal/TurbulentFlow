@@ -103,9 +103,9 @@ By defining the datatypes like this it is not necessary to fill and read the pre
 	\item \textbf{Check out the implementation of the iterator ParallelBoundaryIterator.}\\
 	Done.
 	\item \textbf{Read the implementation and infer its functional meaning: which cells does the iterator operate on?}\\
-	The iterator will move over the boundary layer if there is a neighboring rank available. It operates on a BoundaryStencil.
+	The iterator will move over the boundary layer if there is a neighboring rank available. For each cell it applies a BoundaryStencil. One can specify an offset so it can iterate over inner cells.
 	\item \textbf{Which functions does a respective stencil object need to provide?}\\
-	This functions are necessary because they are defined as virtual ones.
+	The following functions are necessary because they are defined as virtual.
 	\begin{lstlisting}
 	void applyLeftWall   (FlowField & flowField, int i, int j);
 	void applyRightWall  (FlowField & flowField, int i, int j);
@@ -120,7 +120,7 @@ By defining the datatypes like this it is not necessary to fill and read the pre
 	\end{lstlisting}
 	
 	\item \textbf{Can you reuse existing stencil formats, or are new stencil types required?}\\
-	Since every function in BoundaryStencil is virtual we need to define new ones.
+	Since every function in BoundaryStencil is virtual we would have to define new ones.
 	
 	\item \textbf{Implement a boundary stencil PressureBufferFillStencil which reads the pressure values in each of the six (3D) boundary faces of a sub-domain (i.e. the domain of one process) and stores them consecutively in one-dimensional buffer arrays (one array for each of the six faces). For traversal of the respectivesub-domain cells, cf. 1.}\\
 	Not necessary because we are using MPI\_Datatypes.
@@ -135,13 +135,13 @@ By defining the datatypes like this it is not necessary to fill and read the pre
 	Done.
 	
 	\item \textbf{Integrate the PetscParallelManager and respective calls to its communication methods into the class Simulation. Test the exchange of flow quantities in cavity, channel and backward-facing step flows. It is sufficient to only consider the first time step (the choice of a maximum time step should not have severe impact on the testing).}\\
-	Done. Tests were executed for 2D and 3D cases on every scenario. It seems like there is a bug in the cavity scenario. Petsc wont converge if one chooses split in x and y at the same time.
+	Done. Tests were executed for 2D and 3D cases on every scenario. 
 	
 \end{itemize}
 \subsection{Global Synchronization of the Time Step}
 \begin{itemize}
 	\item \textbf{Check out the implementation of setTimeStep() in the class Simulation. How is the maximum time step evaluated in the parallel simulation?}\\
-	\td{}
+	Each rank computes its minimum timestep afterwards the global minimum is derived from those values. MPI\_Allreduce(...) takes care of the reduction and broadcast.
 
 \end{itemize}
 
@@ -157,13 +157,60 @@ By defining the datatypes like this it is not necessary to fill and read the pre
 \subsection{Theory: Towards Scaling Experiments}
 \begin{itemize}
 	\item \textbf{How can weak and strong scaling be measured for NS-EOF? Which problems do you expect?}\\
-	\td{}
+	Strong scaling should be easy by choosing a large scenario since NS-EOF is computebound.\\
+	Weak scaling will be tricky because the number of iterations of PETSC is dependent on the number of cells. Therefore by doubling the domainsize we expect a larger computational work.\\
+	\td{Check again}
 \end{itemize}
 \subsection{NS-EOF in the MAC-cluster}
 \subsubsection{Environment and Login}
 Done.
 \subsubsection{Compiling}
-Done
+Due to the fact that PETSC is not fully supported by the MAC cluster we compiled our own version for this worksheet. We used the version 3.7.4 the commands to compile it are the following ones:
+\begin{lstlisting}[caption=Debug version]
+wget http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-3.7.4.tar.gz
+mkdir $HOME/petsc
+tar -xvf petsc-3.7.4.tar.gz
+cd petsc-3.7.4
+
+#maccluster
+python2 ./configure \
+--with-blas-lapack-dir=$MKLROOT \
+--with-mpi=1 \
+--with-mpi-dir=$MPI_BASE  \
+--prefix=$HOME/petsc/petsc-3.7.4-debug \
+--CC=mpiicc \
+--CXX=mpiicpc \
+--FC=mpiifort \
+--CPPFLAGS="-g -O3" \ # -xHOST does not work with debugging=1
+--CFLAGS="-g -O3" \
+--CXXFLAGS="-g -O3" \
+--with-vendor-compilers=intel \
+--known-mpi-shared-libraries=1 \
+--with-make-np=28 \
+--with-batch=1 \
+--with-debugging=1 \ # Set to zero for release version
+--PETSC_ARCH=petsc-3-7-4-debug
+
+salloc -n 1 -p snb
+cd $HOME/petsc/petsc-3.7.4
+./conftest-petsc-3-7-4-release
+
+#[Ctr + D]
+
+./reconfigure-petsc-3-7-4-release.py
+
+make PETSC_DIR=$HOME/petsc-3.7.4 PETSC_ARCH=petsc-3-7-4-release all
+make PETSC_DIR=$HOME/petsc-3.7.4 PETSC_ARCH=petsc-3-7-4-release install
+
+#in .bashrc
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/petsc/petsc-3.7.4/lib
+export PETSC_DIR=$HOME/petsc/petsc-3.7.4
+\end{lstlisting}
+
+
+
+
+
 \subsubsection{Execution}
 Done
 \subsection{Scaling Measurements}

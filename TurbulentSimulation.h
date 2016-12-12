@@ -6,7 +6,7 @@
 #include "stencils/TurbVTKStencil.h"
 #include "stencils/TurbFGHStencil.h"
 #include "stencils/TurbLPmodelStencil.h"
-#include "stencils/MinDtStencil.h"
+#include "stencils/MaxTurbViscosityStencil.h"
 
 class TurbulentSimulation : public Simulation {
 private:
@@ -21,8 +21,8 @@ private:
     TurbLPmodel _turbLPmodelStencil;
     FieldIterator<TurbFlowField> _turbLPmodelIterator;
 
-    MinDtStencil _minDtStencil;
-    FieldIterator<TurbFlowField> _minDtFieldIterator;
+    MaxTurbViscosityStencil _maxTurbViscosityStencil;
+    FieldIterator<TurbFlowField> _maxTurbViscosityFieldIterator;
     //GlobalBoundaryIterator<TurbFlowField> _minTurbViscosityBoundaryIterator;
 
     GlobalBoundaryIterator<TurbFlowField> _wallTurbViscosityIterator;
@@ -36,8 +36,8 @@ public:
         _turbFGHIterator(turbFlowField,parameters,_turbFGHStencil),
         _turbLPmodelStencil(parameters),
         _turbLPmodelIterator(turbFlowField,parameters,_turbLPmodelStencil),
-        _minDtStencil(parameters),
-        _minDtFieldIterator(turbFlowField,parameters,_minDtStencil,2,-1),
+        _maxTurbViscosityStencil(parameters),
+        _maxTurbViscosityFieldIterator(turbFlowField,parameters,_maxTurbViscosityStencil,2,-1),
         //_minTurbViscosityBoundaryIterator(turbFlowField,parameters,_minTurbViscosityStencil),
         _wallTurbViscosityIterator(_globalBoundaryFactory.getGlobalBoundaryTurbViscosityIterator(_turbFlowField)){}
     ~TurbulentSimulation() {}
@@ -100,12 +100,12 @@ private:
         _maxUFieldIterator.iterate();
         _maxUBoundaryIterator.iterate();
 
-        // determine the minimum turbulent viscosity (we store nu + nu_t as turbulent viscosity)
-        _minDtStencil.reset();
-        _minDtFieldIterator.iterate();
+        // determine the maximum turbulent viscosity (we store nu + nu_t as turbulent viscosity)
+        _maxTurbViscosityStencil.reset();
+        _maxTurbViscosityFieldIterator.iterate();
         //_minTurbViscosityBoundaryIterator.iterate();
 
-        assertion(_minDtStencil.getMinValue() > 0.0);
+        assertion(_maxTurbViscosityStencil.getMaxValue() > 0.0);
 
         if (_parameters.geometry.dim == 3) {
           factor += 1.0/(_parameters.meshsize->getDzMin() * _parameters.meshsize->getDzMin());
@@ -115,7 +115,7 @@ private:
         }
 
         localMin = std::min(_parameters.timestep.dt,
-                                          std::min(std::min(_minDtStencil.getMinValue(),
+                                          std::min(std::min(1.0/(2*factor*_maxTurbViscosityStencil.getMaxValue()),
                                           1.0 / _maxUStencil.getMaxValues()[0]),
                                           1.0 / _maxUStencil.getMaxValues()[1]));
 

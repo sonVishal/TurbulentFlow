@@ -28,7 +28,7 @@ stencils/RHSStencil.o stencils/VelocityStencil.o stencils/VTKStencil.o stencils/
 stencils/VTKBinaryStencil.o \
 parallelManagers/PetscParallelConfiguration.o\
 parallelManagers/PetscParallelManagerMPITypes.o\
-stencils/TurbFGHStencil.o stencils/MixingLengthStencil.o stencils/MinTurbViscosityStencil.o stencils/MinDtStencil.o \
+stencils/TurbFGHStencil.o stencils/MixingLengthStencil.o stencils/MaxTurbViscosityStencil.o \
 GlobalBoundaryFactory.o\
 stencils/BFStepInitStencil.o stencils/NeumannBoundaryStencils.o stencils/BFInputStencils.o stencils/ObstacleStencil.o\
 

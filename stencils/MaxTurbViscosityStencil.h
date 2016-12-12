@@ -1,5 +1,5 @@
-#ifndef _MIN_NU_T_STENCIL_H_
-#define _MIN_NU_T_STENCIL_H_
+#ifndef _MAX_NU_T_STENCIL_H_
+#define _MAX_NU_T_STENCIL_H_
 
 #include "../Stencil.h"
 #include "../Parameters.h"
@@ -13,11 +13,11 @@
  *  and synchronise this value over whole computational domain.
  *  @author Philipp Neumann
  */
-class MinTurbViscosityStencil : public FieldStencil<TurbFlowField>, public BoundaryStencil<TurbFlowField> {
+class MaxTurbViscosityStencil : public FieldStencil<TurbFlowField>, public BoundaryStencil<TurbFlowField> {
 
     private:
 
-        FLOAT _minValue;
+        FLOAT _maxValue;
 
         /** Sets the maximum value to the value of the cell if it surpasses the current one.
          *
@@ -26,7 +26,7 @@ class MinTurbViscosityStencil : public FieldStencil<TurbFlowField>, public Bound
          * @param i Position in the X direction.
          * @param j Position in the Y direction.
          */
-        void cellMinValue(TurbFlowField & flowField, int i, int j);
+        void cellMaxValue(TurbFlowField & flowField, int i, int j);
 
         /** Sets the maximum value to the value of the cell if it surpasses the current one.
          *
@@ -36,7 +36,7 @@ class MinTurbViscosityStencil : public FieldStencil<TurbFlowField>, public Bound
          * @param j Position in the Y direction.
          * @param k Position in the Z direction.
          */
-        void cellMinValue(TurbFlowField & flowField, int i, int j, int k);
+        void cellMaxValue(TurbFlowField & flowField, int i, int j, int k);
 
     public:
 
@@ -44,7 +44,7 @@ class MinTurbViscosityStencil : public FieldStencil<TurbFlowField>, public Bound
          *
          * @param parameters Parameters of the problem
          */
-        MinTurbViscosityStencil (const Parameters & parameters);
+        MaxTurbViscosityStencil (const Parameters & parameters);
 
         //@ brief Body iterations
         //@{
@@ -84,7 +84,7 @@ class MinTurbViscosityStencil : public FieldStencil<TurbFlowField>, public Bound
         /** Returns the array with the maximum modules of the components of the velocity,
          *  divided by the respective local meshsize
          */
-        FLOAT getMinValue() const;
+        FLOAT getMaxValue() const;
 };
 
 #endif

@@ -180,13 +180,13 @@ void MovingWallTurbViscosityStencil::applyRightWall ( TurbFlowField & flowField,
 
 void MovingWallTurbViscosityStencil::applyBottomWall ( TurbFlowField & flowField, int i, int j ){
 
-    flowField.getTurbViscosity().getScalar(i, j) = -flowField.getTurbViscosity().getScalar(i, j+1);
+    flowField.getTurbViscosity().getScalar(i, j) = 2.0/_parameters.flow.Re-flowField.getTurbViscosity().getScalar(i, j+1);
 }
 
 
 void MovingWallTurbViscosityStencil::applyTopWall ( TurbFlowField & flowField, int i, int j ){
 
-    flowField.getTurbViscosity().getScalar(i, j) = -flowField.getTurbViscosity().getScalar(i, j-1);
+    flowField.getTurbViscosity().getScalar(i, j) = 2.0/_parameters.flow.Re -flowField.getTurbViscosity().getScalar(i, j-1);
 }
 
 

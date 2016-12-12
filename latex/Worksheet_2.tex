@@ -1,0 +1,264 @@
+% !TeX spellcheck = en_US
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+%\usepackage{a4}
+
+\sloppy
+\usepackage{parskip} %Make a new line in pdf 
+\usepackage{hyperref} %Quick links
+\usepackage[ngerman]{babel}
+\renewcommand*\rmdefault{ppl} %Schrift
+\usepackage{listings}
+\usepackage{color}
+
+\usepackage{etoolbox}
+%\usepackage{showframe}
+\makeatletter
+\patchcmd{\@makechapterhead}{\vspace*{50\p@}}{}{}{}% Removes space above \chapter head
+\patchcmd{\@makeschapterhead}{\vspace*{50\p@}}{}{}{}% Removes space above \chapter* head
+\makeatother
+
+\definecolor{listinggray}{gray}{0.9}
+\definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
+%Adapted from http://tex.stackexchange.com/questions/81834/whats-the-best-way-to-typeset-c-codes-in-latex
+\lstset{
+	tabsize=4,    
+	language=[GNU]C++,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={1.5\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=false,
+	breaklines=true,
+	prebreak = \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=none,
+	numbers=left,
+	showtabs=false,
+	showspaces=false,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.026,0.112,0.095},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+	numberstyle=\color[rgb]{0.205, 0.142, 0.73},
+	%        \lstdefinestyle{C++}{language=C++,style=numbers}’.
+}
+
+\newcommand{\td}[1]{
+	\textbf{\color{red}TODO: {#1}}
+}
+
+
+
+
+\begin{document}
+
+
+\begin{center}
+	\huge\textbf{Solution Worksheet 2}\\
+	\bigskip
+	\normalsize Vishal Sontakke, Felix Späth, Michael Zellner, Christopher Zöller
+	
+\end{center}
+
+
+\section{Parallelization}
+
+We implemented the MPI\_Communication via MPI\_Datatypes. Our datatypes are the following ones:
+
+\begin{lstlisting}
+	MPI_Datatype _pres_right;  MPI_Datatype _pres_left;
+	MPI_Datatype _pres_top;    MPI_Datatype _pres_bottom;
+	MPI_Datatype _pres_front;  MPI_Datatype _pres_back;
+	
+	MPI_Datatype _velo_right;  MPI_Datatype _velo_left;
+	MPI_Datatype _velo_top;    MPI_Datatype _velo_bottom;
+	MPI_Datatype _velo_front;  MPI_Datatype _velo_back;
+\end{lstlisting}
+
+The definition of the datatypes are for example the following ones (in 2D):
+\begin{lstlisting}
+
+MPI_Type_vector(y, 
+				1, 
+				x+3, 
+				MY_MPI_FLOAT,
+				&_pres_left
+				);
+
+MPI_Type_vector(y,
+				2, 
+				x+3, 
+				MY_MPI_FLOAT,	
+				&_pres_right
+				);
+\end{lstlisting}
+
+By defining the datatypes like this it is not necessary to fill and read the pressure and velocity buffers. Additionally, an iterator is not necessary anymore.
+
+
+\subsection{Communication of Flow Quantities}
+\begin{itemize}
+	\item \textbf{Check out the implementation of the iterator ParallelBoundaryIterator.}\\
+	Done.
+	\item \textbf{Read the implementation and infer its functional meaning: which cells does the iterator operate on?}\\
+	The iterator will move over the boundary layer if there is a neighboring rank available. It operates on a BoundaryStencil.
+	\item \textbf{Which functions does a respective stencil object need to provide?}\\
+	This functions are necessary because they are defined as virtual ones.
+	\begin{lstlisting}
+	void applyLeftWall   (FlowField & flowField, int i, int j);
+	void applyRightWall  (FlowField & flowField, int i, int j);
+	void applyBottomWall (FlowField & flowField, int i, int j);
+	void applyTopWall    (FlowField & flowField, int i, int j);
+	void applyLeftWall   (FlowField & flowField, int i, int j, int k);
+	void applyRightWall  (FlowField & flowField, int i, int j, int k);
+	void applyBottomWall (FlowField & flowField, int i, int j, int k);
+	void applyTopWall    (FlowField & flowField, int i, int j, int k);
+	void applyFrontWall  (FlowField & flowField, int i, int j, int k);
+	void applyBackWall   (FlowField & flowField, int i, int j, int k);
+	\end{lstlisting}
+	
+	\item \textbf{Can you reuse existing stencil formats, or are new stencil types required?}\\
+	Since every function in BoundaryStencil is virtual we need to define new ones.
+	
+	\item \textbf{Implement a boundary stencil PressureBufferFillStencil which reads the pressure values in each of the six (3D) boundary faces of a sub-domain (i.e. the domain of one process) and stores them consecutively in one-dimensional buffer arrays (one array for each of the six faces). For traversal of the respectivesub-domain cells, cf. 1.}\\
+	Not necessary because we are using MPI\_Datatypes.
+	
+	\item \textbf{Implement a boundary stencil PressureBufferReadStencil which reads data from one- dimensional arrays (one array for each of the six faces) and writes them into the correct cells of the boundary.}\\
+	Not necessary because we are using MPI\_Datatypes.
+	
+	\item \textbf{Integrate the read- and write operations into a class PetscParallelManager. The Petsc- ParallelManager should provide a method communicatePressure() (...)}\\
+	Our communicatePressure() and communicateVelocity() methods consists of simple MPI\_SendRecv operations. Filling and reading buffer is not necessary because the MPI\_Datatypes will take care of that.
+	
+	\item \textbf{Implement the exchange of velocities analogously to the steps 1-4. Implement write- and read-stencils VelocityBufferFillStencil and VelocityBufferReadStencil and integrate them into the PetscParallelManager. The respective method communicate- Velocities() should further handle the exchange of the velocity buffers between the processes.}\\
+	Done.
+	
+	\item \textbf{Integrate the PetscParallelManager and respective calls to its communication methods into the class Simulation. Test the exchange of flow quantities in cavity, channel and backward-facing step flows. It is sufficient to only consider the first time step (the choice of a maximum time step should not have severe impact on the testing).}\\
+	Done. Tests were executed for 2D and 3D cases on every scenario. It seems like there is a bug in the cavity scenario. Petsc wont converge if one chooses split in x and y at the same time.
+	
+\end{itemize}
+\subsection{Global Synchronization of the Time Step}
+\begin{itemize}
+	\item \textbf{Check out the implementation of setTimeStep() in the class Simulation. How is the maximum time step evaluated in the parallel simulation?}\\
+	\td{}
+
+\end{itemize}
+
+\subsection{Validation}
+\begin{itemize}
+	\item \textbf{Validate your parallel implementation for different domain decompositions, that is different choices $P_x$ x $P_y$ x $P_z$ , and domain sizes. Use cavity, channel and backward-facing step simulations for this purpose. Compare the solutions to your sequential program. What do you observe?}\\
+	Done.\\
+	\td{Maybe some diagrams so that we can see the speedup}
+	
+\end{itemize}
+
+\section{Scaling and Efficiency}
+\subsection{Theory: Towards Scaling Experiments}
+\begin{itemize}
+	\item \textbf{How can weak and strong scaling be measured for NS-EOF? Which problems do you expect?}\\
+	\td{}
+\end{itemize}
+\subsection{NS-EOF in the MAC-cluster}
+\subsubsection{Environment and Login}
+Done.
+\subsubsection{Compiling}
+Done
+\subsubsection{Execution}
+Done
+\subsection{Scaling Measurements}
+\begin{itemize}
+	\item \textbf{Choose suitable simulation scenarios for the scaling measurements with respect to domain size, domain decomposition and the flow problem under consideration.}\\
+	\td{}
+	\item \textbf{Run your parallel simulations for various numbers of processors and architectures. Plot your speedup and parallel efficiency in respective graphs (processes vs. speedup, e.g.). Hint: Deactivate vtk output in the scaling experiments since our output is not optimized for parallel execution yet.}\\
+	\td{Out VTK output is per rank. Moreover maybe we should compare binary and ascii output here}
+	\item\textbf{How can you improve the performance of your program?}\\
+	\td{}
+	\item\textbf{Optimize your software. You may work on both sequential and parallel improvements as well as on algorithmic optimizations (such as optimization of the pressure Poisson solver).}\\
+	\td{}
+\end{itemize}
+
+\section{Turbulence Modeling}
+\subsection{Implementation of an algebraic turbulence model}
+\begin{itemize}
+	\item \textbf{Compute a laminar reference case. Therefore, set $v_T = 0$.}\\
+	\td{}
+	\item \textbf{Implement the Prandtl mixing length model. Consider that you need to know the local distance to the nearest wall as well as $S_{ij}$.}\\
+	\td{}
+	\item \textbf{Following these instructions,}
+	\begin{itemize}
+		\item \textbf{experiment two of the four options.}\\
+		\td{}
+		\item \textbf{explain your choices. What would you have expected and how does that differ from your findings?}\\
+		\td{}
+		\item \textbf{discuss your results and compare the results of your two modeling approaches.}\\
+		\td{}
+		\item \textbf{compare your findings to the laminar reference case.}\\
+		\td{}\\
+		\td{Ensure to base all of your discussions on appropriate data!}
+	\end{itemize}
+	\td{}\\
+\end{itemize}
+\subsection{Implementational Details}
+\subsubsection{Prerequisites}
+	\begin{itemize}
+	\item \textbf{Extend the configuration of the simulation such that all parameters required by your turbulence model implementation can also be read from the xml-files.}\\
+	\td{}
+\end{itemize}
+\subsubsection{Turbulent viscosity and wall distance}
+\begin{itemize}
+	\item \textbf{Extend the data structures for the turbulent case. In order to keep things simple, you may add a new scalar field for both the distance to the (nearest) wall and a scalar field to store the turbulent viscosity $vT$ . We further evaluate the turbulent viscosity in the cell center, i.e. at the same location as the pressure.}\\
+	\td{}
+	\item \textbf{Consider the basic interplay of stencils, iterators and data structures in NS-EOF. How can you apply the concept of inheritance so that you can naturally extend your data structures and support both old and potentially new data structures in case of turbulence- model-based simulations?}\\
+	\td{}
+	\item \textbf{Implement a VTK visualization for the turbulent viscosity. You may base your implementations on the existing plotter (VTKStencil) for the turbulent case and create a new stencil for this purpose which operates on the new data structure.}\\
+	\td{}
+\end{itemize}
+
+\subsubsection{Momentum equations}
+\begin{itemize}
+	\item \textbf{Replace the discretization of the Laplacian in the evaluation of F, G and H by discrete expressions for}\\
+	\td{}
+	\item \textbf{Improve your implementation by extending it to stretched meshes. How do you need to adapt the formulas for F, G, H from above?}\\
+	\td{}
+\end{itemize}
+
+\subsubsection{Parallelization}
+\begin{itemize}
+	\item \textbf{Extend interprocess communication by communication routines for the viscosity field. The communication of turbulent viscosity is carried out analogously to the communication of the pressure. How can you use the concept of inheritance to extend and reuse the existing communication routines from the PetscParallelManager?}\\
+	\td{}
+	\item \textbf{Extend the configuration by broadcasting the new parameters to all processes. You may use the methods MPI Bcast(...) and broadcastString(...), provided by MPI and the class Configuration.}\\
+	\td{}
+\end{itemize}
+\subsubsection{Plugging things together}
+\begin{itemize}
+	\item \textbf{Use the concept of inheritance to create a simulation class TurbulentSimulation which possesses all properties of Simulation and incorporates the features of the algebraic turbulence modeling.}\\
+	\td{}
+	\item \textbf{Adapt the time step restriction in TurbulentSimulation. Due to your inhomogeneous viscosity, the original expression for diffusive time step limitations}\\
+	\td{}
+	\item \textbf{Implement the evaluation of the new time step criterion using the stencil-iterator concept.}\\
+	\td{}
+	
+	
+\end{itemize}
+
+
+
+
+
+\section{Testing}
+\begin{itemize}
+	\item \textbf{Test your parallel, turbulent flow simulation code in various channel flow scenarios. How can you verify that all finite difference expressions and parallel extensions are evaluated correctly?}\\
+	\td{}
+	\item \textbf{Experiment with your choices on turbulence models in channel flows (cf. Sec. 3.1). What do you observe? How do the different models behave?}\\
+	\td{}
+	\item\textbf{Run turbulence simulations for the backward-facing step scenario.}\\
+	\td{}\\
+	\td{Attach your discussions and appropriate plots as a pdf-file to the code you submit!}
+\end{itemize}
+
+
+
+
+
+\end{document}

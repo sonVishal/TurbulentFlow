@@ -1,8 +1,6 @@
 #ifndef _DERIVATIVES_H_
 #define _DERIVATIVES_H_
-#include <iomanip>
 #include <math.h>
-// #include <cassert>
 #include "../Definitions.h"
 #include "../Parameters.h"
 #include "../TurbFlowField.h"
@@ -1277,24 +1275,17 @@ inline FLOAT DiffusiveTermF1(const FLOAT * const lm, const FLOAT * const lv, con
 }
 
 inline FLOAT DiffusiveTermF2(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
-   // assert(Nuhh0(lm,lnu)==1e-3);
-   // assert(NuhMh0(lm,lnu)==1e-3);
    return (Nuhh0(lm,lnu) * (dudy_f(lv,lm) + dvdx_f(lv,lm)) - NuhMh0(lm,lnu) * (dudy_b(lv,lm) + dvdx_fM1(lv,lm)))
            / lm[mapd( 0, 0, 0, 1)];
 
 }
 
 inline FLOAT DiffusiveTermF3(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
-    // assert(Nuh0h(lm,lnu)==1e-3);
-    // assert(Nuh0Mh(lm,lnu)==1e-3);
     return (Nuh0h(lm,lnu) * (dudz_f(lv,lm) + dwdx_f(lv,lm)) - Nuh0Mh(lm,lv) * (dudz_b(lv,lm) + dwdx_fM1(lv,lm)))
             / lm[mapd(0, 0, 0, 2)];
 }
 
 inline FLOAT DiffusiveTermG1(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
-    // std::cout << std::setprecision(16) << Nuhh0(lm,lnu) << ' ' << NuMhh0(lm,lnu) << '\n';
-    // assert(Nuhh0(lm,lnu)==0.001);
-    // assert(NuMhh0(lm,lnu)<=0.001+1e-12 && NuMhh0(lm,lnu)>=0.001-1e-12);
     return (Nuhh0(lm,lnu) * (dvdx_f(lv,lm) + dudy_f(lv,lm)) - NuMhh0(lm,lnu) * (dvdx_b(lv,lm) + dudy_fM1(lv,lm)))
             / lm[mapd( 0, 0, 0, 0)];
 }
@@ -1313,23 +1304,16 @@ inline FLOAT DiffusiveTermG2(const FLOAT * const lm, const FLOAT * const lv, con
 }
 
 inline FLOAT DiffusiveTermG3(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
-    // std::cout << Nu0hh(lm,lnu) << ' ' << Nu0hMh(lm,lnu) << '\n';
-    // assert(Nu0hh(lm,lnu)<=1e-3+1e-12 && Nu0hh(lm,lnu)>=1e-3-1e-12);
-    // assert(Nu0hMh(lm,lnu)<=1e-3+1e-12 && Nu0hMh(lm,lnu)>=1e-3-1e-12);
     return (Nu0hh(lm,lnu) * (dvdz_f(lv,lm) + dwdy_f(lv,lm)) - Nu0hMh(lm,lnu) * (dvdz_b(lv,lm) + dwdy_fM1(lv,lm)))
             / lm[mapd( 0, 0, 0, 2)];
 }
 
 inline FLOAT DiffusiveTermH1(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
-    // assert(Nuh0h(lm,lnu)==1e-3);
-    // assert(NuMh0h(lm,lnu)==1e-3);
     return (Nuh0h(lm,lnu) * (dwdx_f(lv,lm) + dudz_f(lv,lm)) - NuMh0h(lm,lnu) * (dwdx_b(lv,lm) + dudz_fM1(lv,lm)))
             / lm[mapd( 0, 0, 0, 0)];
 }
 
 inline FLOAT DiffusiveTermH2(const FLOAT * const lm, const FLOAT * const lv, const FLOAT * const lnu){
-    // assert(Nu0hh(lm,lnu)<=1e-3+1e-12 && Nu0hh(lm,lnu)>=1e-3-1e-12);
-    // assert(Nu0Mhh(lm,lnu)<=1e-3+1e-12 && Nu0Mhh(lm,lnu)>=1e-3-1e-12);
     return (Nu0hh(lm,lnu) * (dwdy_f(lv,lm) + dvdz_f(lv,lm)) - Nu0Mhh(lm,lnu) * (dwdy_b(lv,lm) + dvdz_fM1(lv,lm)))
             / lm[mapd( 0, 0, 0, 1)];
 }

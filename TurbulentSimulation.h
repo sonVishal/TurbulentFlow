@@ -2,7 +2,7 @@
 #define _TURBULENT_SIMULATION_H_
 
 #define BINARY_TURB_VTK
-#include <exception>
+
 #include "Simulation.h"
 #include "TurbFlowField.h"
 #include "stencils/MixingLengthStencil.h"
@@ -70,20 +70,10 @@ public:
     void solveTimestep() {
         // compute viscosity
         _turbLPmodelIterator.iterate();
-		// std::cout << "LP model iterate done" << '\n';
-        // // TODO: communicate turbulent viscosity values
+        // communicate turbulent viscosity values
         _petscParallelManager.communicateViscosity();
+		// update wall values
         _wallTurbViscosityIterator.iterate();
-		// std::cout << "LP model wall iterate done" << '\n';
-		// for (int k = 0; k < _parameters.geometry.sizeZ+3; k++) {
-		// 	for (int j = 0; j < _parameters.geometry.sizeY+3; j++) {
-		// 		for (int i = 0; i < _parameters.geometry.sizeX+3; i++) {
-		// 			std::cout << _turbFlowField.getTurbViscosity().getScalar(i, j, k) << ' ';
-		// 		}
-		// 		std::cout << '\n';
-		// 	}
-		// 	std::cout << "------------------------------------------------------------------------------------------" << '\n';
-		// }
 
         // Do the viscosity first so that the min viscosity is not 0 while setting up dt
         // This is equivalent as changing order in a cyclic manner does not change the algorithm
@@ -97,14 +87,13 @@ public:
         _rhsIterator.iterate();
         // solve for pressure
         _solver.solve();
-		// throw std::exception();
-        // TODO WS2: communicate pressure values
+        // communicate pressure values
         _petscParallelManager.communicatePressure();
         // compute velocity
         _velocityIterator.iterate();
     	// set obstacle boundaries
     	_obstacleIterator.iterate();
-        // TODO WS2: communicate velocity values
+        // communicate velocity values
     	_petscParallelManager.communicateVelocity();
         // Iterate for velocities on the boundary
         _wallVelocityIterator.iterate();

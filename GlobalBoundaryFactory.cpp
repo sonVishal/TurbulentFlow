@@ -158,11 +158,11 @@ GlobalBoundaryIterator<TurbFlowField> GlobalBoundaryFactory::
         return GlobalBoundaryIterator<TurbFlowField>(flowField, _parameters,
                                       *(_turbViscosityStencils[0]), *(_turbViscosityStencils[1]),
                                       *(_turbViscosityStencils[2]), *(_turbViscosityStencils[3]),
-                                      1, 0);
+                                      0, 0);
     }
     return GlobalBoundaryIterator<TurbFlowField>(flowField, _parameters,
                                   *(_turbViscosityStencils[0]), *(_turbViscosityStencils[1]),
                                   *(_turbViscosityStencils[2]), *(_turbViscosityStencils[3]),
                                   *(_turbViscosityStencils[4]), *(_turbViscosityStencils[5]),
-                                  1, 0);
+                                  0, 0);
 }

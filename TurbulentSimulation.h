@@ -55,8 +55,7 @@ public:
         _turbLPmodelStencil(parameters),
         _turbLPmodelIterator(turbFlowField,parameters,_turbLPmodelStencil),
         _maxTurbViscosityStencil(parameters),
-        _maxTurbViscosityFieldIterator(turbFlowField,parameters,_maxTurbViscosityStencil,2,-1),
-        //_minTurbViscosityBoundaryIterator(turbFlowField,parameters,_minTurbViscosityStencil),
+        _maxTurbViscosityFieldIterator(turbFlowField,parameters,_maxTurbViscosityStencil),
         _wallTurbViscosityIterator(_globalBoundaryFactory.getGlobalBoundaryTurbViscosityIterator(_turbFlowField)){}
     ~TurbulentSimulation() {}
     void initializeFlowField() {

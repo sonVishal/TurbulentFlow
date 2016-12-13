@@ -36,7 +36,6 @@ int main (int argc, char *argv[]) {
     for(int i=2;i<argc;i++){
     	std::string input(argv[i]);
 
-    	std::cout<<input<<std::endl;
     	if(input.compare("--help")==0){
     		if(rank==0){
     			std::cout<<"Additional command line options \n"<<

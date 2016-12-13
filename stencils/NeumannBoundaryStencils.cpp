@@ -87,8 +87,8 @@ NeumannTurbViscosityBoundaryStencil::NeumannTurbViscosityBoundaryStencil(const P
 
 
 void NeumannTurbViscosityBoundaryStencil::applyLeftWall   ( TurbFlowField & flowField, int i, int j ){
-    flowField.getTurbViscosity().getScalar(i,j) = flowField.getTurbViscosity().getScalar(i+1,j);
-    flowField.getTurbViscosity().getScalar(i-1,j) = flowField.getTurbViscosity().getScalar(i+1,j);
+    flowField.getTurbViscosity().getScalar(i,j) = flowField.getTurbViscosity().getScalar(i+2,j);
+    flowField.getTurbViscosity().getScalar(i+1,j) = flowField.getTurbViscosity().getScalar(i+2,j);
 }
 
 void NeumannTurbViscosityBoundaryStencil::applyRightWall  ( TurbFlowField & flowField, int i, int j ){

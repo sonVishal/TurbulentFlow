@@ -6,7 +6,7 @@
 \sloppy
 \usepackage{parskip} %Make a new line in pdf 
 \usepackage{hyperref} %Quick links
-\usepackage[ngerman]{babel}
+%\usepackage[ngerman]{babel}
 \renewcommand*\rmdefault{ppl} %Schrift
 \usepackage{listings}
 \usepackage{color}
@@ -230,7 +230,7 @@ Done
 \begin{itemize}
 	\item \textbf{Compute a laminar reference case. Therefore, set $v_T = 0$.}\\
 	Done with 2D.\\
-	\td{3D}
+	3D has been implemented but there is a bug which we are not able to find out which causes PETSc to diverge after few time steps.
 	\item \textbf{Implement the Prandtl mixing length model. Consider that you need to know the local distance to the nearest wall as well as $S_{ij}$.}\\
 	Done.
 	\item \textbf{Following these instructions,}
@@ -267,16 +267,15 @@ Done
 	\item \textbf{Replace the discretization of the Laplacian in the evaluation of F, G and H by discrete expressions for}\\
 	Done\\
 	\item \textbf{Improve your implementation by extending it to stretched meshes. How do you need to adapt the formulas for F, G, H from above?}\\
-	\td{Check 3D}\\
 	We extend the implementation to stretched meshes by looking at the cell sizes and weighing the respective cell with the respective ratio. This is similar to what is already implemented in the code for other derivatives.
 \end{itemize}
 
 \subsubsection{Parallelization}
 \begin{itemize}
 	\item \textbf{Extend interprocess communication by communication routines for the viscosity field. The communication of turbulent viscosity is carried out analogously to the communication of the pressure. How can you use the concept of inheritance to extend and reuse the existing communication routines from the PetscParallelManager?}\\
-	\td{}
+	Done. Similar to the communication of pressure and velocity using MPI\_DATA\_TYPE.
 	\item \textbf{Extend the configuration by broadcasting the new parameters to all processes. You may use the methods MPI Bcast(...) and broadcastString(...), provided by MPI and the class Configuration.}\\
-	\td{}
+	Done.
 \end{itemize}
 \subsubsection{Plugging things together}
 \begin{itemize}
@@ -297,7 +296,7 @@ Done
 \section{Testing}
 \begin{itemize}
 	\item \textbf{Test your parallel, turbulent flow simulation code in various channel flow scenarios. How can you verify that all finite difference expressions and parallel extensions are evaluated correctly?}\\
-	\td{}
+	Running the simulation with turbulent viscosity, $\nu_{T}$, set to 0 if we observe that the output is same as dns simulation then we conclude that the derivatives are correct. If the derivatives were wrong then we would not see this in the output.
 	\item \textbf{Experiment with your choices on turbulence models in channel flows (cf. Sec. 3.1). What do you observe? How do the different models behave?}\\
 	\td{}
 	\item\textbf{Run turbulence simulations for the backward-facing step scenario.}\\

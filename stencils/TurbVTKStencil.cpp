@@ -156,7 +156,7 @@ void TurbVTKStencil::write ( TurbFlowField & flowField, int timeStep ) {
     _outputFile << "LOOKUP_TABLE default\n";
     _outputFile << _turbViscosityStream.str() << std::endl;
     // Write the distance to wall
-    _outputFile << "SCALARS distToWall float 1\n";
+    _outputFile << "SCALARS mixingLength float 1\n";
     _outputFile << "LOOKUP_TABLE default\n";
     _outputFile << _turbDistToWall.str() << std::endl;
     // Write the header for velocity field

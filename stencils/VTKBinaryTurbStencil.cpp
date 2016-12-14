@@ -102,7 +102,7 @@ VTKBinaryTurbStencil::VTKBinaryTurbStencil ( const Parameters & parameters ): Fi
 	this->wall_b = new byte[wall_b_len];
 
 
-	ss << "\nSCALARS dist_wall float 1\nLOOKUP_TABLE default\n";
+	ss << "\nSCALARS mixingLength float 1\nLOOKUP_TABLE default\n";
 	this->_cd_scalar_wall = ss.str();
 	ss.str("");
 

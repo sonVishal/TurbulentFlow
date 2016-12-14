@@ -184,6 +184,7 @@ Done
 	\item \textbf{Compute a laminar reference case. Therefore, set $v_T = 0$.}\\
 	\td{}
 	\item \textbf{Implement the Prandtl mixing length model. Consider that you need to know the local distance to the nearest wall as well as $S_{ij}$.}\\
+	The turbulent viscosity calculation is implemented in the TurbLPModelStencil files. The Stencil consists of properties for the local velocities and local mesh sizes, the getShearStressTensorProduct which determines the square root in formular (4) and the apply methods that calculate the  turbulent viscosity value for each cell. The derivatives for the shear stress tensor are implemented in the StencilFunctions.h file. The mixing length is stored in TurbFlowField and calculated in MixingLengthStencil. 
 	\td{}
 	\item \textbf{Following these instructions,}
 	\begin{itemize}
@@ -218,8 +219,10 @@ Done
 \subsubsection{Momentum equations}
 \begin{itemize}
 	\item \textbf{Replace the discretization of the Laplacian in the evaluation of F, G and H by discrete expressions for}\\
+	The velocity terms F, G and H are being evaluated in TurbFGHStencil. The methods that compute F, G and H are implemented in StencilFunctions. The compute functions used for the DNS simulations are overloaded and the evaluation of the Laplacian is changed to the evaluation of the three summands of equation (8-10) respectively.  The methods used to calculate these summands consist of the derivative-methods and the methods that determine the turbulent viscosity at cell edges. 
 	\td{}
 	\item \textbf{Improve your implementation by extending it to stretched meshes. How do you need to adapt the formulas for F, G, H from above?}\\
+	In order to take different cell sizes into account when evaluating the derivatives and interpolated values for the F, G, H calculations, the velocity and turbulent viscosity components have to be considered proportionally to their distance to the point of interest (i.e. to the point where the value are evaluated). 
 	\td{}
 \end{itemize}
 

@@ -11,6 +11,13 @@
 \renewcommand*\rmdefault{ppl} %Schrift
 \usepackage{listings}
 \usepackage{color}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
 
 \usepackage{etoolbox}
 %\usepackage{showframe}
@@ -48,6 +55,38 @@
 
 \newcommand{\td}[1]{
 	\textbf{\color{red}TODO: {#1}}
+}
+
+
+\makeatletter
+\pgfplotsset{
+	/pgfplots/flexible xticklabels from table/.code n args={3}{%
+		\pgfplotstableread[#3]{#1}\coordinate@table
+		\pgfplotstablegetcolumn{#2}\of{\coordinate@table}\to\pgfplots@xticklabels
+		\let\pgfplots@xticklabel=\pgfplots@user@ticklabel@list@x
+	}
+}
+\makeatother
+
+\newcommand{\createPlot}[3]{
+	\scriptsize
+	\begin{tikzpicture}
+	\pgfplotstableread[col sep=comma]{#1}\datatable
+	\begin{axis}[
+	ybar, ymin=0,
+	xlabel={#2},
+	ylabel=Time in s,
+	%ymode=log,
+	ymajorgrids,
+	flexible xticklabels from table={#1}{{#2}}{col sep=comma},
+	xticklabel style={rotate=45, anchor=east, align=right,text width=1.0cm},
+	xtick=data,
+	nodes near coords align={vertical}]
+	\addplot[blue!20!black,fill=blue!50!white] table[x expr=\coordindex,y={#3}]{\datatable};
+	
+	\end{axis}
+	\end{tikzpicture}\\
+	
 }
 
 
@@ -219,13 +258,59 @@ Done
 \subsection{Scaling Measurements}
 \begin{itemize}
 	\item \textbf{Choose suitable simulation scenarios for the scaling measurements with respect to domain size, domain decomposition and the flow problem under consideration.}\\
-	\td{}
+	
+	\textbf{Strong scaling results:}
+
+\begin{figure}[H]
+	\hspace{-3cm}
+	\begin{minipage}{.7\textwidth}
+		\centering
+		\createPlot{csv/N1IncX.csv}{Processes}{Time}	
+		\caption{On one Node with domain size 120x120. Increase number of ranks in x-direction}
+	\end{minipage}%
+	\begin{minipage}{.8\textwidth}
+		\centering
+		\createPlot{csv/N1IncY.csv}{Processes}{Time}	
+		\caption{On one Node with domain size 120x120. Increase number of ranks in y-direction}
+	\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\createPlot{csv/N1IncXY.csv}{Processes}{Time}
+	\caption{On one Node with domain size 120x120. Increase number of ranks in x- and y-direction}
+\end{figure}
+
+
+\begin{figure}[H]
+	\hspace{-3cm}
+	\begin{minipage}{.7\textwidth}
+		\centering
+		\createPlot{csv/N2.csv}{Processes}{Time}
+		\caption{On two Node with domain size 120x120}
+	\end{minipage}%
+	\begin{minipage}{.8\textwidth}
+		\centering
+		\createPlot{csv/N4.csv}{Processes}{Time}
+		\caption{On four Node with domain size 120x120}
+	\end{minipage}
+\end{figure}
+
+
+\textbf{Weak scaling results:}
+\begin{figure}[H]
+	\centering
+	\createPlot{csv/weak.csv}{Processes}{Time}
+	\caption{On one node. 40x40 per rank.}
+\end{figure}
+	
 	\item \textbf{Run your parallel simulations for various numbers of processors and architectures. Plot your speedup and parallel efficiency in respective graphs (processes vs. speedup, e.g.). Hint: Deactivate vtk output in the scaling experiments since our output is not optimized for parallel execution yet.}\\
 	\td{Out VTK output is per rank. Moreover maybe we should compare binary and ascii output here}
 	\item\textbf{How can you improve the performance of your program?}\\
-	\td{}
+	Since the Petsc part is the most compute intensive one. One should try to improve this. About 65\% of the runtime is spend in Petsc. Probably a better parallelization of this part by using for example OpenMP could help to address this problem. Moreover another Preconditioner could help to decrease the time which is spend in petsc.
 	\item\textbf{Optimize your software. You may work on both sequential and parallel improvements as well as on algorithmic optimizations (such as optimization of the pressure Poisson solver).}\\
-	\td{}
+	One optimization we did was to use a better implementation for the MPI communication. With our MPI\_Datatypes unnecessary fill and read operation on the communication buffers are not a problem anymore. Additionally, our code is much cleaner as before because it is about 500 loc less.
+	Another improvement is the BinaryVTK output. It is much faster and safes harddisk space.
 \end{itemize}
 
 \section{Turbulence Modeling}

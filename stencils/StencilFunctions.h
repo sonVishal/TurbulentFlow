@@ -97,61 +97,7 @@ inline FLOAT dudx ( const FLOAT * const lv, const FLOAT * const lm ) {
     const int index0 = mapd(0,0,0,0);
     const int index1 = mapd(-1,0,0,0);
     return  ( lv [index0] - lv [index1] ) / lm[index0];
-    /*if (fabs(tmp1-tmp2) > 1.0e-12){handleError(1, "dudx");}
-
-    return tmp2;*/
 }
-
-//inline FLOAT dudy ( const FLOAT * const lv, const FLOAT * const lm ) {
-//// new structured naming system:
-//// 0 represents left side of cell
-//// 1 represents right side of cell (from 0 -> 1)
-//// M represents shift in layer downwards
-//// P represents shift in layer upwards
-
-//const int vel = 0;
-
-//const int index_M0 = mapd(-1,-1,0,vel);
-//// u[i-1,j-1,k]
-//const int index_M1 = mapd( 0,-1,0,vel);
-//// u[i,j-1,k]
-//const int index_0 = mapd(-1, 0,0,vel);
-//// u[i-1,j,k]
-//const int index_1 = mapd( 0, 0,0,vel);
-//// u[i,j,k]
-//const int index_P0 = mapd(-1, 1,0,vel);
-//// u[i-1,j+1,k]
-//const int index_P1 = mapd( 0, 1,0,vel);
-//// u[i,j+1,k]
-
-//// specified length indices (0 current, M downwards, P upwards)
-
-//const int dist = 1;
-//const int index_lM = mapd(0,-1,0,dist);
-//const int index_l0 = mapd(0, 0,0,dist);
-//const int index_lP = mapd(0, 1,0,dist);
-
-//// substitution and selecting required terms (leave constant throughout)
-
-//// distances
-//const FLOAT hShort = 0.5*lm[index_l0];
-//// distance of center u-value from upper edge of cell
-
-//const FLOAT hLongP = 0.5*(hShort + lm[index_lP]);
-//// distance of south and center u-value
-
-//const FLOAT hLongM = 0.5*(hShort + lm[index_lM]);
-//// distance of north and center u-value
-
-//// averages
-//const FLOAT AveP0 = lv[index_P0]*(hShort)/hLongP + lv[index_0]*(hLongP-hShort)/hLongP;
-//const FLOAT AveP1 = lv[index_P1]*(hShort)/hLongP + lv[index_1]*(hLongP-hShort)/hLongP;
-//const FLOAT AveM0 = lv[index_M0]*(hShort)/hLongM + lv[index_0]*(hLongM-hShort)/hLongM;
-//const FLOAT AveM1 = lv[index_M1]*(hShort)/hLongM + lv[index_1]*(hLongM-hShort)/hLongM;
-
-//return ( 0.5*(AveP0 + AveP1) - 0.5*(AveM0 + AveM1) ) / (2*hShort); }
-
-
 
 
 inline FLOAT dudy ( const FLOAT * const lv, const FLOAT * const lm) {
@@ -171,10 +117,6 @@ inline FLOAT dudy ( const FLOAT * const lv, const FLOAT * const lm) {
     return 1.0/(4.0*hyShort) * ( ( (hyLong1-hyShort)/hyLong1 * u00 + hyShort/hyLong1 * u01  ) + ( (hyLong1-hyShort)/hyLong1 * uM10 + hyShort/hyLong1 * uM11  )
                                  - ( ( (hyLong0-hyShort)/hyLong0 * u00 + hyShort/hyLong0 * u0M1 ) + ( (hyLong0-hyShort)/hyLong0 * uM10 + hyShort/hyLong0 * uM1M1 ) ) ) ;
 
-    /*FLOAT tmp = 1.0/(4.0*hyShort) * ( ( (hyLong1-hyShort)/hyLong1 * u00 + hyShort/hyLong1 * u01  ) + ( (hyLong1-hyShort)/hyLong1 * uM10 + hyShort/hyLong1 * uM11  )
-                                  - ( ( (hyLong0-hyShort)/hyLong0 * u00 + hyShort/hyLong0 * u0M1 ) + ( (hyLong0-hyShort)/hyLong0 * uM10 + hyShort/hyLong0 * uM1M1 ) ) ) ;
-    std::cout << "dudy: " << tmp << std::endl;
-    return std::abs(tmp)*/;
 }
 
 inline FLOAT dudz ( const FLOAT * const lv, const FLOAT * const lm) {
@@ -193,42 +135,7 @@ inline FLOAT dudz ( const FLOAT * const lv, const FLOAT * const lm) {
     return 1.0/(4.0*hzShort) * ( ( (hzLong1-hzShort)/hzLong1 * u00 + hzShort/hzLong1 * u01  ) + ( (hzLong1-hzShort)/hzLong1 * uM10 + hzShort/hzLong1 * uM11 )
                              - ( ( (hzLong0-hzShort)/hzLong0 * u00 + hzShort/hzLong0 * u0M1 ) + ( (hzLong0-hzShort)/hzLong0 * uM10 + hzShort/hzLong0 * uM1M1) ) );
 }
-//inline FLOAT dvdx ( const FLOAT * const lv, const FLOAT * const lm ) {
 
-//    // specified velocity indices (0 = left, 1 = right, M downwards, P upwards)
-
-//    const int vel = 1;
-
-//    const int index_M0    = mapd(-1,-1,0,vel);
-//    const int index_M1    = mapd(-1, 0,0,vel);
-//    const int index_0     = mapd( 0,-1,0,vel);
-//    const int index_1     = mapd( 0, 0,0,vel);
-//    const int index_P0    = mapd( 1,-1,0,vel);
-//    const int index_P1    = mapd( 1, 0,0,vel);
-
-//    // specified length indices (0 current, M downwards, P upwards)
-
-//    const int dist = 0;
-
-//    const int index_lM    = mapd(-1,0,0,dist);
-//    const int index_l0    = mapd( 0,0,0,dist);
-//    const int index_lP    = mapd( 1,0,0,dist);
-
-//    // substitution and selecting required terms (leave constant throughout)
-
-//    // distances
-//    const FLOAT hShort  = 0.5*lm[index_l0];
-//    const FLOAT hLongP  = 0.5*(lm[index_l0] + lm[index_lP]);
-//    const FLOAT hLongM  = 0.5*(lm[index_l0] + lm[index_lM]);
-
-//    // averages
-//    const FLOAT AveP0 = lv[index_P0]*(hShort)/hLongP + lv[index_0]*(hLongP-hShort)/hLongP;
-//    const FLOAT AveP1 = lv[index_P1]*(hShort)/hLongP + lv[index_1]*(hLongP-hShort)/hLongP;
-//    const FLOAT AveM0 = lv[index_M0]*(hShort)/hLongM + lv[index_0]*(hLongM-hShort)/hLongM;
-//    const FLOAT AveM1 = lv[index_M1]*(hShort)/hLongM + lv[index_1]*(hLongM-hShort)/hLongM;
-
-//    return ( 0.5*(AveP0 + AveP1) - 0.5*(AveM0 + AveM1) ) / (2*hShort);
-//}
 
 inline FLOAT dvdx ( const FLOAT * const lv, const FLOAT * const lm) {
     //return 1;// evaluate dudy in the cell center by a central difference
@@ -246,10 +153,6 @@ inline FLOAT dvdx ( const FLOAT * const lv, const FLOAT * const lm) {
     return 1.0/(4.0*hxShort) * ( ( (hxLong1-hxShort)/hxLong1 * v00 + hxShort/hxLong1 * v10  ) + ( (hxLong1-hxShort)/hxLong1 * v0M1 + hxShort/hxLong1 * v1M1 )
                              - ( ( (hxLong0-hxShort)/hxLong0 * v00 + hxShort/hxLong0 * vM10 ) + ( (hxLong0-hxShort)/hxLong0 * v0M1 + hxShort/hxLong0 * vM1M1) ) );
 
-//    FLOAT tmp = 1.0/(4.0*hxShort) * ( ( (hxLong1-hxShort)/hxLong1 * v00 + hxShort/hxLong1 * v10  ) + ( (hxLong1-hxShort)/hxLong1 * v0M1 + hxShort/hxLong1 * v1M1 )
-//                                  - ( ( (hxLong0-hxShort)/hxLong0 * v00 + hxShort/hxLong0 * vM10 ) + ( (hxLong0-hxShort)/hxLong0 * v0M1 + hxShort/hxLong0 * vM1M1) ) );
-//    std::cout << "dvdx: " << tmp << std::endl;
-//    return abs(tmp);
 
 }
 
@@ -259,9 +162,6 @@ inline FLOAT dvdy ( const FLOAT * const lv, const FLOAT * const lm ) {
     const int index1 = mapd(0,-1,0,1);
     return ( lv [index0] - lv [index1] ) / lm[index0];
 
-    /*if (fabs(tmp1-tmp2) > 1.0e-12){handleError(1, "dvdy");}
-
-    return tmp2;*/
 }
 
 inline FLOAT dvdz ( const FLOAT * const lv, const FLOAT * const lm) {
@@ -321,9 +221,7 @@ inline FLOAT dwdz ( const FLOAT * const lv, const FLOAT * const lm ) {
     const int index1 = mapd(0,0,-1,2);
     return ( lv [index0] - lv [index1] ) / lm[index0];
 
-    /*if (fabs(tmp1-tmp2) > 1.0e-12){handleError(1, "dwdz");}
 
-    return tmp2;*/
 }
 
 
@@ -345,9 +243,6 @@ inline FLOAT d2udx2 ( const FLOAT * const lv, const FLOAT * const lm ) {
     const FLOAT dxSum = dx0+dx1;
     return 2.0*(lv[index_P1]/(dx1*dxSum) - lv[index_0]/(dx1*dx0) + lv[index_M1]/(dx0*dxSum) );
 
-    /*if (fabs(tmp1-tmp2) > 1.0e-12){handleError(1, "d2udx2");}
-
-    return tmp2;*/
 }
 
 inline FLOAT d2udy2 ( const FLOAT * const lv, const FLOAT * const lm ) {
@@ -362,9 +257,6 @@ inline FLOAT d2udy2 ( const FLOAT * const lv, const FLOAT * const lm ) {
     const FLOAT dySum = dy0+dy1;
     return 2.0*(lv[mapd(0,1,0,0)]/(dy1*dySum) - lv[mapd(0,0,0,0)]/(dy1*dy0) + lv[mapd(0,-1,0,0)]/(dy0*dySum) );
 
-    /*if (fabs(tmp1-tmp2) > 1.0e-12){handleError(1, "d2udy2");}
-
-    return tmp2;*/
 }
 
 inline FLOAT d2udz2 ( const FLOAT * const lv, const FLOAT * const lm ) {
@@ -377,9 +269,7 @@ inline FLOAT d2udz2 ( const FLOAT * const lv, const FLOAT * const lm ) {
     const FLOAT dz1 = 0.5*(dz_0+dz_P1);
     const FLOAT dzSum = dz0+dz1;
     return 2.0*(lv[mapd(0,0,1,0)]/(dz1*dzSum) - lv[mapd(0,0,0,0)]/(dz1*dz0) + lv[mapd(0,0,-1,0)]/(dz0*dzSum) );
-    /*if (fabs(tmp1-tmp2) > 1.0e-12){handleError(1, "d2udz2");}
 
-    return tmp2;*/
 }
 
 
@@ -395,9 +285,6 @@ inline FLOAT d2vdx2 ( const FLOAT * const lv, const FLOAT * const lm ) {
     const FLOAT dxSum = dx0+dx1;
     return 2.0*(lv[mapd(1,0,0,1)]/(dx1*dxSum) - lv[mapd(0,0,0,1)]/(dx1*dx0) + lv[mapd(-1,0,0,1)]/(dx0*dxSum) );
 
-    /*if (fabs(tmp1-tmp2) > 1.0e-12){handleError(1, "d2vdx2");}
-
-    return tmp2;*/
 }
 
 inline FLOAT d2vdy2 ( const FLOAT * const lv, const FLOAT * const lm ) {
@@ -412,9 +299,6 @@ inline FLOAT d2vdy2 ( const FLOAT * const lv, const FLOAT * const lm ) {
     const FLOAT dySum = dy0+dy1;
     return 2.0*(lv[index_P1]/(dy1*dySum) - lv[index_0]/(dy1*dy0) + lv[index_M1]/(dy0*dySum) );
 
-    /*if (fabs(tmp1-tmp2) > 1.0e-12){handleError(1, "d2vdy2");}
-
-    return tmp2;*/
 }
 
 inline FLOAT d2vdz2 ( const FLOAT * const lv, const FLOAT * const lm ) {
@@ -428,9 +312,6 @@ inline FLOAT d2vdz2 ( const FLOAT * const lv, const FLOAT * const lm ) {
     const FLOAT dzSum = dz0+dz1;
     return 2.0*(lv[mapd(0,0,1,1)]/(dz1*dzSum) - lv[mapd(0,0,0,1)]/(dz1*dz0) + lv[mapd(0,0,-1,1)]/(dz0*dzSum) );
 
-    /*if (fabs(tmp1-tmp2) > 1.0e-12){handleError(1, "d2vdz2");}
-
-    return tmp2;*/
 }
 
 
@@ -446,9 +327,6 @@ inline FLOAT d2wdx2 ( const FLOAT * const lv, const FLOAT * const lm ) {
     const FLOAT dxSum = dx0+dx1;
     return 2.0*(lv[mapd(1,0,0,2)]/(dx1*dxSum) - lv[mapd(0,0,0,2)]/(dx1*dx0) + lv[mapd(-1,0,0,2)]/(dx0*dxSum) );
 
-    /*if (fabs(tmp1-tmp2) > 1.0e-12){handleError(1, "d2wdx2");}
-
-    return tmp2;*/
 }
 
 inline FLOAT d2wdy2 ( const FLOAT * const lv, const FLOAT * const lm ) {
@@ -462,9 +340,6 @@ inline FLOAT d2wdy2 ( const FLOAT * const lv, const FLOAT * const lm ) {
     const FLOAT dySum = dy0+dy1;
     return 2.0*(lv[mapd(0,1,0,2)]/(dy1*dySum) - lv[mapd(0,0,0,2)]/(dy1*dy0) + lv[mapd(0,-1,0,2)]/(dy0*dySum) );
 
-    /*if (fabs(tmp1-tmp2) > 1.0e-12){handleError(1, "d2wdy2");}
-
-    return tmp2;*/
 }
 
 inline FLOAT d2wdz2 ( const FLOAT * const lv, const FLOAT * const lm ) {
@@ -479,25 +354,12 @@ inline FLOAT d2wdz2 ( const FLOAT * const lv, const FLOAT * const lm ) {
     const FLOAT dzSum = dz0+dz1;
     return 2.0*(lv[index_P1]/(dz1*dzSum) - lv[index_0]/(dz1*dz0) + lv[index_M1]/(dz0*dzSum) );
 
-    /*if (fabs(tmp1-tmp2) > 1.0e-12){handleError(1, "d2wdz2");}
-
-    return tmp2;*/
 }
 
 
 /** first-derivative of product (u*v), evaluated at the location of the v-component */
 inline FLOAT duvdx ( const FLOAT * const lv, const Parameters & parameters, const FLOAT * const lm ) {
-/*
-    const FLOAT tmp1= 1.0 /4.0 * ( ( ( ( lv [mapd(0,0,0,0)] + lv [mapd(0,1,0,0)] ) *
-                         ( lv [mapd(0,0,0,1)] + lv [mapd(1,0,0,1)] ) ) -
-                       ( ( lv [mapd(-1,0,0,0)] + lv [mapd(-1,1,0,0)] ) *
-                         ( lv [mapd(-1,0,0,1)] + lv [mapd(0,0,0,1)] ) ) )
-      + parameters.solver.gamma *( ( fabs ( lv [mapd(0,0,0,0)] + lv [mapd(0,1,0,0)] ) *
-                              ( lv [mapd(0,0,0,1)] - lv [mapd(1,0,0,1)] ) ) -
-                       ( fabs ( lv [mapd(-1,0,0,0)] + lv [mapd(-1,1,0,0)] ) *
-                              ( lv [mapd(-1,0,0,1)] - lv [mapd(0,0,0,1)] ) ) )
-                       ) / lm[mapd(0,0,0,0)];
-*/
+
 
     const FLOAT hxShort = 0.5*lm[mapd( 0,0,0,0)];                       // distance of corner points in x-direction from center v-value
     const FLOAT hxLong0 = 0.5*(lm[mapd(0,0,0,0)] + lm[mapd(-1,0,0,0)]); // distance between center and west v-value
@@ -533,23 +395,13 @@ inline FLOAT duvdx ( const FLOAT * const lv, const Parameters & parameters, cons
     // return linear combination of central and donor-cell difference
     const FLOAT tmp2 = (1.0-parameters.solver.gamma)*secondOrder + parameters.solver.gamma*firstOrder;
 
-//    if (fabs(tmp1-tmp2) > 1.0e-12){handleError(1, "Error duv_dx"); }
     return tmp2;
 }
 
 
 /** evaluates first derivative w.r.t. y for u*v at location of u-component. For details on implementation, see duvdx */
 inline FLOAT duvdy ( const FLOAT * const lv, const Parameters & parameters, const FLOAT * const lm ) {
-/*    const FLOAT tmp1 = 1.0 /4.0 * ( ( ( ( lv [mapd(0,0,0,1)] + lv [mapd(1,0,0,1)] ) *
-                         ( lv [mapd(0,0,0,0)] + lv [mapd(0,1,0,0)] ) ) -
-                       ( ( lv [mapd(0,-1,0,1)] + lv [mapd(1,-1,0,1)] ) *
-                         ( lv [mapd(0,-1,0,0)] + lv [mapd(0,0,0,0)] ) ) ) +
-      parameters.solver.gamma * ( ( fabs ( lv [mapd(0,0,0,1)] + lv [mapd(1,0,0,1)] ) *
-                              ( lv [mapd(0,0,0,0)] - lv [mapd(0,1,0,0)] ) ) -
-                       ( fabs ( lv [mapd(0,-1,0,1)] + lv [mapd(1,-1,0,1)] ) *
-                              ( lv [mapd(0,-1,0,0)] - lv [mapd(0,0,0,0)] ) ) ) ) /
-                       lm[mapd(0,0,0,1)];
-*/
+
     const FLOAT hyShort = 0.5*lm[mapd( 0,0,0,1)];                       // distance of corner points in x-direction from center v-value
     const FLOAT hyLong0 = 0.5*(lm[mapd(0,0,0,1)] + lm[mapd( 0,-1,0,1)]); // distance between center and west v-value
     const FLOAT hyLong1 = 0.5*(lm[mapd(0,0,0,1)] + lm[mapd( 0,1,0,1)]); // distance between center and east v-value
@@ -583,16 +435,7 @@ inline FLOAT duvdy ( const FLOAT * const lv, const Parameters & parameters, cons
 
 /** evaluates first derivative w.r.t. x for u*w at location of w-component. For details on implementation, see duvdx */
 inline FLOAT duwdx ( const FLOAT * const lv, const Parameters & parameters, const FLOAT * const lm ) {
-/*    const FLOAT tmp1 = 1.0 /4.0 * ( ( ( ( lv [mapd(0,0,0,0)] + lv [mapd(0,0,1,0)] ) *
-                         ( lv [mapd(0,0,0,2)] + lv [mapd(1,0,0,2)] ) ) -
-                       ( ( lv [mapd(-1,0,0,0)] + lv [mapd(-1,0,1,0)] ) *
-                         ( lv [mapd(-1,0,0,2)] + lv [mapd(0,0,0,2)] ) ) ) +
-      parameters.solver.gamma * ( ( fabs ( lv [mapd(0,0,0,0)] + lv [mapd(0,0,1,0)] ) *
-                              ( lv [mapd(0,0,0,2)] - lv [mapd(1,0,0,2)] ) ) -
-                       ( fabs ( lv [mapd(-1,0,0,0)] + lv [mapd(-1,0,1,0)] ) *
-                              ( lv [mapd(-1,0,0,2)] - lv [mapd(0,0,0,2)] ) ) ) ) /
-                       lm[mapd(0,0,0,0)];
-*/
+
     const FLOAT hxShort = 0.5*lm[mapd( 0,0,0,0)];                       // distance of corner points in x-direction from center v-value
     const FLOAT hxLong0 = 0.5*(lm[mapd(0,0,0,0)] + lm[mapd(-1,0,0,0)]); // distance between center and west v-value
     const FLOAT hxLong1 = 0.5*(lm[mapd(0,0,0,0)] + lm[mapd( 1,0,0,0)]); // distance between center and east v-value
@@ -619,23 +462,14 @@ inline FLOAT duwdx ( const FLOAT * const lv, const Parameters & parameters, cons
                                 kr*(w00+w10) - kl*(wM10+w00) + fabs(kr)*(w00 - w10) - fabs(kl)*(wM10 - w00)
                               );
     const FLOAT tmp2 = (1.0-parameters.solver.gamma)*secondOrder + parameters.solver.gamma*firstOrder;
-//    if (fabs(tmp1-tmp2) > 1.0e-12){handleError(1,"Error duwdx");}
+
     return tmp2;
 }
 
 
 /** evaluates first derivative w.r.t. z for u*w at location of u-component. For details on implementation, see duvdx */
 inline FLOAT duwdz ( const FLOAT * const lv, const Parameters & parameters, const FLOAT * const lm ) {
-/*    const FLOAT tmp1= 1.0 /4.0 * ( ( ( ( lv [mapd(0,0,0,2)] + lv [mapd(1,0,0,2)] ) *
-                         ( lv [mapd(0,0,0,0)] + lv [mapd(0,0,1,0)] ) ) -
-                       ( ( lv [mapd(0,0,-1,2)] + lv [mapd(1,0,-1,2)] ) *
-                         ( lv [mapd(0,0,-1,0)] + lv [mapd(0,0,0,0)] ) ) ) +
-      parameters.solver.gamma * ( ( fabs ( lv [mapd(0,0,0,2)] + lv [mapd(1,0,0,2)] ) *
-                              ( lv [mapd(0,0,0,0)] - lv [mapd(0,0,1,0)] ) ) -
-                       ( fabs ( lv [mapd(0,0,-1,2)] + lv [mapd(1,0,-1,2)] ) *
-                              ( lv [mapd(0,0,-1,0)] - lv [mapd(0,0,0,0)] ) ) ) ) /
-                       lm[mapd(0,0,0,2)];
-*/
+
     const FLOAT hzShort = 0.5*lm[mapd( 0,0,0,2)];                       // distance of corner points in x-direction from center v-value
     const FLOAT hzLong0 = 0.5*(lm[mapd(0,0,0,2)] + lm[mapd( 0,0,-1,2)]); // distance between center and west v-value
     const FLOAT hzLong1 = 0.5*(lm[mapd(0,0,0,2)] + lm[mapd( 0,0, 1,2)]); // distance between center and east v-value
@@ -663,23 +497,13 @@ inline FLOAT duwdz ( const FLOAT * const lv, const Parameters & parameters, cons
                               );
     const FLOAT tmp2 = (1.0-parameters.solver.gamma)*secondOrder + parameters.solver.gamma*firstOrder;
 
-//    if (fabs(tmp1-tmp2)> 1.0e-12){handleError(1,"duwdz");}
     return tmp2;
 }
 
 
 /** evaluates first derivative w.r.t. y for v*w at location of w-component. For details on implementation, see duvdx */
 inline FLOAT dvwdy ( const FLOAT * const lv, const Parameters & parameters,const FLOAT * const lm ) {
-/*    const FLOAT tmp1 =  1.0 /4.0 * ( ( ( ( lv [mapd(0,0,0,1)] + lv [mapd(0,0,1,1)] ) *
-                         ( lv [mapd(0,0,0,2)] + lv [mapd(0,1,0,2)] ) ) -
-                       ( ( lv [mapd(0,-1,0,1)] + lv [mapd(0,-1,1,1)] ) *
-                         ( lv [mapd(0,-1,0,2)] + lv [mapd(0,0,0,2)] ) ) ) +
-      parameters.solver.gamma * ( ( fabs ( lv [mapd(0,0,0,1)] + lv [mapd(0,0,1,1)] ) *
-                              ( lv [mapd(0,0,0,2)] - lv [mapd(0,1,0,2)] ) ) -
-                       ( fabs ( lv [mapd(0,-1,0,1)] + lv [mapd(0,-1,1,1)] ) *
-                              ( lv [mapd(0,-1,0,2)] - lv [mapd(0,0,0,2)] ) ) ) ) /
-                       lm[mapd(0,0,0,1)];
-*/
+
     const FLOAT hyShort = 0.5*lm[mapd( 0,0,0,1)];                       // distance of corner points in x-direction from center v-value
     const FLOAT hyLong0 = 0.5*(lm[mapd(0,0,0,1)] + lm[mapd(0,-1,0,1)]); // distance between center and west v-value
     const FLOAT hyLong1 = 0.5*(lm[mapd(0,0,0,1)] + lm[mapd( 0,1,0,1)]); // distance between center and east v-value
@@ -706,23 +530,14 @@ inline FLOAT dvwdy ( const FLOAT * const lv, const Parameters & parameters,const
                                 kr*(w00+w10) - kl*(wM10+w00) + fabs(kr)*(w00 - w10) - fabs(kl)*(wM10 - w00)
                               );
     const FLOAT tmp2 = (1.0-parameters.solver.gamma)*secondOrder + parameters.solver.gamma*firstOrder;
-//    if (fabs(tmp1-tmp2) > 1.0e-12){handleError(1,"dvwdy");}
+
     return tmp2;
 }
 
 
 /** evaluates first derivative w.r.t. z for v*w at location of v-component. For details on implementation, see duvdx */
 inline FLOAT dvwdz ( const FLOAT * const lv, const Parameters & parameters, const FLOAT * const lm ) {
-/*    const FLOAT tmp1 = 1.0 /4.0 * ( ( ( ( lv [mapd(0,0,0,2)] + lv [mapd(0,1,0,2)] ) *
-                         ( lv [mapd(0,0,0,1)] + lv [mapd(0,0,1,1)] ) ) -
-                       ( ( lv [mapd(0,0,-1,2)] + lv [mapd(0,1,-1,2)] ) *
-                         ( lv [mapd(0,0,-1,1)] + lv [mapd(0,0,0,1)] ) ) ) +
-      parameters.solver.gamma * ( ( fabs ( lv [mapd(0,0,0,2)] + lv [mapd(0,1,0,2)] ) *
-                              ( lv [mapd(0,0,0,1)] - lv [mapd(0,0,1,1)] ) ) -
-                       ( fabs ( lv [mapd(0,0,-1,2)] + lv [mapd(0,1,-1,2)] ) *
-                              ( lv [mapd(0,0,-1,1)] - lv [mapd(0,0,0,1)] ) ) ) ) /
-                       lm[mapd(0,0,0,2)];
-*/
+
     const FLOAT hzShort = 0.5*lm[mapd( 0,0,0,2)];                       // distance of corner points in x-direction from center v-value
     const FLOAT hzLong0 = 0.5*(lm[mapd(0,0,0,2)] + lm[mapd( 0,0,-1,2)]); // distance between center and west v-value
     const FLOAT hzLong1 = 0.5*(lm[mapd(0,0,0,2)] + lm[mapd( 0,0, 1,2)]); // distance between center and east v-value
@@ -756,16 +571,7 @@ inline FLOAT dvwdz ( const FLOAT * const lv, const Parameters & parameters, cons
 
 /** first derivative of u*u w.r.t. x, evaluated at location of u-component. */
 inline FLOAT du2dx ( const FLOAT * const lv, const Parameters & parameters, const FLOAT * const lm ) {
-/*    const FLOAT tmp1 = 1.0 /4.0 * ( ( ( ( lv [mapd(0,0,0,0)] + lv [mapd(1,0,0,0)] ) *
-                         ( lv [mapd(0,0,0,0)] + lv [mapd(1,0,0,0)] ) ) -
-                       ( ( lv [mapd(-1,0,0,0)] + lv [mapd(0,0,0,0)] ) *
-                         ( lv [mapd(-1,0,0,0)] + lv [mapd(0,0,0,0)] ) ) ) +
-      parameters.solver.gamma * ( ( fabs ( lv [mapd(0,0,0,0)] + lv [mapd(1,0,0,0)] ) *
-                              ( lv [mapd(0,0,0,0)] - lv [mapd(1,0,0,0)] ) ) -
-                       ( fabs ( lv [mapd(-1,0,0,0)] + lv [mapd(0,0,0,0)] ) *
-                              ( lv [mapd(-1,0,0,0)] - lv [mapd(0,0,0,0)] ) ) ) ) /
-                       lm[mapd(0,0,0,0)];
-*/
+
     const FLOAT dxShort = 0.5*lm[mapd(0,0,0,0)];
     const FLOAT dxLong0 = 0.5*(lm[mapd(-1,0,0,0)] + lm[mapd(0,0,0,0)]);
     const FLOAT dxLong1 = 0.5*(lm[mapd( 0,0,0,0)] + lm[mapd(1,0,0,0)]);
@@ -791,23 +597,14 @@ inline FLOAT du2dx ( const FLOAT * const lv, const Parameters & parameters, cons
 
     // return linear combination of central- and upwind difference
     const FLOAT tmp2 = (1.0-parameters.solver.gamma)*secondOrder + parameters.solver.gamma*firstOrder;
-//    if (fabs(tmp1-tmp2) > 1.0e-12){handleError(1,"du2dx");}
+
     return tmp2;
 }
 
 
 /** first derivative of v*v w.r.t. y, evaluated at location of v-component; for details, see du2dx */
 inline FLOAT dv2dy ( const FLOAT * const lv, const Parameters & parameters, const FLOAT* const lm ) {
-/*    const FLOAT tmp1= 1.0 /4.0 * ( ( ( ( lv [mapd(0,0,0,1)] + lv [mapd(0,1,0,1)] ) *
-                         ( lv [mapd(0,0,0,1)] + lv [mapd(0,1,0,1)] ) ) -
-                       ( ( lv [mapd(0,-1,0,1)] + lv [mapd(0,0,0,1)] ) *
-                         ( lv [mapd(0,-1,0,1)] + lv [mapd(0,0,0,1)] ) ) ) +
-      parameters.solver.gamma * ( ( fabs ( lv [mapd(0,0,0,1)] + lv [mapd(0,1,0,1)] ) *
-                              ( lv [mapd(0,0,0,1)] - lv [mapd(0,1,0,1)] ) ) -
-                       ( fabs ( lv [mapd(0,-1,0,1)] + lv [mapd(0,0,0,1)] ) *
-                              ( lv [mapd(0,-1,0,1)] - lv [mapd(0,0,0,1)] ) ) ) ) /
-                       lm[mapd(0,0,0,1)];
-*/
+
     const FLOAT dyShort = 0.5*lm[mapd(0,0,0,1)];
     const FLOAT dyLong0 = 0.5*(lm[mapd(0,-1,0,1)] + lm[mapd(0,0,0,1)]);
     const FLOAT dyLong1 = 0.5*(lm[mapd( 0,0,0,1)] + lm[mapd(0,1,0,1)]);
@@ -833,16 +630,7 @@ inline FLOAT dv2dy ( const FLOAT * const lv, const Parameters & parameters, cons
 
 /** first derivative of w*w w.r.t. z, evaluated at location of w-component; for details, see du2dx */
 inline FLOAT dw2dz ( const FLOAT * const lv, const Parameters & parameters, const FLOAT* const lm ) {
-/*    const FLOAT tmp1= 1.0 /4.0 * ( ( ( ( lv [mapd(0,0,0,2)] + lv [mapd(0,0,1,2)] ) *
-                         ( lv [mapd(0,0,0,2)] + lv [mapd(0,0,1,2)] ) ) -
-                       ( ( lv [mapd(0,0,-1,2)] + lv [mapd(0,0,0,2)] ) *
-                         ( lv [mapd(0,0,-1,2)] + lv [mapd(0,0,0,2)] ) ) ) +
-      parameters.solver.gamma * ( ( fabs ( lv [mapd(0,0,0,2)] + lv [mapd(0,0,1,2)] ) *
-                              ( lv [mapd(0,0,0,2)] - lv [mapd(0,0,1,2)] ) ) -
-                       ( fabs ( lv [mapd(0,0,-1,2)] + lv [mapd(0,0,0,2)] ) *
-                              ( lv [mapd(0,0,-1,2)] - lv [mapd(0,0,0,2)] ) ) ) ) /
-                       lm[mapd(0,0,0,2)];
-*/
+
     const FLOAT dzShort = 0.5*lm[mapd(0,0,0,2)];
     const FLOAT dzLong0 = 0.5*(lm[mapd(0,0,-1,2)] + lm[mapd(0,0,0,2)]);
     const FLOAT dzLong1 = 0.5*(lm[mapd( 0,0,0,2)] + lm[mapd(0,0,1,2)]);
@@ -861,7 +649,7 @@ inline FLOAT dw2dz ( const FLOAT * const lv, const Parameters & parameters, cons
                                kr*(w0+w1) - kl*(wM1+w0) + fabs(kr)*(w0 - w1) - fabs(kl)*(wM1 - w0)
                              );
     const FLOAT tmp2 = (1.0-parameters.solver.gamma)*secondOrder + parameters.solver.gamma*firstOrder;
-//    if (fabs(tmp1-tmp2) > 1.0e-12){handleError(1,"dw2dz");}
+
     return tmp2;
 }
 

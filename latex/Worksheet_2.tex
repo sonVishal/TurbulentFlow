@@ -105,6 +105,7 @@ By defining the datatypes like this it is not necessary to fill and read the pre
 	Done.
 	\item \textbf{Read the implementation and infer its functional meaning: which cells does the iterator operate on?}\\
 	The iterator will move over the boundary layer if there is a neighboring rank available. For each cell it applies a BoundaryStencil. One can specify an offset so it can iterate over inner cells.
+	\newpage
 	\item \textbf{Which functions does a respective stencil object need to provide?}\\
 	The following functions are necessary because they are defined as virtual.
 	\begin{lstlisting}
@@ -150,7 +151,9 @@ By defining the datatypes like this it is not necessary to fill and read the pre
 \begin{itemize}
 	\item \textbf{Validate your parallel implementation for different domain decompositions, that is different choices $P_x$ x $P_y$ x $P_z$ , and domain sizes. Use cavity, channel and backward-facing step simulations for this purpose. Compare the solutions to your sequential program. What do you observe?}\\
 	Done.\\
-	\td{Maybe some diagrams so that we can see the speedup}
+	Corner cells need to be send, too. These are needed for the derivatives as they contain the values of their right boarder.
+	We tested the dimensional splitting in different 2D and 3D channel flow test-cases, with and without turbulence. The communication works as specified and gives the same results as the sequential code, even the numerical problem in the 3D channel flow is independent from the parallelization. The cavity scenario was tested with 2D and 3D, but without turbulence.
+	We observed, that it is hard to achieve a speedup by adding more MPI-ranks as the number of iterations petsc needs increases dramatically, see next chapter for more details.
 	
 \end{itemize}
 
@@ -158,9 +161,8 @@ By defining the datatypes like this it is not necessary to fill and read the pre
 \subsection{Theory: Towards Scaling Experiments}
 \begin{itemize}
 	\item \textbf{How can weak and strong scaling be measured for NS-EOF? Which problems do you expect?}\\
-	Strong scaling should be easy by choosing a large scenario since NS-EOF is computebound.\\
-	Weak scaling will be tricky because the number of iterations of PETSC is dependent on the number of cells. Therefore by doubling the domainsize we expect a larger computational work.\\
-	\td{Check again}
+	Strong scaling should be easy to measure by choosing a large scenario. We should be able to increase the number of processors working on the problem in order to achieve a lower execution time.\\
+	Weak scaling will be tricky because the number of iterations of PETSC is dependent on the number of cells. The increase of computational work is therefore higher than the increase of cell-count. A good metrics would probably meassure the time per itreation and include this. We will just keep the number of cells per process constant. \\
 \end{itemize}
 \subsection{NS-EOF in the MAC-cluster}
 \subsubsection{Environment and Login}

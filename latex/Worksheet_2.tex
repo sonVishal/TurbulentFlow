@@ -88,6 +88,27 @@
 	\end{tikzpicture}\\
 	
 }
+\newcommand{\createGraph}[4]{
+	\scriptsize
+	\begin{tikzpicture}
+	\pgfplotstableread[col sep=comma]{#1}\datatable
+	\begin{axis}[
+	ybar,ymin=0,
+	xlabel={#2},
+	ylabel={#4},
+	%ymode=log,
+	ymajorgrids,
+	flexible xticklabels from table={#1}{{#2}}{col sep=comma},
+	xticklabel style={rotate=45, anchor=east, align=right,text width=1.0cm},
+	xtick=data,
+	nodes near coords align={vertical}]
+	\addplot[blue!20!black,fill=blue!50!white] table[x expr=\coordindex,y={#3}]{\datatable};
+	
+	\end{axis}
+	\end{tikzpicture}\\
+	
+}
+
 
 
 
@@ -205,7 +226,11 @@ By defining the datatypes like this it is not necessary to fill and read the pre
 \end{itemize}
 \subsection{NS-EOF in the MAC-cluster}
 \subsubsection{Environment and Login}
-Done.
+\begin{itemize}
+	\item SLURM-Batch System, use salloc or sbatch to use compute nodes.
+	\item AMD-Bulldozer nodes: petsc currently not working on these due to compiler settings
+	\item Intel-Sandybridge nodes: dualsocket Intel(R) Xeon(R) E5-2670 with 8 cores / 16 threads each. 128 GB RAM per node, 64 GB RAM per CPU-socket. Infiniband interconnect.
+\end{itemize}
 \subsubsection{Compiling}
 Due to the fact that PETSC is not fully supported by the MAC cluster we compiled our own version for this worksheet. We used the version 3.7.4 the commands to compile it are the following ones:
 \begin{lstlisting}[caption=Debug version]
@@ -266,19 +291,19 @@ Done
 	\begin{minipage}{.7\textwidth}
 		\centering
 		\createPlot{csv/N1IncX.csv}{Processes}{Time}	
-		\caption{On one Node with domain size 120x120. Increase number of ranks in x-direction}
+		\caption{On one Node with domain size 120x120 cells. Increase number of ranks in x-direction}
 	\end{minipage}%
 	\begin{minipage}{.8\textwidth}
 		\centering
 		\createPlot{csv/N1IncY.csv}{Processes}{Time}	
-		\caption{On one Node with domain size 120x120. Increase number of ranks in y-direction}
+		\caption{On one Node with domain size 120x120 cells. Increase number of ranks in y-direction}
 	\end{minipage}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
 	\createPlot{csv/N1IncXY.csv}{Processes}{Time}
-	\caption{On one Node with domain size 120x120. Increase number of ranks in x- and y-direction}
+	\caption{On one Node with domain size 120x120 cells. Increase number of ranks in x- and y-direction}
 \end{figure}
 
 
@@ -287,12 +312,12 @@ Done
 	\begin{minipage}{.7\textwidth}
 		\centering
 		\createPlot{csv/N2.csv}{Processes}{Time}
-		\caption{On two Node with domain size 120x120}
+		\caption{On two Node with domain size 120x120 cells.}
 	\end{minipage}%
 	\begin{minipage}{.8\textwidth}
 		\centering
 		\createPlot{csv/N4.csv}{Processes}{Time}
-		\caption{On four Node with domain size 120x120}
+		\caption{On four Node with domain size 120x120 cells.}
 	\end{minipage}
 \end{figure}
 
@@ -301,11 +326,27 @@ Done
 \begin{figure}[H]
 	\centering
 	\createPlot{csv/weak.csv}{Processes}{Time}
-	\caption{On one node. 40x40 per rank.}
+	\caption{On one node. 40x40 cells per rank.}
 \end{figure}
 	
 	\item \textbf{Run your parallel simulations for various numbers of processors and architectures. Plot your speedup and parallel efficiency in respective graphs (processes vs. speedup, e.g.). Hint: Deactivate vtk output in the scaling experiments since our output is not optimized for parallel execution yet.}\\
-	\td{Out VTK output is per rank. Moreover maybe we should compare binary and ascii output here}
+	It was not possible to run simulations on different partition due to the Petsc error explained above.\\
+	
+	\textbf{Speedup}
+	\begin{figure}[H]
+		\centering
+		\createGraph{csv/N1Speed.csv}{Processes}{Speedup}{Speedup}
+		\caption{On one node. 120x120 cells per rank.}
+	\end{figure}
+
+	\textbf{Efficiency}
+		\begin{figure}[H]
+		\centering
+		\createGraph{csv/N1Eff.csv}{Processes}{Efficiency}{Efficiency}
+		\caption{On one node. 120x120 cells per rank.}
+	\end{figure}
+	
+	
 	\item\textbf{How can you improve the performance of your program?}\\
 	Since the Petsc part is the most compute intensive one. One should try to improve this. About 65\% of the runtime is spend in Petsc. Probably a better parallelization of this part by using for example OpenMP could help to address this problem. Moreover another Preconditioner could help to decrease the time which is spend in petsc.
 	\item\textbf{Optimize your software. You may work on both sequential and parallel improvements as well as on algorithmic optimizations (such as optimization of the pressure Poisson solver).}\\

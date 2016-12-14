@@ -236,14 +236,18 @@ Done
 	\item \textbf{Following these instructions,}
 	\begin{itemize}
 		\item \textbf{experiment two of the four options.}\\
-		\td{}
+		We chose to implement equation 6 and 7 as well as the option without boundary layer thickness dependency of the mixing length. In the following we will discuss the two models using equation 6 and 7 respectively. 
 		\item \textbf{explain your choices. What would you have expected and how does that differ from your findings?}\\
-		\td{}
+The two equations resolve the evolution of the boundary layer thickness in flow direction which will lead to a more accurate description of the boundary layer development compared to a model where the boundary layer thickness depends solely on the wall normal distance. 
+The Blasius boundary layer equation describes a boundary layer thickness which is inverse proportional to the square root of Re_x whereas the turbulent boundary layer model has the boundary layer thickness proportional to the inverse of the 5th root. We expect those proportionalities will show in the development of the boundary layer thickness and therefore in the mixing length and turbulent viscosity. 
 		\item \textbf{discuss your results and compare the results of your two modeling approaches.}\\
+The results show the expected proportionalities to the boundary layer thickness functions. Since the Blasisus boundary layer thickness increases faster than the turbulent boundary layer thickness and therefore the turbulent viscosity is higher in the entrance area of the channel. At x/H = 20 both laminar and turbulent boundary layer thickness are larger than kappa*h and therefore both models calculate the same turbulent viscosity. 
 		\td{}
 		\item \textbf{compare your findings to the laminar reference case.}\\
+In the laminar reference case the turbulent viscosity is set to zero which results in less exchange of momentum in the fluid and therefore the velocity gradients are weaker and the maximum velocity is higher. 
 		\td{}\\
 		\td{Ensure to base all of your discussions on appropriate data!}
+
 	\end{itemize}
 \end{itemize}
 \subsection{Implementational Details}
@@ -255,7 +259,7 @@ Done
 \subsubsection{Turbulent viscosity and wall distance}
 \begin{itemize}
 	\item \textbf{Extend the data structures for the turbulent case. In order to keep things simple, you may add a new scalar field for both the distance to the (nearest) wall and a scalar field to store the turbulent viscosity $vT$ . We further evaluate the turbulent viscosity in the cell center, i.e. at the same location as the pressure.}\\
-	Done.
+	The turbulent viscosity calculation is implemented in the TurbLPModelStencil files. The Stencil consists of properties for the local velocities and local mesh sizes, the getShearStressTensorProduct which determines the square root in equation (4) and the apply methods that calculate the  turbulent viscosity value for each cell. The derivatives for the shear stress tensor are implemented in the StencilFunctions.h file. The mixing length is stored in TurbFlowField and calculated in MixingLengthStencil. 
 	\item \textbf{Consider the basic interplay of stencils, iterators and data structures in NS-EOF. How can you apply the concept of inheritance so that you can naturally extend your data structures and support both old and potentially new data structures in case of turbulence- model-based simulations?}\\
 	Done.
 	\item \textbf{Implement a VTK visualization for the turbulent viscosity. You may base your implementations on the existing plotter (VTKStencil) for the turbulent case and create a new stencil for this purpose which operates on the new data structure.}\\
@@ -265,7 +269,7 @@ Done
 \subsubsection{Momentum equations}
 \begin{itemize}
 	\item \textbf{Replace the discretization of the Laplacian in the evaluation of F, G and H by discrete expressions for}\\
-	Done\\
+	The velocity terms F, G and H are being evaluated in TurbFGHStencil. The methods that compute F, G and H are implemented in StencilFunctions. The compute functions used for the DNS simulations are overloaded and the evaluation of the Laplacian is changed to the evaluation of the three summands of equation (8-10) respectively.  The methods used to calculate these summands consist of the derivative-methods and the methods that determine the turbulent viscosity at cell edges. 
 	\item \textbf{Improve your implementation by extending it to stretched meshes. How do you need to adapt the formulas for F, G, H from above?}\\
 	We extend the implementation to stretched meshes by looking at the cell sizes and weighing the respective cell with the respective ratio. This is similar to what is already implemented in the code for other derivatives.
 \end{itemize}

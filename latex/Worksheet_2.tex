@@ -240,7 +240,7 @@ Done
 		We chose to implement equation 6 and 7 as well as the option without boundary layer thickness dependency of the mixing length. In the following we will discuss the two models using equation 6 and 7 respectively. 
 		\item \textbf{explain your choices. What would you have expected and how does that differ from your findings?}\\
 The two equations resolve the evolution of the boundary layer thickness in flow direction which will lead to a more accurate description of the boundary layer development compared to a model where the boundary layer thickness depends solely on the wall normal distance. 
-The Blasius boundary layer equation describes a boundary layer thickness which is inverse proportional to the square root of Re_x whereas the turbulent boundary layer model has the boundary layer thickness proportional to the inverse of the 5th root. We expect those proportionalities will show in the development of the boundary layer thickness and therefore in the mixing length and turbulent viscosity. 
+The Blasius boundary layer equation describes a boundary layer thickness which is inverse proportional to the square root of Re\_x whereas the turbulent boundary layer model has the boundary layer thickness proportional to the inverse of the 5th root. We expect those proportionalities will show in the development of the boundary layer thickness and therefore in the mixing length and turbulent viscosity. 
 		\item \textbf{discuss your results and compare the results of your two modeling approaches.}\\
 The results show the expected proportionalities to the boundary layer thickness functions. Since the Blasisus boundary layer thickness increases faster than the turbulent boundary layer thickness and therefore the turbulent viscosity is higher in the entrance area of the channel. At x/H = 20 both laminar and turbulent boundary layer thickness are larger than kappa*h and therefore both models calculate the same turbulent viscosity. 
 		\item \textbf{compare your findings to the laminar reference case.}\\
@@ -301,17 +301,17 @@ In the laminar reference case the turbulent viscosity is set to zero which resul
 In the following 
 	\item \textbf{Experiment with your choices on turbulence models in channel flows (cf. Sec. 3.1). What do you observe? How do the different models behave?}\\
 	In the following graph the the normalized velocity profiles of a DNS simulation and a laminar RANS simulation for Re = 1000 are plotted ar x/H = 20 over the dimensionless wall normal distance. The profiles are congruent. Therefore the derivatives must be evaluated correctly. The domain has been decomposed into 4x2 blocks for the parallel compuation. The flow field throughout the channel does not show any unphysical sudden changes in flow properties and single core simulations show the same results. Therefore the parallel extensions are evaluated correctly.\\ 
-\includegraphics{1_Velocity_profile_RANS_and_DNS_ at_20}\\
+\includegraphics[width=0.9\textwidth]{pictures/1_Velocity_profile_RANS_and_DNS_at_20}\\
 
 The mixing length development in flow direction is in accordance with the x-dependency of the two boundary layer thickness equations. Therefore the mixing length increases faster when the Blasius boundary layer equation is used than it does for the turbulent boundary layer model. The graph below shows the evolution of the mixing length along the center line of the channel. The mixing length increases with the boundary layer thickness until $\kappa$ *h is the restricting factor. \\
 
-\includegraphics{2_Mixing_lengths}\\
+\includegraphics[width=0.9\textwidth]{pictures/2_Mixing_lengths}\\
 
 As the plot of the mixing length development has shown, differences in turbulent viscosity exist only until x/H = 20 is reached. Therefore the velocity profiles at x/H = 20 should be similar for both turbulence models whereas they should differ in the entrance region. This behavior is shown in the following two velocity profile graphs where the velocity profiles are plotted at x/H = 5 and x/H = 20. \\
 
-\includegraphics{2_Velocity_Profile_x5}\\
+\includegraphics[width=0.9\textwidth]{pictures/2_Velocity_Profile_x5}\\
 
-\includegraphics{2_Velocity_Profile_x20}\\
+\includegraphics[width=0.9\textwidth]{pictures/2_Velocity_Profile_x20}\\
 
 	\item\textbf{Run turbulence simulations for the backward-facing step scenario.}\\
 	\td{}\\

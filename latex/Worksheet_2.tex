@@ -298,7 +298,8 @@ In the laminar reference case the turbulent viscosity is set to zero which resul
 \begin{itemize}
 	\item \textbf{Test your parallel, turbulent flow simulation code in various channel flow scenarios. How can you verify that all finite difference expressions and parallel extensions are evaluated correctly?}\\
 	Running the simulation with turbulent viscosity, $\nu_{T}$, set to 0 if we observe that the output is the same as dns simulation then we conclude that the derivatives are correct. If the derivatives were wrong then we would not see this in the output.
-In the following 
+
+ 
 	\item \textbf{Experiment with your choices on turbulence models in channel flows (cf. Sec. 3.1). What do you observe? How do the different models behave?}\\
 	In the following graph the the normalized velocity profiles of a DNS simulation and a laminar RANS simulation for Re = 1000 are plotted ar x/H = 20 over the dimensionless wall normal distance. The profiles are congruent. Therefore the derivatives must be evaluated correctly. The domain has been decomposed into 4x2 blocks for the parallel compuation. The flow field throughout the channel does not show any unphysical sudden changes in flow properties and single core simulations show the same results. Therefore the parallel extensions are evaluated correctly.\\ 
 \includegraphics[width=0.9\textwidth]{pictures/1_Velocity_profile_RANS_and_DNS_at_20}\\
@@ -312,6 +313,10 @@ As the plot of the mixing length development has shown, differences in turbulent
 \includegraphics[width=0.9\textwidth]{pictures/2_Velocity_Profile_x5}\\
 
 \includegraphics[width=0.9\textwidth]{pictures/2_Velocity_Profile_x20}\\
+
+The following plot shows the production term of the Reynolds stress tensor normalized with the wall shear stress over the normalized wall normal direction. With an increase in the Reynolds number the turbulence production increases. The decay of the turbulence production towards the channel center is not linear as expected. The turbulence production close to the wall is larger than expected. It reaches values close to one, which does not coincide with the results that are found in literature.  We conclude there is an overproduction of turbulence close to the wall. 
+
+\includegraphics[width=0.9\textwidth]{pictures/Reynolds_Stress_Re5600_Re11200}\\
 
 	\item\textbf{Run turbulence simulations for the backward-facing step scenario.}\\
 	\td{}\\

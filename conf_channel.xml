@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
-    <flow Re="5600" />
-    <simulation finalTime="10.0" >
+    <flow Re="30317" />
+    <simulation finalTime="1000.0" >
         <type>turbulence</type>
         <scenario>channel</scenario>
     </simulation>
-    <backwardFacingStep xRatio="0.0" yRatio="0.0" />
+    <backwardFacingStep xRatio="0.167" yRatio="0.5" />
     <timestep dt="1" tau="0.5" />
     <solver gamma="0.5" />
     <geometry
-      dim="2"
-      lengthX="20.0" lengthY="1.0" lengthZ="1.0"
-      sizeX="40" sizeY="40" sizeZ="20"
+      dim="3"
+      lengthX="120.0" lengthY="20.0" lengthZ="20.0"
+      sizeX="20" sizeY="40" sizeZ="40"
       stretchX="false" stretchY="true" stretchZ="true"
     >
-      <!--mesh>uniform</mesh-->
-      <mesh>stretched</mesh>
+      <mesh>uniform</mesh>
+      <!--mesh>stretched</mesh-->
     </geometry>
     <environment gx="0" gy="0" gz="0" />
     <walls>
@@ -38,8 +38,8 @@
             <vector x="0" y="0" z="0" />
         </back>
     </walls>
-    <vtk interval="1">channel_result</vtk>
+    <vtk interval="1">results/channel_result</vtk>
     <turbulence MixingLengthMethod="3" /> <!--> 0=Default 1=Ignore boundary layer 2=Laminar 3=Turbulent</-->
     <stdOut interval="1" />
-    <parallel numProcessorsX="1" numProcessorsY="1" numProcessorsZ="1" />
+    <parallel numProcessorsX="2" numProcessorsY="2" numProcessorsZ="1" />
 </configuration>

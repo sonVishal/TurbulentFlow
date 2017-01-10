@@ -3,8 +3,10 @@
 -ksp_converged_reason
 ### plotting the convergence of the solver
 #-ksp_monitor
-
+#-mat_view binary
 #-ksp_type fgmres
+#-ksp_type gcr
+#-ksp_gmres_restart 10
 
 ### factorization level for the ILU precond -- serial
 #-pc_factor_levels 2

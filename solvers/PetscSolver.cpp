@@ -115,7 +115,7 @@ PetscSolver::PetscSolver(FlowField & flowField, Parameters & parameters):
     DMDABoundaryType bx = DMDA_BOUNDARY_NONE,
                      by = DMDA_BOUNDARY_NONE,
                      bz = DMDA_BOUNDARY_NONE;
-                     
+
 
     if (parameters.walls.typeLeft==PERIODIC){
         bx = DMDA_BOUNDARY_PERIODIC;
@@ -255,8 +255,13 @@ PetscSolver::PetscSolver(FlowField & flowField, Parameters & parameters):
     KSPSetDM(_ksp, _da);
     KSPSetComputeOperators(_ksp, computeMatrix, &_ctx);
 
+    // NOTE: Here we set the solver type to flexible GMRES
+    // Try: KSPBCGS BiCGSTAB - works locally
+    // Try: KSPTFQMR Transpose free QMR - works locally
+    // Try: KSPGCR Generalized Conjugate Residual
+    // Default: KSPFGMRES Flexible GMRES
     KSPSetType(_ksp,KSPFGMRES);
-    
+
     int comm_size;
     MPI_Comm_size(PETSC_COMM_WORLD,&comm_size);
 
@@ -279,13 +284,13 @@ PetscSolver::PetscSolver(FlowField & flowField, Parameters & parameters):
     KSPSetUp(_ksp);
 
     //from here we can change sub_ksp if necessary
-    //that has to be done after setup. The other solvers above 
+    //that has to be done after setup. The other solvers above
     //can be changed before setup with KSPSetFromOptions
 
     if (comm_size>1){
 	KSP *subksp;
 	PC subpc;
-	
+
 	PCASMGetSubKSP(_pc,NULL,NULL,&subksp);
 	KSPGetPC(subksp[0],&subpc);
 
@@ -308,7 +313,7 @@ PetscSolver::PetscSolver(FlowField & flowField, Parameters & parameters):
     }
 
 
-   
+
 }
 
 
@@ -375,9 +380,7 @@ PetscErrorCode computeMatrix2D(KSP ksp, Mat A, Mat pc, MatStructure * matStructu
 
     Nx = parameters.geometry.sizeX + 2;
     Ny = parameters.geometry.sizeY + 2;
-#ifdef PRINT_LIMITS
     std::cout << "Limits= " << limitsX[0] << ", " << limitsX[1] << "; " << limitsY[0] << " , " << limitsY[1] << std::endl;
-#endif
     // Loop for inner nodes
     for (j = limitsY[0]; j < limitsY[1]; j++){
         for (i = limitsX[0]; i < limitsX[1]; i++){
@@ -566,7 +569,10 @@ PetscErrorCode computeMatrix2D(KSP ksp, Mat A, Mat pc, MatStructure * matStructu
 
     MatAssemblyBegin(A,MAT_FINAL_ASSEMBLY);
     MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY);
-
+    // PetscViewer viewer;
+    // PetscViewerASCIIOpen(MPI_COMM_WORLD, "A_ascii.out",&viewer);
+    // MatView(A,viewer);
+    // PetscViewerDestroy(&viewer);
     MatNullSpace nullspace;
     MatNullSpaceCreate(PETSC_COMM_WORLD,PETSC_TRUE,0,0,&nullspace);
     MatSetNullSpace(A,nullspace);
@@ -1091,4 +1097,3 @@ void PetscSolver::reInitMatrix() {
     else
     	KSPSetComputeOperators(_ksp,computeMatrix3D, &_ctx);
 }
-
